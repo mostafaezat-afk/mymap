@@ -1,0 +1,52 @@
+/* styles.css - التنسيقات العامة */
+
+:root {
+    --primary-color: #2E8B57;
+    --secondary-color: #FFD700;
+    --dark-color: #1E3A8A;
+    --light-bg: #F8F9FA;
+}
+
+body {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    background-color: var(--light-bg);
+}
+
+.upload-btn {
+    min-width: 400px;
+    min-height: 200px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.btn-outline-primary, .btn-outline-success, .btn-outline-info {
+    border-width: 2px;
+    font-weight: bold;
+}
+
+@media print {
+    header, nav, footer, .no-print {
+        display: none !important;
+    }
+}
