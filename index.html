@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خريطة خدمات بشتيل</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      background: #f5f5f5;
+      overflow: hidden;
+    }
+    
+    #header {
+      background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+      color: white;
+      padding: 15px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    #header h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-search {
+      background: white;
+      color: #2196f3;
+    }
+    
+    .btn-add {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+    
+    #map {
+      width: 100%;
+      height: calc(100vh - 70px);
+    }
+    
+    .filter-panel {
+      position: absolute;
+      top: 80px;
+      left: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      max-width: 250px;
+    }
+    
+    .filter-panel h3 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+      font-size: 16px;
+    }
+    
+    .filter-panel select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+    }
+    
+    .filter-panel button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Tajawal', sans-serif;
+      font-weight: bold;
+    }
+    
+    .filter-panel button:hover {
+      background: #1976d2;
+    }
+    
+    .stats-panel {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      min-width: 150px;
+    }
+    
+    .stats-panel h4 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+      font-size: 14px;
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 13px;
+    }
+    
+    .stat-value {
+      font-weight: bold;
+      color: #2196f3;
+    }
+    
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      z-index: 2000;
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      #header h1 {
+        font-size: 18px;
+      }
+      
+      .filter-panel {
+        top: 70px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+      }
+      
+      .stats-panel {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+      }
+      
+      #map {
+        height: calc(100vh - 60px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>🗺️ خريطة خدمات بشتيل</h1>
+    <div class="header-buttons">
+      <a href="https://script.google.com/macros/s/AKfycby-1bnOjE9Is5kZDW3mW0Vr5SBmaN0rLouAhRnEUHOof5J_M3unwnC7r7eBiD_Fd_p5/exec?page=search" class="btn btn-search">🔍 البحث</a>
+      <a href="https://script.google.com/macros/s/AKfycby-1bnOjE9Is5kZDW3mW0Vr5SBmaN0rLouAhRnEUHOof5J_M3unwnC7r7eBiD_Fd_p5/exec?page=provider" class="btn btn-add">➕ إضافة خدمة</a>
+    </div>
+  </div>
+
+  <div class="filter-panel">
+    <h3>تصفية حسب النشاط</h3>
+    <select id="filterActivity">
+      <option value="">جميع الأنشطة</option>
+    </select>
+    <button onclick="filterByActivity()">تطبيق</button>
+    <button onclick="showAllProviders()" style="background: #f44336; margin-top: 5px;">إظهار الكل</button>
+  </div>
+
+  <div class="stats-panel">
+    <h4>📊 الإحصائيات</h4>
+    <div class="stat-item">
+      <span>إجمالي الخدمات:</span>
+      <span class="stat-value" id="totalProviders">0</span>
+    </div>
+    <div class="stat-item">
+      <span>الأنشطة المختلفة:</span>
+      <span class="stat-value" id="totalActivities">0</span>
+    </div>
+    <div class="stat-item">
+      <span>المعروض حالياً:</span>
+      <span class="stat-value" id="visibleProviders">0</span>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">⏳ جاري التحميل...</div>
+  <div id="map"></div>
+
+  <script>
+    let map, allMarkers = [], allProviders = [], activitiesList = [];
+
+    // تهيئة الخريطة
+    function initMap() {
+      const beshtil = { lat: 30.0856171, lng: 31.1819895 };
+      
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: beshtil,
+        zoom: 14,
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          }
+        ],
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true
+      });
+
+      loadAllProviders();
+    }
+
+    // تحميل جميع مقدمي الخدمات
+    function loadAllProviders() {
+      document.getElementById('loading').style.display = 'block';
+      
+      google.script.run
+        .withSuccessHandler(function(providers) {
+          allProviders = providers;
+          displayProviders(providers);
+          loadActivitiesFilter();
+          updateStats();
+          document.getElementById('loading').style.display = 'none';
+        })
+        .withFailureHandler(function(error) {
+          console.error("Error loading providers:", error);
+          document.getElementById('loading').style.display = 'none';
+          alert("حدث خطأ في تحميل البيانات");
+        })
+        .getAllProviders();
+    }
+
+    // عرض مقدمي الخدمات على الخريطة
+    function displayProviders(providers) {
+      // مسح العلامات السابقة
+      allMarkers.forEach(m => m.setMap(null));
+      allMarkers = [];
+
+      if (!providers || providers.length === 0) {
+        return;
+      }
+
+      // إنشاء أيقونات مخصصة لكل نشاط
+      const activityIcons = {
+        'نجار': 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+        'حداد': 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+        'سباك': 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+        'كهربائي': 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+        'default': 'https://maps.google.com/mapfiles/ms/icons/purple-dot.png'
+      };
+
+      providers.forEach(p => {
+        const icon = activityIcons[p.activity] || activityIcons['default'];
+        
+        const marker = new google.maps.Marker({
+          position: { lat: p.lat, lng: p.lng },
+          map: map,
+          title: p.name,
+          icon: icon,
+          animation: google.maps.Animation.DROP
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="font-family: Tajawal, sans-serif; direction: rtl; padding: 12px; min-width: 200px;">
+              <div style="font-size: 18px; font-weight: bold; color: #1976d2; margin-bottom: 10px; border-bottom: 2px solid #2196f3; padding-bottom: 8px;">
+                ${p.name}
+              </div>
+              <div style="margin: 8px 0; display: flex; align-items: center;">
+                <span style="margin-left: 8px;">🛠️</span>
+                <span><strong>النشاط:</strong> ${p.activity}</span>
+              </div>
+              <div style="margin: 8px 0; display: flex; align-items: center;">
+                <span style="margin-left: 8px;">📞</span>
+                <span><strong>الهاتف:</strong> <a href="tel:${p.phone}" style="color: #2196f3; text-decoration: none;">${p.phone}</a></span>
+              </div>
+              <div style="margin: 8px 0; display: flex; align-items: center;">
+                <span style="margin-left: 8px;">📍</span>
+                <span><strong>العنوان:</strong> ${p.address}</span>
+              </div>
+              <div style="margin: 8px 0; display: flex; align-items: center; color: #666; font-size: 13px;">
+                <span style="margin-left: 8px;">🕒</span>
+                <span>${new Date(p.time).toLocaleDateString('ar-EG')}</span>
+              </div>
+            </div>
+          `
+        });
+
+        marker.addListener("click", function() {
+          // إغلاق جميع النوافذ المفتوحة
+          allMarkers.forEach(m => {
+            if (m.infoWindow) {
+              m.infoWindow.close();
+            }
+          });
+          infoWindow.open(map, marker);
+        });
+
+        marker.infoWindow = infoWindow;
+        marker.providerData = p;
+        allMarkers.push(marker);
+      });
+
+      // تمركز الخريطة على جميع العلامات
+      if (providers.length > 0) {
+        const bounds = new google.maps.LatLngBounds();
+        providers.forEach(p => {
+          bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+        });
+        map.fitBounds(bounds);
+      }
+    }
+
+    // تحميل قائمة الأنشطة في الفلتر
+    function loadActivitiesFilter() {
+      const activities = [...new Set(allProviders.map(p => p.activity))].sort();
+      activitiesList = activities;
+      
+      const select = document.getElementById('filterActivity');
+      select.innerHTML = '<option value="">جميع الأنشطة</option>';
+      
+      activities.forEach(act => {
+        const option = document.createElement('option');
+        option.value = act;
+        option.textContent = act;
+        select.appendChild(option);
+      });
+    }
+
+    // تصفية حسب النشاط
+    function filterByActivity() {
+      const selectedActivity = document.getElementById('filterActivity').value;
+      
+      if (!selectedActivity) {
+        showAllProviders();
+        return;
+      }
+
+      allMarkers.forEach(marker => {
+        if (marker.providerData.activity === selectedActivity) {
+          marker.setMap(map);
+        } else {
+          marker.setMap(null);
+        }
+      });
+
+      // تمركز على المرئي فقط
+      const visibleProviders = allProviders.filter(p => p.activity === selectedActivity);
+      if (visibleProviders.length > 0) {
+        const bounds = new google.maps.LatLngBounds();
+        visibleProviders.forEach(p => {
+          bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+        });
+        map.fitBounds(bounds);
+      }
+
+      updateStats();
+    }
+
+    // إظهار جميع مقدمي الخدمات
+    function showAllProviders() {
+      document.getElementById('filterActivity').value = '';
+      allMarkers.forEach(marker => marker.setMap(map));
+      
+      if (allProviders.length > 0) {
+        const bounds = new google.maps.LatLngBounds();
+        allProviders.forEach(p => {
+          bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+        });
+        map.fitBounds(bounds);
+      }
+      
+      updateStats();
+    }
+
+    // تحديث الإحصائيات
+    function updateStats() {
+      const visibleCount = allMarkers.filter(m => m.getMap() !== null).length;
+      
+      document.getElementById('totalProviders').textContent = allProviders.length;
+      document.getElementById('totalActivities').textContent = activitiesList.length;
+      document.getElementById('visibleProviders').textContent = visibleCount;
+    }
+  </script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8&callback=initMap"></script>
+</body>
+</html>
