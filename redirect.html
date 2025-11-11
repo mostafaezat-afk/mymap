@@ -1,158 +1,34 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>جاري التحميل...</title>
+<script>
+  // ✅ حط الرابط المستهدف مباشرة هنا
+  const targetUrl = 'https://script.google.com/macros/s/AKfycbxuGpLDJRoCzg6VQ2J46V__0E60cRd5iCylAZiUr-TUPOLoXhGqe3f0KJXkFC8_Z-7C/exec?page=search';
   
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  console.log('📍 Target URL:', targetUrl);
+  
+  // العد التنازلي
+  let count = 3;
+  const countdownEl = document.getElementById('countdown');
+  
+  const countdownInterval = setInterval(() => {
+    count--;
+    countdownEl.textContent = count;
     
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      color: white;
-      overflow: hidden;
+    if (count === 0) {
+      clearInterval(countdownInterval);
+      countdownEl.textContent = '⏳';
     }
+  }, 1000);
+  
+  // الانتقال التلقائي بعد 3 ثواني
+  setTimeout(() => {
+    console.log('🔄 Redirecting...');
     
-    .container {
-      text-align: center;
-      padding: 2rem;
-      animation: fadeIn 0.5s ease-in;
-    }
+    // إضافة timestamp لفرض التحديث
+    const timestamp = new Date().getTime();
+    const finalUrl = targetUrl + '&_refresh=' + timestamp;
     
-    .logo {
-      font-size: 8rem;
-      margin-bottom: 2rem;
-      animation: bounce 1s infinite;
-    }
+    console.log('📍 Final URL:', finalUrl);
     
-    .title {
-      font-size: 3rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-    
-    .message {
-      font-size: 1.8rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-    }
-    
-    .loader {
-      width: 60px;
-      height: 60px;
-      border: 6px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 2rem auto;
-    }
-    
-    .countdown {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-top: 2rem;
-    }
-    
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    @keyframes bounce {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-20px);
-      }
-    }
-    
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .logo {
-        font-size: 6rem;
-      }
-      .title {
-        font-size: 2.5rem;
-      }
-      .message {
-        font-size: 1.5rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="logo">🔄</div>
-    <div class="title">جاري التحديث...</div>
-    <div class="message">سيتم تحميل الصفحة تلقائياً</div>
-    <div class="loader"></div>
-    <div class="countdown" id="countdown">3</div>
-  </div>
-
-  <script>
-    // ✅ استخراج الرابط من URL
-    const urlParams = https://script.google.com/macros/s/AKfycbwkODR-rEuWz3DZv3xml_uZ9ABW0Haz777U5AZ9FtVoiU26TJ4CILFAnvMYloXqwIzj/exec;
-    const targetUrl = urlParams.get('target');
-    
-    if (!targetUrl) {
-      console.error('❌ No target URL provided!');
-      document.querySelector('.title').textContent = 'خطأ!';
-      document.querySelector('.message').textContent = 'لم يتم تحديد رابط الانتقال';
-    } else {
-      console.log('📍 Target URL:', targetUrl);
-      
-      // العد التنازلي
-      let count = 3;
-      const countdownEl = document.getElementById('countdown');
-      
-      const countdownInterval = setInterval(() => {
-        count--;
-        countdownEl.textContent = count;
-        
-        if (count === 0) {
-          clearInterval(countdownInterval);
-          countdownEl.textContent = '⏳';
-        }
-      }, 1000);
-      
-      // الانتقال التلقائي
-      setTimeout(() => {
-        console.log('🔄 Redirecting...');
-        
-        // إضافة timestamp لفرض التحديث
-        const timestamp = new Date().getTime();
-        const separator = targetUrl.includes('?') ? '&' : '?';
-        const finalUrl = targetUrl + separator + '_refresh=' + timestamp;
-        
-        console.log('📍 Final URL:', finalUrl);
-        
-        // انتقل للصفحة
-        window.location.replace(finalUrl);
-      }, 3000);
-    }
-  </script>
-</body>
-</html>
-
+    // انتقل للصفحة
+    window.location.replace(finalUrl);
+  }, 3000);
+</script>
