@@ -63,5 +63,15 @@
       window.location.replace(finalUrl);
     }, 3000);
   </script>
+  <script>
+// إعادة تحميل الصفحة مرة واحدة فقط
+if (!sessionStorage.getItem('reloaded')) {
+    sessionStorage.setItem('reloaded', 'true');
+    location.reload();
+} else {
+    sessionStorage.removeItem('reloaded');
+}
+</script>
+
 </body>
 </html>
