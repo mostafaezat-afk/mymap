@@ -13,13 +13,13 @@
   <div class="container">
     <div class="logo">🔄</div>
     <div class="title">جاري التحميل...</div>
-    <div class="message">سيتم فتح الصفحة في تبويب جديد</div>
+    <div class="message">سيتم تحميل الصفحة تلقائياً</div>
     <div class="loader"></div>
     <div class="countdown" id="countdown">3</div>
   </div>
 
   <script>
-    // ✅ الرابط النظيف بدون parameters إضافية
+    // ✅ الرابط المستهدف
     const targetUrl = 'https://script.google.com/macros/s/AKfycbx6gXLI4G5qoT6MDDJnSUWVg8G4fKhZkHm3Gv9TO-5ChiSP3K-DayaLgF-C59LAPTou/exec?page=search';
     
     console.log('📍 Target URL:', targetUrl);
@@ -38,17 +38,10 @@
       }
     }, 1000);
     
-    // فتح صفحة جديدة بعد 3 ثواني
+    // ✅ انتقال مباشر بعد 3 ثواني (بدون فتح تبويب جديد)
     setTimeout(() => {
-      console.log('🔄 Opening new tab...');
-      
-      // فتح الصفحة في تبويب جديد
-      window.open(targetUrl, '_blank');
-      
-      // إغلاق الصفحة الحالية
-      setTimeout(() => {
-        window.close();
-      }, 500);
+      console.log('🔄 Redirecting...');
+      window.location.href = targetUrl;
     }, 3000);
   </script>
 </body>
