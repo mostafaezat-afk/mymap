@@ -6,18 +6,7 @@
   <title>جاري التحميل...</title>
   
   <style>
-    * {margin:0;padding:0;box-sizing:border-box}
-    body {font-family:'Tajawal',sans-serif;background:linear-gradient(135deg,#2196f3 0%,#1976d2 100%);display:flex;align-items:center;justify-content:center;min-height:100vh;color:white;overflow:hidden}
-    .container {text-align:center;padding:2rem;animation:fadeIn 0.5s ease-in}
-    .logo {font-size:8rem;margin-bottom:2rem;animation:bounce 1s infinite}
-    .title {font-size:3rem;font-weight:800;margin-bottom:1rem}
-    .message {font-size:1.8rem;margin-bottom:2rem;opacity:0.9}
-    .loader {width:60px;height:60px;border:6px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 1s linear infinite;margin:2rem auto}
-    .countdown {font-size:2.5rem;font-weight:700;margin-top:2rem}
-    @keyframes fadeIn {from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes bounce {0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
-    @keyframes spin {to{transform:rotate(360deg)}}
-    @media (max-width:768px){.logo{font-size:6rem}.title{font-size:2.5rem}.message{font-size:1.5rem}}
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Tajawal',sans-serif;background:linear-gradient(135deg,#2196f3 0%,#1976d2 100%);display:flex;align-items:center;justify-content:center;min-height:100vh;color:white;overflow:hidden}.container{text-align:center;padding:2rem;animation:fadeIn 0.5s ease-in}.logo{font-size:8rem;margin-bottom:2rem;animation:bounce 1s infinite}.title{font-size:3rem;font-weight:800;margin-bottom:1rem}.message{font-size:1.8rem;margin-bottom:2rem;opacity:0.9}.loader{width:60px;height:60px;border:6px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 1s linear infinite;margin:2rem auto}.countdown{font-size:2.5rem;font-weight:700;margin-top:2rem}@keyframes fadeIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}@keyframes spin{to{transform:rotate(360deg)}}@media (max-width:768px){.logo{font-size:6rem}.title{font-size:2.5rem}.message{font-size:1.5rem}}
   </style>
 </head>
 <body>
@@ -30,7 +19,10 @@
   </div>
 
   <script>
+    // ✅ الرابط النظيف بدون parameters إضافية
     const targetUrl = 'https://script.google.com/macros/s/AKfycbx6gXLI4G5qoT6MDDJnSUWVg8G4fKhZkHm3Gv9TO-5ChiSP3K-DayaLgF-C59LAPTou/exec?page=search';
+    
+    console.log('📍 Target URL:', targetUrl);
     
     // العد التنازلي
     let count = 3;
@@ -46,17 +38,18 @@
       }
     }, 1000);
     
-    // فتح صفحة جديدة وإغلاق الحالية
+    // فتح صفحة جديدة بعد 3 ثواني
     setTimeout(() => {
+      console.log('🔄 Opening new tab...');
+      
       // فتح الصفحة في تبويب جديد
       window.open(targetUrl, '_blank');
       
       // إغلاق الصفحة الحالية
       setTimeout(() => {
-        window.open('', '_self').close();
+        window.close();
       }, 500);
     }, 3000);
   </script>
-
 </body>
 </html>
