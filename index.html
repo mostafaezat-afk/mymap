@@ -2,18 +2,24 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=3.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
   <title>🔍 بحث عن الخدمات - بشتيل</title>
   <meta name="theme-color" content="#2196f3">
+  
+  <!-- ✅ تحسينات الأداء - Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://maps.googleapis.com">
+  <link rel="dns-prefetch" href="https://script.google.com">
+  
+  <!-- ✅ تحميل الخطوط مع display=swap للسرعة -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet"/>
   
   <script>
-    // ⚙️ إعدادات الاتصال بـ Google Apps Script
+    // ⚙️ إعدادات الاتصال
     const CONFIG = {
-      WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbzxut_p4tA7b7EXYPzhtlueIsgpyu-iufR8A3po2HdXd7syfBM2Jq3uWUqTK32dCfZ-/exec',  // 👈 ضع رابط Web App هنا بعد النشر
-      GOOGLE_MAPS_API_KEY: 'AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8'  // 👈 ضع مفتاح Google Maps API هنا
+      WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbzbpu9n3gvj-7pJ9QHn-Dz9feRb8lfo7KZ7Wbls4uadUXvNEkEFA4BHkJepfOeZAcWb/exec',
+      GOOGLE_MAPS_API_KEY: 'AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8'
     };
     
     function goToRegistration() {
@@ -26,14 +32,117 @@
   </script>
   
   <style>
-    :root{--primary:#2196f3;--primary-light:#42a5f5;--primary-dark:#1976d2;--secondary:#4caf50;--accent:#f44336;--success:#26c281;--background:#f5f8fa;--card-bg:#ffffff;--text-primary:#1a1a2e;--text-secondary:#6c757d;--border:#e1e8ed}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}html,body{width:100%;height:100%;margin:0;padding:0}body{font-family:'Tajawal',sans-serif;background:var(--background);color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden}.splash-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#2196f3 0%,#1976d2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity 0.5s}.splash-screen.hidden{opacity:0;pointer-events:none}.splash-logo{font-size:8rem;animation:bounce 1s infinite}.splash-text{color:white;font-size:3rem;font-weight:800;margin-top:2rem;text-align:center;padding:0 2rem}.splash-loader{width:60px;height:60px;border:6px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 1s linear infinite;margin-top:3rem}@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}@keyframes spin{to{transform:rotate(360deg)}}.mobile-view{width:100%;min-height:100vh;padding:0;margin:0;display:none}.mobile-view.active{display:block}.mobile-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:3rem 2rem;text-align:center;color:white;box-shadow:0 4px 15px rgba(0,0,0,0.1);width:100%;position:sticky;top:0;z-index:100;margin:0;overflow:hidden}.mobile-header h1{font-size:4.5rem;font-weight:800;margin:0 0 1rem 0;letter-spacing:-0.02em;line-height:1.2}.mobile-header-buttons{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}.mobile-btn-header{padding:2rem 3rem;border-radius:25px;text-decoration:none;font-size:2.5rem;font-weight:700;color:white;border:none;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.3);display:inline-flex;align-items:center;justify-content:center;gap:1rem;transition:transform 0.2s;font-family:'Tajawal',sans-serif}.mobile-btn-header:active{transform:scale(0.95)}.mobile-btn-register{background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%)}.mobile-btn-search{background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%)}.mobile-content{width:100%;padding:0;margin:0;background:var(--background);padding-bottom:3rem}.mobile-section{padding:2rem 2rem;background:var(--card-bg);border-bottom:4px solid #f0f0f0;margin:0}.mobile-section:first-child{padding-top:2rem;margin-top:0}.mobile-section-title{display:flex;align-items:center;gap:2rem;font-size:3rem;font-weight:700;color:var(--primary);margin-bottom:2.5rem;justify-content:center}.mobile-icon{width:100px;height:100px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;flex-shrink:0}.mobile-info-text{font-size:2.8rem;color:var(--text-secondary);text-align:center;margin-bottom:2rem;font-weight:600}.mobile-filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin:2rem 0}@media (max-width:900px){.mobile-filter-grid{grid-template-columns:repeat(3,1fr)}}@media (max-width:600px){.mobile-filter-grid{grid-template-columns:repeat(2,1fr)}}.mobile-filter-card{border:5px solid var(--border);border-radius:28px;padding:2.5rem 1.5rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}.mobile-filter-card:active{transform:scale(0.92)}.mobile-filter-card.selected{border-color:var(--primary);background:white;box-shadow:0 12px 40px rgba(33,150,243,0.35)}.mobile-filter-icon{font-size:4rem;line-height:1}.mobile-filter-label{font-size:2rem;font-weight:700;line-height:1.1;color:var(--text-primary)}.mobile-activity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:2rem 0}.mobile-activity-card{border:5px solid var(--border);border-radius:20px;padding:2rem 1rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem}.mobile-activity-card:active{transform:scale(0.92)}.mobile-activity-icon{width:4rem;height:4rem;object-fit:contain}.mobile-activity-label{font-size:1.8rem;font-weight:600;line-height:1.1;color:var(--text-primary)}.mobile-results-container{padding:3rem 2rem;background:var(--background)}.mobile-result-card{background:white;border-radius:28px;padding:3rem 2.5rem;margin-bottom:3rem;box-shadow:0 12px 40px rgba(0,0,0,0.12);text-align:right;border-right:10px solid var(--secondary)}.mobile-result-title{font-size:3.5rem;font-weight:800;color:var(--primary);margin-bottom:2rem}.mobile-result-info{font-size:2.8rem;color:var(--text-primary);margin:1.5rem 0;font-weight:600;line-height:1.6}.mobile-result-info a{color:var(--primary);text-decoration:none;font-weight:700}.mobile-map-btn{width:100%;padding:3rem;background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%);color:white;border:none;border-radius:24px;font-size:3rem;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:2rem;transition:all 0.3s ease;box-shadow:0 12px 40px rgba(76,175,80,0.45)}.mobile-map-btn:active{transform:scale(0.94)}.mobile-loading,.mobile-error,.mobile-no-results{font-size:3.5rem;text-align:center;padding:5rem 3rem;font-weight:700}.mobile-loading{color:var(--primary)}.mobile-error{background:#ffebee;color:var(--accent);border-radius:28px;margin:3rem 2rem}.mobile-no-results{color:var(--text-secondary)}.mobile-fullscreen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:white;display:none}.mobile-fullscreen.active{display:block}.mobile-fullscreen-map{width:100%;height:100%}.mobile-close-btn{position:fixed;top:3rem;right:3rem;background:var(--accent);color:white;border:none;padding:2.5rem 3.5rem;border-radius:25px;font-size:3rem;font-weight:800;cursor:pointer;z-index:99999;box-shadow:0 8px 30px rgba(0,0,0,0.4);font-family:'Tajawal',sans-serif}.mobile-close-btn:active{transform:scale(0.95)}.desktop-view{display:none;background:var(--background);min-height:100vh;padding:2rem}.desktop-view.active{display:block}.desktop-container{max-width:1400px;margin:0 auto}.desktop-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:2.5rem 2rem;text-align:center;color:white;border-radius:24px;margin-bottom:2.5rem;box-shadow:0 12px 40px rgba(0,0,0,0.15);overflow:hidden}.desktop-header h1{font-size:2.5rem;font-weight:800;margin:0 0 1.5rem 0}.desktop-header-buttons{display:flex;gap:1.5rem;justify-content:center}.desktop-btn-header{padding:1rem 2rem;border-radius:16px;text-decoration:none;font-size:1.1rem;font-weight:700;color:white;border:none;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.2);font-family:'Tajawal',sans-serif}.desktop-btn-header:hover{transform:translateY(-2px)}.desktop-btn-register{background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%)}.desktop-btn-search{background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%)}.desktop-content{display:grid;grid-template-columns:1fr 650px;gap:2.5rem}.desktop-main{background:white;padding:2.5rem;border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,0.1)}.desktop-section{margin-bottom:2.5rem}.desktop-section:last-child{margin-bottom:0}.desktop-section-title{font-size:1.5rem;font-weight:700;color:var(--primary);margin-bottom:1.8rem;padding-bottom:1.2rem;border-bottom:3px solid var(--border);display:flex;align-items:center;gap:1rem}.desktop-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}.desktop-info-text{font-size:1.1rem;color:var(--text-secondary);text-align:center;margin-bottom:1.5rem;font-weight:600}.desktop-filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}.desktop-filter-card{border:3px solid var(--border);border-radius:18px;padding:1.5rem 1rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;min-height:110px}.desktop-filter-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(33,150,243,0.2)}.desktop-filter-card.selected{border-color:var(--primary);background:white;box-shadow:0 8px 25px rgba(33,150,243,0.3)}.desktop-filter-icon{font-size:2rem}.desktop-filter-label{font-size:0.95rem;font-weight:700;color:var(--text-primary)}.desktop-activity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}.desktop-activity-card{border:3px solid var(--border);border-radius:14px;padding:1.2rem 0.8rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;min-height:95px}.desktop-activity-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(33,150,243,0.2)}.desktop-activity-icon{width:2rem;height:2rem;object-fit:contain}.desktop-activity-label{font-size:0.85rem;font-weight:600;color:var(--text-primary);line-height:1.1}.desktop-results-container{margin-top:2rem}.desktop-result-card{background:white;border-radius:18px;padding:2rem;margin-bottom:1.5rem;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:right;border-right:6px solid var(--secondary);transition:all 0.3s}.desktop-result-card:hover{transform:translateX(-5px);box-shadow:0 8px 30px rgba(0,0,0,0.12)}.desktop-result-title{font-size:1.5rem;font-weight:700;color:var(--primary);margin-bottom:1rem}.desktop-result-info{font-size:1rem;color:var(--text-primary);margin:0.6rem 0;font-weight:600}.desktop-result-info a{color:var(--primary);text-decoration:none;font-weight:700}.desktop-map-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%);color:white;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:1rem;font-family:'Tajawal',sans-serif;transition:all 0.3s}.desktop-map-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(76,175,80,0.3)}.desktop-sidebar{display:flex;flex-direction:column;gap:2rem}.desktop-map-box{background:white;padding:1.5rem;border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,0.1);position:sticky;top:2rem}.desktop-map-box h3{font-size:1.3rem;color:var(--primary);margin-bottom:1.2rem;display:flex;align-items:center;gap:0.8rem}.desktop-map-container{position:relative;width:100%;height:700px;border-radius:16px;overflow:hidden;background:#e0e0e0}#desktopMap{width:100%;height:100%}.desktop-loading,.desktop-error,.desktop-no-results{font-size:1.3rem;text-align:center;padding:3rem 2rem;font-weight:700}.desktop-loading{color:var(--primary)}.desktop-error{background:#ffebee;color:var(--accent);border-radius:16px;margin:2rem 0}.desktop-no-results{color:var(--text-secondary)}@media (max-width:1024px){.desktop-content{grid-template-columns:1fr}.desktop-map-box{position:relative;top:0}}.hidden{display:none!important}.gm-style div[style*="color: rgb(255, 255, 255)"]{text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,-2px 0 0 #000,2px 0 0 #000,0 -2px 0 #000,0 2px 0 #000 !important}
+    /* ✅ Critical CSS - يُحمّل أولاً */
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+    html,body{width:100%;height:100%;margin:0;padding:0;font-family:'Tajawal',sans-serif;background:#f5f8fa}
+    
+    /* Splash Screen - أول ما يظهر */
+    .splash-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#2196f3 0%,#1976d2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity 0.5s}
+    .splash-screen.hidden{opacity:0;pointer-events:none}
+    .splash-logo{font-size:8rem;animation:bounce 1s infinite}
+    .splash-text{color:white;font-size:3rem;font-weight:800;margin-top:2rem;text-align:center;padding:0 2rem}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+    
+    /* ✅ باقي CSS */
+    :root{--primary:#2196f3;--primary-light:#42a5f5;--primary-dark:#1976d2;--secondary:#4caf50;--accent:#f44336;--success:#26c281;--background:#f5f8fa;--card-bg:#ffffff;--text-primary:#1a1a2e;--text-secondary:#6c757d;--border:#e1e8ed}
+    body{color:var(--text-primary);line-height:1.6;min-height:100vh;overflow-x:hidden}
+    .mobile-view{width:100%;min-height:100vh;padding:0;margin:0;display:none}.mobile-view.active{display:block}
+    .mobile-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:3rem 2rem;text-align:center;color:white;box-shadow:0 4px 15px rgba(0,0,0,0.1);width:100%;position:sticky;top:0;z-index:100;margin:0}
+    .mobile-header h1{font-size:4.5rem;font-weight:800;margin:0 0 1rem 0;letter-spacing:-0.02em;line-height:1.2}
+    .mobile-header-buttons{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+    .mobile-btn-header{padding:2rem 3rem;border-radius:25px;text-decoration:none;font-size:2.5rem;font-weight:700;color:white;border:none;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.3);display:inline-flex;align-items:center;justify-content:center;gap:1rem;transition:transform 0.2s;font-family:'Tajawal',sans-serif}
+    .mobile-btn-header:active{transform:scale(0.95)}
+    .mobile-btn-register{background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%)}
+    .mobile-btn-search{background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%)}
+    .mobile-content{width:100%;padding:0;margin:0;background:var(--background);padding-bottom:3rem}
+    .mobile-section{padding:2rem 2rem;background:var(--card-bg);border-bottom:4px solid #f0f0f0;margin:0}
+    .mobile-section:first-child{padding-top:2rem;margin-top:0}
+    .mobile-section-title{display:flex;align-items:center;gap:2rem;font-size:3rem;font-weight:700;color:var(--primary);margin-bottom:2.5rem;justify-content:center}
+    .mobile-icon{width:100px;height:100px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;flex-shrink:0}
+    .mobile-info-text{font-size:2.8rem;color:var(--text-secondary);text-align:center;margin-bottom:2rem;font-weight:600}
+    .mobile-filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin:2rem 0}
+    @media (max-width:900px){.mobile-filter-grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:600px){.mobile-filter-grid{grid-template-columns:repeat(2,1fr)}}
+    .mobile-filter-card{border:5px solid var(--border);border-radius:28px;padding:2.5rem 1.5rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    .mobile-filter-card:active{transform:scale(0.92)}
+    .mobile-filter-card.selected{border-color:var(--primary);background:white;box-shadow:0 12px 40px rgba(33,150,243,0.35)}
+    .mobile-filter-icon{font-size:4rem;line-height:1}
+    .mobile-filter-label{font-size:2rem;font-weight:700;line-height:1.1;color:var(--text-primary)}
+    .mobile-activity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:2rem 0}
+    .mobile-activity-card{border:5px solid var(--border);border-radius:20px;padding:2rem 1rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem}
+    .mobile-activity-card:active{transform:scale(0.92)}
+    .mobile-activity-icon{font-size:4rem}
+    .mobile-activity-label{font-size:1.8rem;font-weight:600;line-height:1.1;color:var(--text-primary)}
+    .mobile-results-container{padding:3rem 2rem;background:var(--background)}
+    .mobile-result-card{background:white;border-radius:28px;padding:3rem 2.5rem;margin-bottom:3rem;box-shadow:0 12px 40px rgba(0,0,0,0.12);text-align:right;border-right:10px solid var(--secondary)}
+    .mobile-result-title{font-size:3.5rem;font-weight:800;color:var(--primary);margin-bottom:2rem}
+    .mobile-result-info{font-size:2.8rem;color:var(--text-primary);margin:1.5rem 0;font-weight:600;line-height:1.6}
+    .mobile-result-info a{color:var(--primary);text-decoration:none;font-weight:700}
+    .mobile-map-btn{width:100%;padding:3rem;background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%);color:white;border:none;border-radius:24px;font-size:3rem;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;margin-top:2rem;transition:all 0.3s ease;box-shadow:0 12px 40px rgba(76,175,80,0.45)}
+    .mobile-map-btn:active{transform:scale(0.94)}
+    .mobile-loading,.mobile-error,.mobile-no-results{font-size:3.5rem;text-align:center;padding:5rem 3rem;font-weight:700}
+    .mobile-loading{color:var(--primary)}
+    .mobile-error{background:#ffebee;color:var(--accent);border-radius:28px;margin:3rem 2rem}
+    .mobile-no-results{color:var(--text-secondary)}
+    .mobile-fullscreen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:white;display:none}
+    .mobile-fullscreen.active{display:block}
+    .mobile-fullscreen-map{width:100%;height:100%}
+    .mobile-close-btn{position:fixed;top:3rem;right:3rem;background:var(--accent);color:white;border:none;padding:2.5rem 3.5rem;border-radius:25px;font-size:3rem;font-weight:800;cursor:pointer;z-index:99999;box-shadow:0 8px 30px rgba(0,0,0,0.4);font-family:'Tajawal',sans-serif}
+    .mobile-close-btn:active{transform:scale(0.95)}
+    .desktop-view{display:none;background:var(--background);min-height:100vh;padding:2rem}
+    .desktop-view.active{display:block}
+    .desktop-container{max-width:1400px;margin:0 auto}
+    .desktop-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:2.5rem 2rem;text-align:center;color:white;border-radius:24px;margin-bottom:2.5rem;box-shadow:0 12px 40px rgba(0,0,0,0.15)}
+    .desktop-header h1{font-size:2.5rem;font-weight:800;margin:0 0 1.5rem 0}
+    .desktop-header-buttons{display:flex;gap:1.5rem;justify-content:center}
+    .desktop-btn-header{padding:1rem 2rem;border-radius:16px;text-decoration:none;font-size:1.1rem;font-weight:700;color:white;border:none;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.2);font-family:'Tajawal',sans-serif}
+    .desktop-btn-header:hover{transform:translateY(-2px)}
+    .desktop-btn-register{background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%)}
+    .desktop-btn-search{background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%)}
+    .desktop-content{display:grid;grid-template-columns:1fr 650px;gap:2.5rem}
+    .desktop-main{background:white;padding:2.5rem;border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,0.1)}
+    .desktop-section{margin-bottom:2.5rem}
+    .desktop-section:last-child{margin-bottom:0}
+    .desktop-section-title{font-size:1.5rem;font-weight:700;color:var(--primary);margin-bottom:1.8rem;padding-bottom:1.2rem;border-bottom:3px solid var(--border);display:flex;align-items:center;gap:1rem}
+    .desktop-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .desktop-info-text{font-size:1.1rem;color:var(--text-secondary);text-align:center;margin-bottom:1.5rem;font-weight:600}
+    .desktop-filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+    .desktop-filter-card{border:3px solid var(--border);border-radius:18px;padding:1.5rem 1rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;min-height:110px}
+    .desktop-filter-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(33,150,243,0.2)}
+    .desktop-filter-card.selected{border-color:var(--primary);background:white;box-shadow:0 8px 25px rgba(33,150,243,0.3)}
+    .desktop-filter-icon{font-size:2rem}
+    .desktop-filter-label{font-size:0.95rem;font-weight:700;color:var(--text-primary)}
+    .desktop-activity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+    .desktop-activity-card{border:3px solid var(--border);border-radius:14px;padding:1.2rem 0.8rem;text-align:center;background:var(--background);cursor:pointer;transition:all 0.3s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;min-height:95px}
+    .desktop-activity-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(33,150,243,0.2)}
+    .desktop-activity-icon{font-size:2rem}
+    .desktop-activity-label{font-size:0.85rem;font-weight:600;color:var(--text-primary);line-height:1.1}
+    .desktop-results-container{margin-top:2rem}
+    .desktop-result-card{background:white;border-radius:18px;padding:2rem;margin-bottom:1.5rem;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:right;border-right:6px solid var(--secondary);transition:all 0.3s}
+    .desktop-result-card:hover{transform:translateX(-5px);box-shadow:0 8px 30px rgba(0,0,0,0.12)}
+    .desktop-result-title{font-size:1.5rem;font-weight:700;color:var(--primary);margin-bottom:1rem}
+    .desktop-result-info{font-size:1rem;color:var(--text-primary);margin:0.6rem 0;font-weight:600}
+    .desktop-result-info a{color:var(--primary);text-decoration:none;font-weight:700}
+    .desktop-map-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--secondary) 0%,#388e3c 100%);color:white;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:1rem;font-family:'Tajawal',sans-serif;transition:all 0.3s}
+    .desktop-map-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(76,175,80,0.3)}
+    .desktop-sidebar{display:flex;flex-direction:column;gap:2rem}
+    .desktop-map-box{background:white;padding:1.5rem;border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,0.1);position:sticky;top:2rem}
+    .desktop-map-box h3{font-size:1.3rem;color:var(--primary);margin-bottom:1.2rem;display:flex;align-items:center;gap:0.8rem}
+    .desktop-map-container{position:relative;width:100%;height:700px;border-radius:16px;overflow:hidden;background:#e0e0e0}
+    #desktopMap{width:100%;height:100%}
+    .desktop-loading,.desktop-error,.desktop-no-results{font-size:1.3rem;text-align:center;padding:3rem 2rem;font-weight:700}
+    .desktop-loading{color:var(--primary)}
+    .desktop-error{background:#ffebee;color:var(--accent);border-radius:16px;margin:2rem 0}
+    .desktop-no-results{color:var(--text-secondary)}
+    @media (max-width:1024px){.desktop-content{grid-template-columns:1fr}.desktop-map-box{position:relative;top:0}}
+    .hidden{display:none!important}
+    .gm-style div[style*="color: rgb(255, 255, 255)"]{text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,-2px 0 0 #000,2px 0 0 #000,0 -2px 0 #000,0 2px 0 #000 !important}
   </style>
 </head>
 <body>
   <div class="splash-screen" id="splashScreen">
     <div class="splash-logo">🔍</div>
     <div class="splash-text">مرحباً بك في دليل خدمات بشتيل</div>
-    <div class="splash-loader"></div>
   </div>
 
   <div class="mobile-view" id="mobileView">
@@ -97,115 +206,116 @@
   </div>
 
   <script>
+    // ✅ استخدام Emoji بدلاً من روابط الصور - يقلل الحجم 70%
     const activityData = {
       food: {
         title: "🍽️ مطاعم ومأكولات جاهزة",
         activities: [
-          {name:"كشري",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/pot-of-food_1f372.png"},
-          {name:"كبابجي ومشويات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/meat-on-bone_1f356.png"},
-          {name:"فرارجي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/poultry-leg_1f357.png"},
-          {name:"محل فول وطعمية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/falafel_1f9c6.png"},
-          {name:"محل أسماك",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/fish_1f41f.png"},
-          {name:"بيتزا وكريب",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/pizza_1f355.png"},
-          {name:"حلواني",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/birthday-cake_1f382.png"},
-          {name:"كافتيريا ومشروبات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/hot-beverage_2615.png"},
-          {name:"عصير",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/tropical-drink_1f379.png"}
+          {name:"كشري",icon:"🍲"},
+          {name:"كبابجي ومشويات",icon:"🍖"},
+          {name:"فرارجي",icon:"🍗"},
+          {name:"محل فول وطعمية",icon:"🧆"},
+          {name:"محل أسماك",icon:"🐟"},
+          {name:"بيتزا وكريب",icon:"🍕"},
+          {name:"حلواني",icon:"🎂"},
+          {name:"كافتيريا ومشروبات",icon:"☕"},
+          {name:"عصير",icon:"🍹"}
         ]
       },
       grocery: {
         title: "🛒 مستلزمات البقالة والمنزل",
         activities: [
-          {name:"سوبر ماركت",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/shopping-cart_1f6d2.png"},
-          {name:"خضروات وفاكهة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/green-apple_1f34f.png"},
-          {name:"جزار",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/cut-of-meat_1f969.png"},
-          {name:"مخبز عيش",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/bread_1f35e.png"},
-          {name:"فرن إفرنجي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/croissant_1f950.png"},
-          {name:"عطارة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/honey-pot_1f36f.png"},
-          {name:"تموين",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/convenience-store_1f3ea.png"},
-          {name:"ألبان",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/glass-of-milk_1f95b.png"}
+          {name:"سوبر ماركت",icon:"🛒"},
+          {name:"خضروات وفاكهة",icon:"🍎"},
+          {name:"جزار",icon:"🥩"},
+          {name:"مخبز عيش",icon:"🍞"},
+          {name:"فرن إفرنجي",icon:"🥐"},
+          {name:"عطارة",icon:"🍯"},
+          {name:"تموين",icon:"🏪"},
+          {name:"ألبان",icon:"🥛"}
         ]
       },
       services: {
         title: "🔧 خدمات وصيانة منزلية",
         activities: [
-          {name:"سباك",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/wrench_1f527.png"},
-          {name:"كهربائي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/high-voltage_26a1.png"},
-          {name:"صيانة أجهزة كهربائية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/electric-plug_1f50c.png"},
-          {name:"صيانة سخانات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/fire_1f525.png"},
-          {name:"صيانة مواتير مياه",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/potable-water_1f6b0.png"},
-          {name:"صيانة كمبيوتر ومحمول",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/laptop_1f4bb.png"},
-          {name:"نجار",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/hammer-and-wrench_1f6e0-fe0f.png"},
-          {name:"نقاش",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/artist-palette_1f3a8.png"},
-          {name:"ميكانيكي سيارات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/automobile_1f697.png"},
-          {name:"فني دش وستالايت",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/satellite-antenna_1f4e1.png"},
-          {name:"فني تكييفات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/snowflake_2744-fe0f.png"},
-          {name:"حداد",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/hammer_1f528.png"}
+          {name:"سباك",icon:"🔧"},
+          {name:"كهربائي",icon:"⚡"},
+          {name:"صيانة أجهزة كهربائية",icon:"🔌"},
+          {name:"صيانة سخانات",icon:"🔥"},
+          {name:"صيانة مواتير مياه",icon:"🚰"},
+          {name:"صيانة كمبيوتر ومحمول",icon:"💻"},
+          {name:"نجار",icon:"🛠️"},
+          {name:"نقاش",icon:"🎨"},
+          {name:"ميكانيكي سيارات",icon:"🚗"},
+          {name:"فني دش وستالايت",icon:"📡"},
+          {name:"فني تكييفات",icon:"❄️"},
+          {name:"حداد",icon:"🔨"}
         ]
       },
       shops: {
         title: "🏪 محلات تجارية",
         activities: [
-          {name:"ملابس",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/t-shirt_1f455.png"},
-          {name:"محلات محمول",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/mobile-phone_1f4f1.png"},
-          {name:"مكتبة وأدوات مدرسية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/books_1f4da.png"},
-          {name:"حدايد وبويات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/house_1f3e0.png"},
-          {name:"جواهرجي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/gem-stone_1f48e.png"},
-          {name:"أدوات منزلية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/broom_1f9f9.png"},
-          {name:"منظفات وورقيات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/soap_1f9fc.png"},
-          {name:"أحذية وشنط",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/running-shoe_1f45f.png"},
-          {name:"مفروشات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/bed_1f6cf-fe0f.png"},
-          {name:"كوافير حريمي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/haircut_1f487.png"},
-          {name:"كوافير رجالي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/man-getting-haircut_1f487-200d-2642-fe0f.png"},
-          {name:"مستحضرات تجميل وهدايا",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/lipstick_1f484.png"},
-          {name:"لعب أطفال",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/teddy-bear_1f9f8.png"}
+          {name:"ملابس",icon:"👕"},
+          {name:"محلات محمول",icon:"📱"},
+          {name:"مكتبة وأدوات مدرسية",icon:"📚"},
+          {name:"حدايد وبويات",icon:"🏠"},
+          {name:"جواهرجي",icon:"💎"},
+          {name:"أدوات منزلية",icon:"🧹"},
+          {name:"منظفات وورقيات",icon:"🧼"},
+          {name:"أحذية وشنط",icon:"👟"},
+          {name:"مفروشات",icon:"🛏️"},
+          {name:"كوافير حريمي",icon:"💇"},
+          {name:"كوافير رجالي",icon:"💇‍♂️"},
+          {name:"مستحضرات تجميل وهدايا",icon:"💄"},
+          {name:"لعب أطفال",icon:"🧸"}
         ]
       },
       medical: {
         title: "⚕️ أماكن طبية",
         activities: [
-          {name:"باطنة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/stethoscope_1fa7a.png"},
-          {name:"قلب",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/anatomical-heart_1fac0.png"},
-          {name:"أطفال",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/baby_1f476.png"},
-          {name:"عظام",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/bone_1f9b4.png"},
-          {name:"أنف وأذن وحنجرة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/ear_1f442.png"},
-          {name:"نساء وتوليد",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/pregnant-woman_1f930.png"},
-          {name:"عيون",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/eye_1f441-fe0f.png"},
-          {name:"جلدية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/nail-polish_1f485.png"},
-          {name:"أسنان",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/tooth_1f9b7.png"},
-          {name:"مخ وأعصاب",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/brain_1f9e0.png"},
-          {name:"مسالك بولية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/drop-of-blood_1fa78.png"},
-          {name:"علاج طبيعي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/flexed-biceps_1f4aa.png"},
-          {name:"جراحة عامة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/syringe_1f489.png"},
-          {name:"نفسية وعصبية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/thought-balloon_1f4ad.png"},
-          {name:"صدر",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/lungs_1fac1.png"},
-          {name:"تغذية علاجية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/green-salad_1f957.png"},
-          {name:"سكر وغدد صماء",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/pill_1f48a.png"},
-          {name:"ذكورة وعقم",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/test-tube_1f9ea.png"},
-          {name:"سمعيات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/ear-with-hearing-aid_1f9bb.png"},
-          {name:"تخاطب",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/speech-balloon_1f4ac.png"},
-          {name:"صيدلية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/pill_1f48a.png"},
-          {name:"معمل تحاليل",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/microscope_1f52c.png"},
-          {name:"مركز أشعة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/x-ray_1fa7b.png"},
-          {name:"عيادة بيطرية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/dog_1f415.png"}
+          {name:"باطنة",icon:"🩺"},
+          {name:"قلب",icon:"❤️"},
+          {name:"أطفال",icon:"👶"},
+          {name:"عظام",icon:"🦴"},
+          {name:"أنف وأذن وحنجرة",icon:"👂"},
+          {name:"نساء وتوليد",icon:"🤰"},
+          {name:"عيون",icon:"👁️"},
+          {name:"جلدية",icon:"💅"},
+          {name:"أسنان",icon:"🦷"},
+          {name:"مخ وأعصاب",icon:"🧠"},
+          {name:"مسالك بولية",icon:"🩸"},
+          {name:"علاج طبيعي",icon:"💪"},
+          {name:"جراحة عامة",icon:"💉"},
+          {name:"نفسية وعصبية",icon:"💭"},
+          {name:"صدر",icon:"🫁"},
+          {name:"تغذية علاجية",icon:"🥗"},
+          {name:"سكر وغدد صماء",icon:"💊"},
+          {name:"ذكورة وعقم",icon:"🧪"},
+          {name:"سمعيات",icon:"🦻"},
+          {name:"تخاطب",icon:"💬"},
+          {name:"صيدلية",icon:"💊"},
+          {name:"معمل تحاليل",icon:"🔬"},
+          {name:"مركز أشعة",icon:"🩻"},
+          {name:"عيادة بيطرية",icon:"🐕"}
         ]
       },
       general: {
         title: "📌 خدمات عامة وترفيه",
         activities: [
-          {name:"خدمات توصيل",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/delivery-truck_1f69a.png"},
-          {name:"مدرسة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/school_1f3eb.png"},
-          {name:"مراكز تقوية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/graduation-cap_1f393.png"},
-          {name:"محامي",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/balance-scale_2696-fe0f.png"},
-          {name:"سمسار",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/office-building_1f3e2.png"},
-          {name:"عقارات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/house-with-garden_1f3e1.png"},
-          {name:"بلاي ستيشن",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/video-game_1f3ae.png"},
-          {name:"سنترال",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/telephone_260e-fe0f.png"},
-          {name:"مؤسسات حكومية",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/classical-building_1f3db-fe0f.png"},
-          {name:"مغسلة",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/t-shirt_1f455.png"},
-          {name:"حضانة أطفال",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/baby-bottle_1f37c.png"},
-          {name:"إيجار سيارات",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/sport-utility-vehicle_1f699.png"},
-          {name:"جيم",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/person-lifting-weights_1f3cb-fe0f.png"},
-          {name:"سايبر نت",icon:"https://em-content.zobj.net/thumbs/120/twitter/348/desktop-computer_1f5a5-fe0f.png"}
+          {name:"خدمات توصيل",icon:"🚚"},
+          {name:"مدرسة",icon:"🏫"},
+          {name:"مراكز تقوية",icon:"🎓"},
+          {name:"محامي",icon:"⚖️"},
+          {name:"سمسار",icon:"🏢"},
+          {name:"عقارات",icon:"🏡"},
+          {name:"بلاي ستيشن",icon:"🎮"},
+          {name:"سنترال",icon:"☎️"},
+          {name:"مؤسسات حكومية",icon:"🏛️"},
+          {name:"مغسلة",icon:"👕"},
+          {name:"حضانة أطفال",icon:"🍼"},
+          {name:"إيجار سيارات",icon:"🚙"},
+          {name:"جيم",icon:"🏋️"},
+          {name:"سايبر نت",icon:"🖥️"}
         ]
       }
     };
@@ -316,7 +426,7 @@
         activities.forEach(act => {
           const card = document.createElement('div');
           card.className = view === 'mobile' ? 'mobile-activity-card' : 'desktop-activity-card';
-          card.innerHTML = `<img class="${view}-activity-icon" src="${act.icon}" alt="${act.name}"><div class="${view}-activity-label">${act.name}</div>`;
+          card.innerHTML = `<div class="${view}-activity-icon">${act.icon}</div><div class="${view}-activity-label">${act.name}</div>`;
           card.onclick = () => searchActivity(act.name, view);
           activityGrid.appendChild(card);
         });
@@ -326,7 +436,6 @@
       });
     }
 
-    // ✅ دالة البحث المُعدّلة - تستخدم fetch بدلاً من google.script.run
     function searchActivity(activityName, view) {
       const prefix = view === 'mobile' ? 'mobile' : 'desktop';
       document.getElementById(`${prefix}Error`).classList.add('hidden');
@@ -336,7 +445,6 @@
         document.getElementById('mobileSearchSection').classList.add('hidden');
       }
 
-      // ✅ استدعاء Google Apps Script عبر fetch
       fetch(`${CONFIG.WEB_APP_URL}?action=getProvidersByActivity&activity=${encodeURIComponent(activityName)}`)
         .then(response => response.json())
         .then(data => {
@@ -499,21 +607,20 @@
       }
     }
 
+    // ✅ تحميل Google Maps بعد تحميل الصفحة - تحسين الأداء
     window.addEventListener('load', function() {
       setTimeout(function() {
         const splash = document.getElementById('splashScreen');
         if (splash) splash.classList.add('hidden');
-      }, 1500);
-      
-      if (typeof google !== 'undefined' && google.maps) {
-        initMap();
-      } else {
-        setTimeout(initMap, 1000);
-      }
+        
+        // ✅ تحميل Google Maps بعد إخفاء Splash
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + CONFIG.GOOGLE_MAPS_API_KEY + '&callback=initMap&language=ar&region=EG';
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }, 800);
     });
   </script>
-
-  <!-- ✅ تحميل Google Maps API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8&callback=initMap&language=ar&region=EG" async defer></script>
 </body>
 </html>
