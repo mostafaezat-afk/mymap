@@ -293,52 +293,99 @@
     }
     
     .result-card {
-      background: var(--card);
-      border-radius: 15px;
-      padding: 1.2rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-right: 4px solid var(--secondary);
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      border: 2px solid #e3f2fd;
+      border-right: 6px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
     
     .result-name {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--primary);
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
     
     .result-row {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text);
-      margin: 0.5rem 0;
+      margin: 0.7rem 0;
       font-weight: 600;
-      line-height: 1.5;
+      line-height: 1.6;
+      padding: 0.3rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     
     .result-row a {
       color: var(--primary);
       text-decoration: none;
       font-weight: 700;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    
+    .result-row a:active {
+      border-bottom-color: var(--primary);
     }
     
     .result-btn {
       width: 100%;
-      padding: 1rem;
-      background: linear-gradient(135deg, var(--secondary), #388e3c);
+      padding: 1.1rem;
+      background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
       color: #fff;
       border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 700;
+      border-radius: 15px;
+      font-size: 1.05rem;
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 0.8rem;
+      margin-top: 1.2rem;
       font-family: 'Tajawal';
-      box-shadow: 0 3px 10px rgba(76,175,80,0.3);
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+    
+    .result-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
     }
     
     .result-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+    }
+    
+    .result-btn:active::before {
+      left: 100%;
     }
     
     /* Messages */
@@ -594,56 +641,101 @@
     }
     
     .desktop-result-card {
-      background: var(--card);
-      border-radius: 15px;
-      padding: 1.5rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      border-right: 5px solid var(--secondary);
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 18px;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      border: 2px solid #e3f2fd;
+      border-right: 6px solid var(--primary);
       transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .desktop-result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
     
     .desktop-result-card:hover {
-      transform: translateX(-5px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      transform: translateX(-8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
     
     .desktop-result-name {
-      font-size: 1.4rem;
-      font-weight: 700;
+      font-size: 1.5rem;
+      font-weight: 800;
       color: var(--primary);
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
     
     .desktop-result-row {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text);
-      margin: 0.5rem 0;
+      margin: 0.7rem 0;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     
     .desktop-result-row a {
       color: var(--primary);
       text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    
+    .desktop-result-row a:hover {
+      border-bottom-color: var(--primary);
     }
     
     .desktop-result-btn {
       width: 100%;
-      padding: 1rem;
-      background: linear-gradient(135deg, var(--secondary), #388e3c);
+      padding: 1.1rem;
+      background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
       color: #fff;
       border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 700;
+      border-radius: 15px;
+      font-size: 1.05rem;
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       font-family: 'Tajawal';
-      transition: all 0.2s;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+    
+    .desktop-result-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
     }
     
     .desktop-result-btn:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    }
+    
+    .desktop-result-btn:hover::before {
+      left: 100%;
     }
     
     .desktop-sidebar {
@@ -911,6 +1003,7 @@
       selectedCat = 'all';
       markers.forEach(m => {
         if (m.marker) m.marker.setMap(null);
+        if (m.overlay) m.overlay.setMap(null);
       });
       markers = [];
       infoWindows = [];
@@ -1040,6 +1133,7 @@
       
       markers.forEach(m => {
         if (m.marker) m.marker.setMap(null);
+        if (m.overlay) m.overlay.setMap(null);
       });
       markers = [];
       infoWindows = [];
@@ -1071,17 +1165,64 @@
       const map = view === 'mobile' ? mobileMap : desktopMap;
       
       providers.forEach((p, i) => {
+        // إنشاء Custom Marker مع Label محسّن
         const marker = new google.maps.Marker({
           position: {lat: p.lat, lng: p.lng},
           map: map,
           title: p.name,
-          label: {
-            text: p.name,
-            color: '#FFF',
-            fontSize: '12px',
-            fontWeight: 'bold'
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: '#2196f3',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 3
           }
         });
+        
+        // إنشاء Label مخصص فوق الدبوس
+        const labelDiv = document.createElement('div');
+        labelDiv.style.cssText = `
+          position: absolute;
+          background: #2196f3;
+          color: #ffffff;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-family: 'Tajawal', sans-serif;
+          font-size: 13px;
+          font-weight: 800;
+          text-shadow: 
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000,
+            0 0 5px rgba(0,0,0,0.5);
+          box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+          white-space: nowrap;
+          pointer-events: none;
+          transform: translate(-50%, -40px);
+          z-index: 1000;
+        `;
+        labelDiv.textContent = p.name;
+        
+        // إضافة Label للخريطة باستخدام OverlayView
+        const overlay = new google.maps.OverlayView();
+        overlay.onAdd = function() {
+          const panes = this.getPanes();
+          panes.floatPane.appendChild(labelDiv);
+        };
+        overlay.draw = function() {
+          const projection = this.getProjection();
+          const position = projection.fromLatLngToDivPixel(marker.getPosition());
+          labelDiv.style.left = position.x + 'px';
+          labelDiv.style.top = position.y + 'px';
+        };
+        overlay.onRemove = function() {
+          if (labelDiv.parentNode) {
+            labelDiv.parentNode.removeChild(labelDiv);
+          }
+        };
+        overlay.setMap(map);
         
         const infoWindow = new google.maps.InfoWindow({
           content: `
@@ -1102,7 +1243,7 @@
           infoWindow.open(map, marker);
         });
         
-        markers.push({marker});
+        markers.push({marker, overlay});
         infoWindows.push(infoWindow);
       });
     }
@@ -1148,7 +1289,24 @@
         zoomControl: true,
         mapTypeControl: false,
         streetViewControl: true,
-        fullscreenControl: false
+        fullscreenControl: false,
+        styles: [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+          },
+          {
+            featureType: "poi.business",
+            elementType: "all",
+            stylers: [{ visibility: "off" }]
+          },
+          {
+            featureType: "transit",
+            elementType: "labels.icon",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
       };
       
       if (isMobile) {
