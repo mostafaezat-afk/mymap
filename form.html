@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>📍 تسجيل مقدم خدمة - بشتيل</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet" />
+  
+  <script>
+    const CONFIG = {
+      WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyVW8NG--5KGo9i9ho3aT1t6zPt9dB1aBKaJbkb8q0yFP5BKiK2Koke4tDjezL3Oo9D/exec',
+      GOOGLE_MAPS_API_KEY: 'AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8'
+    };
+  </script>
+  
+  <style>
+    :root {
+      --primary: #2196f3;
+      --primary-light: #42a5f5;
+      --primary-dark: #1976d2;
+      --secondary: #4caf50;
+      --accent: #f44336;
+      --success: #26c281;
+      --background: #f5f8fa;
+      --card-bg: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #6c757d;
+      --border: #e1e8ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============ MOBILE VIEW ============ */
+    .mobile-view {
+      width: 100%;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      display: none;
+    }
+
+    .mobile-view.active {
+      display: block;
+    }
+
+    .mobile-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+
+    .mobile-header h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      margin: 1rem 0;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .mobile-header-buttons {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .mobile-btn-header {
+      padding: 2rem 3rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .mobile-btn-header:active {
+      transform: scale(0.95);
+    }
+
+    .mobile-btn-home {
+      background: linear-gradient(135deg, var(--accent) 0%, #d32f2f 100%);
+    }
+
+    .mobile-btn-search {
+      background: linear-gradient(135deg, var(--secondary) 0%, #388e3c 100%);
+    }
+
+    .mobile-content {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      background: var(--background);
+      padding-bottom: 12rem;
+    }
+
+    .mobile-section {
+      padding: 3rem 2rem;
+      background: var(--card-bg);
+      border-bottom: 4px solid #f0f0f0;
+    }
+
+    .mobile-section-title {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2.5rem;
+    }
+
+    .mobile-icon {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      flex-shrink: 0;
+    }
+
+    .mobile-label {
+      display: block;
+      font-size: 3.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: right;
+    }
+
+    .mobile-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .mobile-input {
+      width: 100%;
+      padding: 3.2rem 2.8rem;
+      font-size: 3.2rem;
+      border: 5px solid var(--border);
+      border-radius: 28px;
+      font-family: inherit;
+      background: var(--background);
+      color: var(--text-primary);
+      margin-bottom: 2.5rem;
+      transition: all 0.3s ease;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .mobile-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 6px rgba(33, 150, 243, 0.2);
+    }
+
+    .mobile-input::placeholder {
+      font-size: 3rem;
+      color: #999;
+    }
+
+    .mobile-category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .mobile-category-card {
+      border: 5px solid var(--border);
+      border-radius: 28px;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: var(--background);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .mobile-category-card:active {
+      transform: scale(0.92);
+    }
+
+    .mobile-category-card.selected {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 12px 40px rgba(33, 150, 243, 0.35);
+    }
+
+    .mobile-category-icon {
+      font-size: 4rem;
+      line-height: 1;
+    }
+
+    .mobile-category-label {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text-primary);
+    }
+
+    .mobile-activity-grid {
+      display: none;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .mobile-activity-grid.active {
+      display: grid;
+    }
+
+    .mobile-activity-card {
+      border: 5px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem 1rem;
+      text-align: center;
+      background: var(--background);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+    }
+
+    .mobile-activity-card:active {
+      transform: scale(0.92);
+    }
+
+    .mobile-activity-card.selected {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 12px 40px rgba(33, 150, 243, 0.35);
+    }
+
+    .mobile-activity-icon {
+      width: 4rem;
+      height: 4rem;
+      object-fit: contain;
+    }
+
+    .mobile-activity-label {
+      font-size: 1.8rem;
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--text-primary);
+    }
+
+    .mobile-map-container {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      border-radius: 0;
+      overflow: hidden;
+      background: #e0e0e0;
+    }
+
+    #mobileMap {
+      width: 100%;
+      height: 100%;
+    }
+
+    .mobile-center-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      font-size: 5rem;
+      z-index: 10;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    .mobile-map-hint {
+      background: #e3f2fd;
+      padding: 2rem;
+      text-align: center;
+      color: var(--primary);
+      font-size: 2.5rem;
+      font-weight: 600;
+      border-top: 2px solid var(--primary);
+    }
+
+    .mobile-submit-section {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      background: white;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.18);
+      z-index: 100;
+    }
+
+    .mobile-btn-submit {
+      width: 100%;
+      padding: 3rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 3rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Tajawal', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 40px rgba(33, 150, 243, 0.45);
+    }
+
+    .mobile-btn-submit:active {
+      transform: scale(0.94);
+    }
+
+    .mobile-alert {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      padding: 2.5rem;
+      z-index: 9999;
+      display: none;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .mobile-alert.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .mobile-alert.error {
+      background: var(--accent);
+      color: white;
+    }
+
+    .required {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* ============ DESKTOP VIEW ============ */
+    .desktop-view {
+      display: none;
+      background: var(--background);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .desktop-view.active {
+      display: block;
+    }
+
+    .desktop-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .desktop-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: white;
+      border-radius: 24px;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+
+    .desktop-header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0.5rem 0 1.5rem 0;
+    }
+
+    .desktop-header-buttons {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .desktop-btn-header {
+      padding: 1.5rem 3rem;
+      border-radius: 16px;
+      text-decoration: none;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .desktop-btn-header:hover {
+      transform: translateY(-2px);
+    }
+
+    .desktop-btn-search {
+      background: linear-gradient(135deg, var(--secondary) 0%, #388e3c 100%);
+    }
+
+    .desktop-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+
+    .desktop-main {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    }
+
+    .desktop-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .desktop-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .desktop-section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.8rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 3px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .desktop-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .desktop-label {
+      display: block;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.8rem;
+      text-align: right;
+    }
+
+    .desktop-input {
+      width: 100%;
+      padding: 1.1rem 1.3rem;
+      font-size: 1.1rem;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      font-family: inherit;
+      background: var(--background);
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .desktop-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+    }
+
+    .desktop-category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    .desktop-category-card {
+      border: 3px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      background: var(--background);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 110px;
+    }
+
+    .desktop-category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
+    }
+
+    .desktop-category-card.selected {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    }
+
+    .desktop-category-icon {
+      font-size: 2rem;
+    }
+
+    .desktop-category-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .desktop-activity-grid {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .desktop-activity-grid.active {
+      display: grid;
+    }
+
+    .desktop-activity-card {
+      border: 3px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem 0.8rem;
+      text-align: center;
+      background: var(--background);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      min-height: 95px;
+    }
+
+    .desktop-activity-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
+    }
+
+    .desktop-activity-card.selected {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    }
+
+    .desktop-activity-icon {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+    }
+
+    .desktop-activity-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .desktop-btn-submit {
+      width: 100%;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 2.5rem;
+      font-family: 'Tajawal', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(33, 150, 243, 0.3);
+    }
+
+    .desktop-btn-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(33, 150, 243, 0.4);
+    }
+
+    .desktop-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .desktop-map-box {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 2rem;
+    }
+
+    .desktop-map-box h3 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .desktop-map-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #e0e0e0;
+    }
+
+    #desktopMap {
+      width: 100%;
+      height: 100%;
+    }
+
+    .desktop-center-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      font-size: 2.5rem;
+      z-index: 10;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    .desktop-map-hint {
+      background: #e3f2fd;
+      padding: 1rem;
+      text-align: center;
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-top: 2px solid var(--primary);
+      border-radius: 0 0 16px 16px;
+      margin: -1rem -1.5rem -1.5rem -1.5rem;
+    }
+
+    .desktop-alert {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      padding: 1.5rem;
+      z-index: 9999;
+      display: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .desktop-alert.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .desktop-alert.error {
+      background: var(--accent);
+      color: white;
+    }
+
+    @media (max-width: 1024px) {
+      .desktop-content {
+        grid-template-columns: 1fr;
+      }
+      .desktop-map-box {
+        position: relative;
+        top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ============ MOBILE VIEW ============ -->
+  <div class="mobile-view" id="mobileView">
+    <div class="mobile-header">
+      <h1>🧑‍🔧 تسجيل مقدم خدمة</h1>
+      <div class="mobile-header-buttons">
+        <a href="https://mostafaezat-afk.github.io/mymap/" class="mobile-btn-header mobile-btn-home">🏠 الرئيسية</a>
+        <a href="https://mostafaezat-afk.github.io/mymap/fd.html" class="mobile-btn-header mobile-btn-search" target="_blank">🔍 البحث عن نشاط</a>
+      </div>
+    </div>
+
+    <div class="mobile-alert" id="mobileAlert"></div>
+
+    <div class="mobile-content">
+      <form id="mobileForm">
+        <div class="mobile-section">
+          <div class="mobile-section-title">
+            <div class="mobile-icon">📝</div>
+            البيانات الأساسية
+          </div>
+          <label class="mobile-label"><span class="required">*</span> الاسم</label>
+          <input type="text" class="mobile-input" id="mobileName" placeholder="أدخل اسمك" required />
+          
+          <label class="mobile-label"><span class="required">*</span> الهاتف</label>
+          <input type="tel" class="mobile-input" id="mobilePhone" placeholder="01012345678" required maxlength="11" minlength="11" />
+          
+          <label class="mobile-label"><span class="required">*</span> العنوان</label>
+          <input type="text" class="mobile-input" id="mobileAddress" placeholder="العنوان" required />
+        </div>
+
+        <div class="mobile-section">
+          <div class="mobile-section-title">
+            <div class="mobile-icon">🏪</div>
+            القسم
+          </div>
+          <div class="mobile-category-grid" id="mobileCategoryGrid"></div>
+        </div>
+
+        <div class="mobile-section">
+          <div class="mobile-section-title">
+            <div class="mobile-icon">🛠️</div>
+            النشاط
+          </div>
+          <div id="mobileActivityContainer"></div>
+        </div>
+
+        <div class="mobile-section">
+          <div class="mobile-section-title">
+            <div class="mobile-icon">📍</div>
+            الموقع
+          </div>
+          <div class="mobile-map-container">
+            <div id="mobileMap"></div>
+            <div class="mobile-center-marker">📍</div>
+          </div>
+          <div class="mobile-map-hint">💡 حرك الخريطة لاختيار الموقع</div>
+        </div>
+      </form>
+    </div>
+
+    <div class="mobile-submit-section">
+      <button type="button" class="mobile-btn-submit" id="mobileSubmitBtn">✅ تسجيل</button>
+    </div>
+  </div>
+
+  <!-- ============ DESKTOP VIEW ============ -->
+  <div class="desktop-view" id="desktopView">
+    <div class="desktop-container">
+      <div class="desktop-header">
+        <h1>🧑‍🔧 تسجيل مقدم خدمة - بشتيل</h1>
+        <div class="desktop-header-buttons">
+          <a href="https://mostafaezat-afk.github.io/mymap/fd.html" class="desktop-btn-header desktop-btn-search">🔍 بحث عن نشاط</a>
+        </div>
+      </div>
+
+      <div class="desktop-alert" id="desktopAlert"></div>
+
+      <div class="desktop-content">
+        <div class="desktop-main">
+          <form id="desktopForm">
+            <div class="desktop-section">
+              <div class="desktop-section-title">
+                <div class="desktop-icon">📝</div>
+                البيانات الأساسية
+              </div>
+              <label class="desktop-label"><span class="required">*</span> الاسم</label>
+              <input type="text" class="desktop-input" id="desktopName" placeholder="أدخل اسمك" required />
+              
+              <label class="desktop-label"><span class="required">*</span> الهاتف</label>
+              <input type="tel" class="desktop-input" id="desktopPhone" placeholder="01012345678" required maxlength="11" minlength="11" />
+              
+              <label class="desktop-label"><span class="required">*</span> العنوان</label>
+              <input type="text" class="desktop-input" id="desktopAddress" placeholder="العنوان" required />
+            </div>
+
+            <div class="desktop-section">
+              <div class="desktop-section-title">
+                <div class="desktop-icon">🏪</div>
+                القسم
+              </div>
+              <div class="desktop-category-grid" id="desktopCategoryGrid"></div>
+            </div>
+
+            <div class="desktop-section">
+              <div class="desktop-section-title">
+                <div class="desktop-icon">🛠️</div>
+                النشاط
+              </div>
+              <div id="desktopActivityContainer"></div>
+            </div>
+
+            <button type="button" class="desktop-btn-submit" id="desktopSubmitBtn">✅ تسجيل</button>
+          </form>
+        </div>
+
+        <div class="desktop-sidebar">
+          <div class="desktop-map-box">
+            <h3>📍 الموقع على الخريطة</h3>
+            <div class="desktop-map-container">
+              <div id="desktopMap"></div>
+              <div class="desktop-center-marker">📍</div>
+            </div>
+            <div class="desktop-map-hint">💡 حرك الخريطة لاختيار الموقع</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const activityData = {
+      food: [{ name: "كشري", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/pot-of-food_1f372.png" }, { name: "كبابجي ومشويات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/meat-on-bone_1f356.png" }, { name: "فرارجي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/poultry-leg_1f357.png" }, { name: "محل فول وطعمية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/falafel_1f9c6.png" }, { name: "محل أسماك", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/fish_1f41f.png" }, { name: "بيتزا وكريب", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/pizza_1f355.png" }, { name: "حلواني", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/birthday-cake_1f382.png" }, { name: "كافتيريا ومشروبات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/hot-beverage_2615.png" }, { name: "عصير", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/tropical-drink_1f379.png" }],
+      grocery: [{ name: "سوبر ماركت", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/shopping-cart_1f6d2.png" }, { name: "خضروات وفاكهة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/green-apple_1f34f.png" }, { name: "جزار", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/cut-of-meat_1f969.png" }, { name: "مخبز عيش", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/bread_1f35e.png" }, { name: "فرن إفرنجي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/croissant_1f950.png" }, { name: "عطارة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/honey-pot_1f36f.png" }, { name: "تموين", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/convenience-store_1f3ea.png" }, { name: "ألبان", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/glass-of-milk_1f95b.png" }],
+      services: [{ name: "سباك", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/wrench_1f527.png" }, { name: "كهربائي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/high-voltage_26a1.png" }, { name: "صيانة أجهزة كهربائية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/electric-plug_1f50c.png" }, { name: "صيانة سخانات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/fire_1f525.png" }, { name: "صيانة مواتير مياه", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/potable-water_1f6b0.png" }, { name: "صيانة كمبيوتر ومحمول", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/laptop_1f4bb.png" }, { name: "نجار", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/hammer-and-wrench_1f6e0-fe0f.png" }, { name: "نقاش", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/artist-palette_1f3a8.png" }, { name: "ميكانيكي سيارات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/automobile_1f697.png" }, { name: "فني دش وستالايت", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/satellite-antenna_1f4e1.png" }, { name: "فني تكييفات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/snowflake_2744-fe0f.png" }, { name: "حداد", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/hammer_1f528.png" }],
+      shops: [{ name: "ملابس", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/t-shirt_1f455.png" }, { name: "محلات محمول", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/mobile-phone_1f4f1.png" }, { name: "مكتبة وأدوات مدرسية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/books_1f4da.png" }, { name: "حدايد وبويات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/house_1f3e0.png" }, { name: "جواهرجي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/gem-stone_1f48e.png" }, { name: "أدوات منزلية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/broom_1f9f9.png" }, { name: "منظفات وورقيات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/soap_1f9fc.png" }, { name: "أحذية وشنط", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/running-shoe_1f45f.png" }, { name: "مفروشات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/bed_1f6cf-fe0f.png" }, { name: "كوافير حريمي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/haircut_1f487.png" }, { name: "كوافير رجالي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/man-getting-haircut_1f487-200d-2642-fe0f.png" }, { name: "مستحضرات تجميل وهدايا", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/lipstick_1f484.png" }, { name: "لعب أطفال", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/teddy-bear_1f9f8.png" }],
+      medical: [{ name: "باطنة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/stethoscope_1fa7a.png" }, { name: "قلب", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/anatomical-heart_1fac0.png" }, { name: "أطفال", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/baby_1f476.png" }, { name: "عظام", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/bone_1f9b4.png" }, { name: "أنف وأذن وحنجرة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/ear_1f442.png" }, { name: "نساء وتوليد", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/pregnant-woman_1f930.png" }, { name: "عيون", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/eye_1f441-fe0f.png" }, { name: "جلدية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/nail-polish_1f485.png" }, { name: "أسنان", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/tooth_1f9b7.png" }, { name: "مخ وأعصاب", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/brain_1f9e0.png" }, { name: "مسالك بولية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/drop-of-blood_1fa78.png" }, { name: "علاج طبيعي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/flexed-biceps_1f4aa.png" }, { name: "جراحة عامة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/syringe_1f489.png" }, { name: "نفسية وعصبية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/thought-balloon_1f4ad.png" }, { name: "صدر", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/lungs_1fac1.png" }, { name: "تغذية علاجية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/green-salad_1f957.png" }, { name: "سكر وغدد صماء", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/pill_1f48a.png" }, { name: "ذكورة وعقم", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/test-tube_1f9ea.png" }, { name: "سمعيات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/ear-with-hearing-aid_1f9bb.png" }, { name: "تخاطب", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/speech-balloon_1f4ac.png" }, { name: "صيدلية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/pill_1f48a.png" }, { name: "معمل تحاليل", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/microscope_1f52c.png" }, { name: "مركز أشعة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/x-ray_1fa7b.png" }, { name: "عيادة بيطرية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/dog_1f415.png" }],
+      general: [{ name: "خدمات توصيل", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/delivery-truck_1f69a.png" }, { name: "مدرسة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/school_1f3eb.png" }, { name: "مراكز تقوية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/graduation-cap_1f393.png" }, { name: "محامي", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/balance-scale_2696-fe0f.png" }, { name: "سمسار", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/office-building_1f3e2.png" }, { name: "عقارات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/house-with-garden_1f3e1.png" }, { name: "بلاي ستيشن", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/video-game_1f3ae.png" }, { name: "سنترال", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/telephone_260e-fe0f.png" }, { name: "مؤسسات حكومية", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/classical-building_1f3db-fe0f.png" }, { name: "مغسلة", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/t-shirt_1f455.png" }, { name: "حضانة أطفال", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/baby-bottle_1f37c.png" }, { name: "إيجار سيارات", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/sport-utility-vehicle_1f699.png" }, { name: "جيم", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/person-lifting-weights_1f3cb-fe0f.png" }, { name: "سايبر نت", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/desktop-computer_1f5a5-fe0f.png" }],
+      entertainment: [{ name: "بلاي ستيشن", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/video-game_1f3ae.png" }, { name: "جيم", icon: "https://em-content.zobj.net/thumbs/120/twitter/348/person-lifting-weights_1f3cb-fe0f.png" }]
+    };
+
+    const categories = [
+      { id: "food", icon: "🍽️", label: "مأكولات" },
+      { id: "grocery", icon: "🛒", label: "بقالة" },
+      { id: "services", icon: "🔧", label: "خدمات" },
+      { id: "shops", icon: "🏪", label: "محلات" },
+      { id: "medical", icon: "⚕️", label: "طبي" },
+      { id: "entertainment", icon: "🎮", label: "ترفيه" },
+      { id: "general", icon: "📌", label: "عام" }
+    ];
+
+    let selectedCategory = '', selectedActivity = '', mobileMap, desktopMap, selectedLatLng;
+    const deviceType = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768 ? 'mobile' : 'desktop';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (deviceType === 'mobile') {
+        document.getElementById('mobileView').classList.add('active');
+        setupMobileView();
+      } else {
+        document.getElementById('desktopView').classList.add('active');
+        setupDesktopView();
+      }
+    });
+
+    function setupMobileView() {
+      loadCategories('mobile');
+      document.getElementById('mobileSubmitBtn').addEventListener('click', () => handleSubmit('mobile'));
+    }
+
+    function setupDesktopView() {
+      loadCategories('desktop');
+      document.getElementById('desktopSubmitBtn').addEventListener('click', () => handleSubmit('desktop'));
+    }
+
+    function loadCategories(view) {
+      const grid = view === 'mobile' ? document.getElementById('mobileCategoryGrid') : document.getElementById('desktopCategoryGrid');
+      grid.innerHTML = '';
+      
+      categories.forEach(cat => {
+        const card = document.createElement('div');
+        card.className = view === 'mobile' ? 'mobile-category-card' : 'desktop-category-card';
+        card.innerHTML = `
+          <div class="${view}-category-icon">${cat.icon}</div>
+          <div class="${view}-category-label">${cat.label}</div>
+        `;
+        card.onclick = () => selectCategory(cat.id, card, view);
+        grid.appendChild(card);
+      });
+    }
+
+    function selectCategory(catId, element, view) {
+      selectedCategory = catId;
+      selectedActivity = '';
+      
+      const prefix = view === 'mobile' ? 'mobile' : 'desktop';
+      const grid = document.getElementById(`${prefix}CategoryGrid`);
+      grid.querySelectorAll(`.${prefix}-category-card`).forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+      
+      loadActivities(catId, view);
+    }
+
+    function loadActivities(catId, view) {
+      const container = view === 'mobile' ? document.getElementById('mobileActivityContainer') : document.getElementById('desktopActivityContainer');
+      const activities = activityData[catId] || [];
+      
+      container.innerHTML = '';
+      const activityGrid = document.createElement('div');
+      activityGrid.className = view === 'mobile' ? 'mobile-activity-grid active' : 'desktop-activity-grid active';
+      
+      activities.forEach(act => {
+        const card = document.createElement('div');
+        card.className = view === 'mobile' ? 'mobile-activity-card' : 'desktop-activity-card';
+        card.innerHTML = `
+          <img class="${view}-activity-icon" src="${act.icon}" alt="${act.name}">
+          <div class="${view}-activity-label">${act.name}</div>
+        `;
+        card.onclick = () => selectActivity(act.name, card, view);
+        activityGrid.appendChild(card);
+      });
+      
+      container.appendChild(activityGrid);
+    }
+
+    function selectActivity(name, element, view) {
+      selectedActivity = name;
+      const prefix = view === 'mobile' ? 'mobile' : 'desktop';
+      const container = view === 'mobile' ? document.getElementById('mobileActivityContainer') : document.getElementById('desktopActivityContainer');
+      container.querySelectorAll(`.${prefix}-activity-card`).forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+
+    function initMap() {
+      const b = { lat: 30.0856171, lng: 31.1819895 };
+      selectedLatLng = b;
+      
+      const mapOptions = {
+        center: b, 
+        zoom: 20, 
+        minZoom: 15, 
+        maxZoom: 21,
+        mapTypeId: google.maps.MapTypeId.HYBRID,
+        gestureHandling: 'greedy', 
+        zoomControl: true,
+        zoomControlOptions: { position: google.maps.ControlPosition.LEFT_CENTER },
+        mapTypeControl: false, 
+        streetViewControl: false, 
+        fullscreenControl: false,
+        styles: [
+          { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
+          { featureType: "poi.business", elementType: "all", stylers: [{ visibility: "off" }] },
+          { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] }
+        ]
+      };
+      
+      if (deviceType === 'mobile') {
+        mobileMap = new google.maps.Map(document.getElementById("mobileMap"), mapOptions);
+        mobileMap.addListener('center_changed', function() {
+          const c = mobileMap.getCenter();
+          selectedLatLng = { lat: c.lat(), lng: c.lng() };
+        });
+      } else {
+        desktopMap = new google.maps.Map(document.getElementById("desktopMap"), mapOptions);
+        desktopMap.addListener('center_changed', function() {
+          const c = desktopMap.getCenter();
+          selectedLatLng = { lat: c.lat(), lng: c.lng() };
+        });
+      }
+    }
+
+    function handleSubmit(view) {
+      const prefix = view === 'mobile' ? 'mobile' : 'desktop';
+      const n = document.getElementById(`${prefix}Name`).value.trim();
+      const p = document.getElementById(`${prefix}Phone`).value.trim();
+      const a = document.getElementById(`${prefix}Address`).value.trim();
+      
+      if (!n || !p || !a || !selectedCategory || !selectedActivity) {
+        showAlert("❌ الرجاء ملء جميع الحقول", view, 'error');
+        return;
+      }
+      
+      if (!/^0[0-9]{10}$/.test(p)) {
+        showAlert("❌ رقم الهاتف يجب أن يكون 11 رقم", view, 'error');
+        return;
+      }
+      
+      const btn = document.getElementById(`${prefix}SubmitBtn`);
+      btn.disabled = true;
+      btn.textContent = "⏳ جاري التسجيل...";
+      
+      // إرسال البيانات إلى Google Apps Script
+      const formData = new URLSearchParams({
+        action: 'saveProvider',
+        name: n,
+        phone: p,
+        address: a,
+        activity: selectedActivity,
+        lat: selectedLatLng.lat,
+        lng: selectedLatLng.lng
+      });
+      
+      fetch(CONFIG.WEB_APP_URL + '?' + formData.toString())
+        .then(response => response.json())
+        .then(result => {
+          if (result && result.success) {
+            showAlert("✅ تم التسجيل بنجاح!", view, 'success');
+            setTimeout(() => {
+              document.getElementById(`${prefix}Form`).reset();
+              document.querySelectorAll(`.${prefix}-category-card, .${prefix}-activity-card`).forEach(i => i.classList.remove('selected'));
+              selectedCategory = '';
+              selectedActivity = '';
+              if (view === 'mobile' && mobileMap) {
+                mobileMap.setCenter({ lat: 30.0856171, lng: 31.1819895 });
+              } else if (view === 'desktop' && desktopMap) {
+                desktopMap.setCenter({ lat: 30.0856171, lng: 31.1819895 });
+              }
+              selectedLatLng = { lat: 30.0856171, lng: 31.1819895 };
+            }, 3000);
+          } else {
+            showAlert("❌ خطأ: " + (result?.message || 'فشل التسجيل'), view, 'error');
+          }
+          btn.disabled = false;
+          btn.textContent = "✅ تسجيل";
+        })
+        .catch(error => {
+          showAlert("❌ خطأ في الاتصال", view, 'error');
+          btn.disabled = false;
+          btn.textContent = "✅ تسجيل";
+        });
+    }
+
+    function showAlert(message, view, type) {
+      const alert = view === 'mobile' ? document.getElementById('mobileAlert') : document.getElementById('desktopAlert');
+      alert.textContent = message;
+      alert.className = view === 'mobile' ? `mobile-alert ${type}` : `desktop-alert ${type}`;
+      alert.style.display = 'block';
+      setTimeout(() => { alert.style.display = 'none'; }, 3500);
+    }
+
+    window.addEventListener('load', function() {
+      if (typeof google !== 'undefined' && google.maps) {
+        initMap();
+      } else {
+        setTimeout(initMap, 1000);
+      }
+    });
+  </script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8&language=ar&region=EG" async defer></script>
+</body>
+</html>
