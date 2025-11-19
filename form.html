@@ -735,8 +735,7 @@
     <div class="mobile-header">
       <h1>🧑‍🔧 تسجيل مقدم خدمة</h1>
       <div class="mobile-header-buttons">
-        <a href="https://mostafaezat-afk.github.io/mymap/" class="mobile-btn-header mobile-btn-home">🏠 الرئيسية</a>
-        <a href="https://mostafaezat-afk.github.io/mymap/fd.html" class="mobile-btn-header mobile-btn-search" target="_blank">🔍 البحث عن نشاط</a>
+        <a href="https://mostafaezat-afk.github.io/mymap/" class="mobile-btn-header mobile-btn-search">🔍 البحث عن نشاط</a>
       </div>
     </div>
 
@@ -800,7 +799,7 @@
       <div class="desktop-header">
         <h1>🧑‍🔧 تسجيل مقدم خدمة - بشتيل</h1>
         <div class="desktop-header-buttons">
-          <a href="https://mostafaezat-afk.github.io/mymap/fd.html" class="desktop-btn-header desktop-btn-search">🔍 بحث عن نشاط</a>
+          <a href="https://mostafaezat-afk.github.io/mymap/" class="desktop-btn-header desktop-btn-search">🔍 بحث عن نشاط</a>
         </div>
       </div>
 
@@ -1018,8 +1017,8 @@
       btn.disabled = true;
       btn.textContent = "⏳ جاري التسجيل...";
       
-      // إرسال البيانات إلى Google Apps Script
-      const formData = new URLSearchParams({
+      // إرسال البيانات إلى Google Apps Script عبر POST
+      const formData = {
         action: 'saveProvider',
         name: n,
         phone: p,
@@ -1027,32 +1026,37 @@
         activity: selectedActivity,
         lat: selectedLatLng.lat,
         lng: selectedLatLng.lng
-      });
+      };
       
-      fetch(CONFIG.WEB_APP_URL + '?' + formData.toString())
-        .then(response => response.json())
-        .then(result => {
-          if (result && result.success) {
-            showAlert("✅ تم التسجيل بنجاح!", view, 'success');
-            setTimeout(() => {
-              document.getElementById(`${prefix}Form`).reset();
-              document.querySelectorAll(`.${prefix}-category-card, .${prefix}-activity-card`).forEach(i => i.classList.remove('selected'));
-              selectedCategory = '';
-              selectedActivity = '';
-              if (view === 'mobile' && mobileMap) {
-                mobileMap.setCenter({ lat: 30.0856171, lng: 31.1819895 });
-              } else if (view === 'desktop' && desktopMap) {
-                desktopMap.setCenter({ lat: 30.0856171, lng: 31.1819895 });
-              }
-              selectedLatLng = { lat: 30.0856171, lng: 31.1819895 };
-            }, 3000);
-          } else {
-            showAlert("❌ خطأ: " + (result?.message || 'فشل التسجيل'), view, 'error');
-          }
+      fetch(CONFIG.WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+        .then(() => {
+          // في وضع no-cors لا يمكننا قراءة الاستجابة
+          // لذلك نفترض النجاح
+          showAlert("✅ تم التسجيل بنجاح!", view, 'success');
+          setTimeout(() => {
+            document.getElementById(`${prefix}Form`).reset();
+            document.querySelectorAll(`.${prefix}-category-card, .${prefix}-activity-card`).forEach(i => i.classList.remove('selected'));
+            selectedCategory = '';
+            selectedActivity = '';
+            if (view === 'mobile' && mobileMap) {
+              mobileMap.setCenter({ lat: 30.0856171, lng: 31.1819895 });
+            } else if (view === 'desktop' && desktopMap) {
+              desktopMap.setCenter({ lat: 30.0856171, lng: 31.1819895 });
+            }
+            selectedLatLng = { lat: 30.0856171, lng: 31.1819895 };
+          }, 2000);
           btn.disabled = false;
           btn.textContent = "✅ تسجيل";
         })
         .catch(error => {
+          console.error('Error:', error);
           showAlert("❌ خطأ في الاتصال", view, 'error');
           btn.disabled = false;
           btn.textContent = "✅ تسجيل";
