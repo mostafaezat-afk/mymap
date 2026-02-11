@@ -1,0 +1,95 @@
+export async function onRequest(context) {
+  const { request, env, params } = context;
+  const id = params.id;
+
+  if (request.method === "OPTIONS") {
+    return new Response("", { status: 204, headers: corsHeaders() });
+  }
+
+  try {
+    if (request.method === "GET") {
+      const c = await env.DB.prepare(`SELECT * FROM complaints WHERE id = ?`).bind(id).first();
+      if (!c) return json({ ok:false, error:"الشكوى غير موجودة" }, 404);
+
+      const { results: comments } = await env.DB.prepare(`
+        SELECT * FROM comments
+        WHERE complaint_id = ?
+        ORDER BY created_at ASC
+      `).bind(id).all();
+
+      return json({ ok:true, complaint: c, comments }, 200);
+    }
+
+    if (request.method === "PATCH") {
+      const body = await request.json();
+      const action = (body.action || "").trim();
+
+      if (action === "vote") {
+        const voteType = body.vote; // "support" | "oppose"
+        if (voteType !== "support" && voteType !== "oppose") {
+          return json({ ok:false, error:"نوع تصويت غير صحيح" }, 400);
+        }
+
+        // بدون تسجيل: هنعدّ التصويت مباشرة (ممكن تزود Rate Limit لاحقًا)
+        const col = voteType === "support" ? "support" : "oppose";
+        await env.DB.prepare(`UPDATE complaints SET ${col} = ${col} + 1 WHERE id = ?`).bind(id).run();
+        const updated = await env.DB.prepare(`SELECT * FROM complaints WHERE id = ?`).bind(id).first();
+        return json({ ok:true, complaint: updated }, 200);
+      }
+
+      if (action === "status") {
+        const status = body.status; // open|progress|resolved
+        if (!["open","progress","resolved"].includes(status)) {
+          return json({ ok:false, error:"حالة غير صحيحة" }, 400);
+        }
+        await env.DB.prepare(`UPDATE complaints SET status = ? WHERE id = ?`).bind(status, id).run();
+        const updated = await env.DB.prepare(`SELECT * FROM complaints WHERE id = ?`).bind(id).first();
+        return json({ ok:true, complaint: updated }, 200);
+      }
+
+      return json({ ok:false, error:"Action غير مدعوم" }, 400);
+    }
+
+    if (request.method === "POST") {
+      // add comment
+      const body = await request.json();
+      const name = (body.name || "").trim(); // بالاسم (إجباري)
+      const text = (body.text || "").trim();
+
+      if (!name) return json({ ok:false, error:"الاسم مطلوب" }, 400);
+      if (!text) return json({ ok:false, error:"نص التعليق مطلوب" }, 400);
+
+      const exists = await env.DB.prepare(`SELECT id FROM complaints WHERE id = ?`).bind(id).first();
+      if (!exists) return json({ ok:false, error:"الشكوى غير موجودة" }, 404);
+
+      const cid = crypto.randomUUID();
+      const created_at = Date.now();
+
+      await env.DB.prepare(`
+        INSERT INTO comments (id, complaint_id, name, text, created_at)
+        VALUES (?,?,?,?,?)
+      `).bind(cid, id, name, text, created_at).run();
+
+      return json({ ok:true }, 201);
+    }
+
+    return json({ ok:false, error:"Method not allowed" }, 405);
+  } catch (e) {
+    return json({ ok:false, error:"Server error", details: String(e?.message || e) }, 500);
+  }
+}
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", ...corsHeaders() },
+  });
+}
+
+function corsHeaders() {
+  return {
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET,POST,PATCH,OPTIONS",
+    "access-control-allow-headers": "content-type",
+  };
+}
