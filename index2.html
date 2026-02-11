@@ -1,95 +1,898 @@
-export async function onRequest(context) {
-  const { request, env, params } = context;
-  const id = params.id;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>منصة بشتيل — بلّغ وغيّر</title>
 
-  if (request.method === "OPTIONS") {
-    return new Response("", { status: 204, headers: corsHeaders() });
-  }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 
-  try {
-    if (request.method === "GET") {
-      const c = await env.DB.prepare(`SELECT * FROM complaints WHERE id = ?`).bind(id).first();
-      if (!c) return json({ ok:false, error:"الشكوى غير موجودة" }, 404);
+<style>
+:root {
+  --bg:#0b1622; --bg2:#111e2e; --bg3:#172535;
+  --card:#1a2d42; --card2:#203350;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --primary:#2563eb; --primary-glow:rgba(37,99,235,0.18);
+  --gold:#f59e0b; --red:#ef4444; --green:#22c55e; --purple:#8b5cf6; --cyan:#06b6d4;
+  --text:#e2eaf5; --muted:#6b8aaa;
+  --radius:14px; --radius-sm:9px;
+  --shadow:0 8px 40px rgba(0,0,0,0.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
 
-      const { results: comments } = await env.DB.prepare(`
-        SELECT * FROM comments
-        WHERE complaint_id = ?
-        ORDER BY created_at ASC
-      `).bind(id).all();
+#topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:0 20px;height:62px;flex-shrink:0;
+  background:rgba(11,22,34,0.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);z-index:500;position:relative;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;box-shadow:0 4px 14px rgba(245,158,11,0.3);flex-shrink:0;
+}
+.logo-words strong{font-size:16px;font-weight:900;color:#fff;display:block;line-height:1.1}
+.logo-words span{font-size:10px;color:var(--muted)}
+.topbar-stats{display:flex;gap:10px;margin-right:auto}
+.stat-chip{
+  display:flex;align-items:center;gap:5px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:5px 13px;font-size:12px;color:var(--muted);
+}
+.stat-chip b{color:var(--gold)}
+.add-complaint-btn{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,var(--primary),#1d4ed8);
+  color:#fff;border:none;border-radius:10px;
+  padding:9px 20px;font-size:13px;font-family:inherit;font-weight:800;
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 4px 18px rgba(37,99,235,0.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.add-complaint-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,0.5)}
+.add-complaint-btn .plus{font-size:18px;line-height:1}
 
-      return json({ ok:true, complaint: c, comments }, 200);
-    }
+#main{display:flex;flex:1;overflow:hidden;position:relative}
 
-    if (request.method === "PATCH") {
-      const body = await request.json();
-      const action = (body.action || "").trim();
+#sidebar{
+  width:380px;flex-shrink:0;
+  background:var(--bg2);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:transform .3s;z-index:10;
+}
+#sidebar.hidden{transform:translateX(100%)}
+.sidebar-header{padding:14px 16px 0;flex-shrink:0;}
+.sidebar-tabs{display:flex;gap:6px;margin-bottom:10px}
+.stab{
+  flex:1;padding:8px;border-radius:8px;
+  font-family:inherit;font-size:12px;font-weight:800;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.stab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.sidebar-search{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:10px;
+}
+.sidebar-search input{
+  background:none;border:none;outline:none;flex:1;
+  color:var(--text);font-family:inherit;font-size:12px;
+}
+.sidebar-search input::placeholder{color:var(--muted)}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fc{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:4px 10px;font-size:11px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.fc:hover{border-color:var(--border2);color:var(--text)}
+.fc.active{color:#fff;font-weight:800}
+.fc[data-type="garbage"].active{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red)}
+.fc[data-type="fence"].active{background:rgba(245,158,11,.15);border-color:var(--gold);color:var(--gold)}
+.fc[data-type="sewage"].active{background:rgba(139,92,246,.15);border-color:var(--purple);color:var(--purple)}
+.fc[data-type="water"].active{background:rgba(6,182,212,.15);border-color:var(--cyan);color:var(--cyan)}
+.fc[data-type="other"].active{background:rgba(107,114,128,.15);border-color:#6b7280;color:#9ca3af}
+.fc[data-type="all"].active{background:var(--primary-glow);border-color:var(--primary);color:#93c5fd}
+#complaints-list{flex:1;overflow-y:auto;padding:0 12px 16px;scrollbar-width:thin;scrollbar-color:var(--card2) transparent}
 
-      if (action === "vote") {
-        const voteType = body.vote; // "support" | "oppose"
-        if (voteType !== "support" && voteType !== "oppose") {
-          return json({ ok:false, error:"نوع تصويت غير صحيح" }, 400);
-        }
+.c-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.c-card:hover{border-color:var(--border2);box-shadow:0 6px 24px rgba(0,0,0,.35);transform:translateY(-2px)}
+.c-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
+.c-card::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%}
+.c-card[data-type="garbage"]::before{background:var(--red)}
+.c-card[data-type="fence"]::before{background:var(--gold)}
+.c-card[data-type="sewage"]::before{background:var(--purple)}
+.c-card[data-type="water"]::before{background:var(--cyan)}
+.c-card[data-type="other"]::before{background:#6b7280}
+.c-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.c-card-badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:3px;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:900}
+.b-garbage{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.b-fence{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.b-sewage{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.b-water{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2)}
+.b-other{background:rgba(107,114,128,.15);color:#9ca3af;border:1px solid rgba(107,114,128,.2)}
+.b-open{background:rgba(234,179,8,.1);color:#eab308}
+.b-progress{background:rgba(59,130,246,.1);color:#60a5fa}
+.b-resolved{background:rgba(34,197,94,.1);color:#4ade80}
+.c-title{font-size:14px;font-weight:900;margin-bottom:5px;line-height:1.35}
+.c-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
+.v-mini{
+  display:flex;align-items:center;gap:3px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:3px 8px;font-size:11px;
+  cursor:pointer;transition:all .15s;color:var(--muted);
+}
+.v-mini:hover{border-color:var(--border2);color:var(--text)}
 
-        // بدون تسجيل: هنعدّ التصويت مباشرة (ممكن تزود Rate Limit لاحقًا)
-        const col = voteType === "support" ? "support" : "oppose";
-        await env.DB.prepare(`UPDATE complaints SET ${col} = ${col} + 1 WHERE id = ?`).bind(id).run();
-        const updated = await env.DB.prepare(`SELECT * FROM complaints WHERE id = ?`).bind(id).first();
-        return json({ ok:true, complaint: updated }, 200);
-      }
+#map{flex:1;position:relative}
+#map-container{width:100%;height:100%}
 
-      if (action === "status") {
-        const status = body.status; // open|progress|resolved
-        if (!["open","progress","resolved"].includes(status)) {
-          return json({ ok:false, error:"حالة غير صحيحة" }, 400);
-        }
-        await env.DB.prepare(`UPDATE complaints SET status = ? WHERE id = ?`).bind(status, id).run();
-        const updated = await env.DB.prepare(`SELECT * FROM complaints WHERE id = ?`).bind(id).first();
-        return json({ ok:true, complaint: updated }, 200);
-      }
+#sidebar-toggle{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  z-index:20;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:8px 0 0 8px;padding:10px 6px;
+  cursor:pointer;color:var(--muted);transition:all .15s;
+  writing-mode:vertical-rl;font-size:11px;font-family:inherit;
+}
+#sidebar-toggle:hover{background:var(--card2);color:var(--text)}
 
-      return json({ ok:false, error:"Action غير مدعوم" }, 400);
-    }
+#detail-drawer{
+  position:absolute;bottom:0;right:0;left:0;
+  z-index:30;
+  background:var(--bg2);border-top:1px solid var(--border2);
+  border-radius:20px 20px 0 0;
+  max-height:75vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+#detail-drawer.open{transform:translateY(0)}
+.drawer-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 0}
+.drawer-content{padding:18px 20px 30px}
+.drawer-close{
+  position:absolute;top:14px;left:16px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);border-radius:8px;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:17px;transition:all .15s;
+}
+.drawer-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
+.drawer-header{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.drawer-title{font-size:20px;font-weight:900;line-height:1.3;margin-bottom:8px}
+.drawer-desc{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:14px}
+.drawer-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.drawer-meta span{display:flex;align-items:center;gap:4px}
+.drawer-votes{display:flex;gap:10px;margin-bottom:14px}
+.dv-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px;font-size:14px;font-family:inherit;font-weight:900;
+  cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;
+}
+.dv-btn.s:hover{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)}
+.dv-btn.o:hover{background:rgba(239,68,68,.12);border-color:var(--red);color:var(--red)}
+.vote-bar-wrap{height:6px;background:var(--bg3);border-radius:6px;overflow:hidden;display:flex;margin-bottom:16px}
+.vb-s{background:var(--green);transition:width .4s}
+.vb-o{background:var(--red);transition:width .4s}
+.vb-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:12px}
 
-    if (request.method === "POST") {
-      // add comment
-      const body = await request.json();
-      const name = (body.name || "").trim(); // بالاسم (إجباري)
-      const text = (body.text || "").trim();
+.comment-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
+.ci-head{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.ci-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0}
+.ci-name{font-size:12px;font-weight:800}
+.ci-time{font-size:10px;color:var(--muted);margin-right:auto}
+.ci-text{font-size:12px;color:var(--muted);line-height:1.55}
 
-      if (!name) return json({ ok:false, error:"الاسم مطلوب" }, 400);
-      if (!text) return json({ ok:false, error:"نص التعليق مطلوب" }, 400);
+#modal-overlay{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#modal-overlay.open{opacity:1;pointer-events:all}
+#modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;padding:24px;max-width:520px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  transform:translateY(20px);transition:transform .25s;
+}
+#modal-overlay.open #modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:19px;font-weight:900}
+.modal-close{
+  width:32px;height:32px;border-radius:8px;background:var(--card);
+  border:1px solid var(--border);color:var(--muted);cursor:pointer;
+  font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.modal-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:12px;font-weight:900;margin-bottom:6px;color:var(--muted)}
+.fi,.fs,.ft{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:9px;padding:10px 13px;color:var(--text);
+  font-family:inherit;font-size:13px;outline:none;transition:border-color .15s;
+}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.fs{cursor:pointer}.fs option{background:var(--bg2)}
+.ft{resize:vertical;min-height:85px;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#pick-map{height:180px;border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:crosshair}
+.submit-btn{
+  width:100%;background:linear-gradient(135deg,var(--primary),#1d4ed8);
+  color:#fff;border:none;border-radius:11px;
+  padding:13px;font-size:15px;font-family:inherit;font-weight:900;
+  cursor:pointer;box-shadow:0 4px 18px rgba(37,99,235,.35);
+  transition:transform .15s,box-shadow .15s;margin-top:4px;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,.5)}
 
-      const exists = await env.DB.prepare(`SELECT id FROM complaints WHERE id = ?`).bind(id).first();
-      if (!exists) return json({ ok:false, error:"الشكوى غير موجودة" }, 404);
+#toasts{position:fixed;bottom:20px;left:20px;z-index:700;display:flex;flex-direction:column;gap:8px}
+.toast{
+  display:flex;align-items:center;gap:9px;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:9px;padding:11px 16px;font-size:13px;
+  box-shadow:var(--shadow);max-width:320px;
+}
 
-      const cid = crypto.randomUUID();
-      const created_at = Date.now();
+@media(max-width:768px){
+  #sidebar{position:absolute;right:0;top:0;bottom:0;z-index:40;transform:translateX(100%)}
+  #sidebar:not(.hidden){transform:translateX(0)}
+  .topbar-stats{display:none}
+  .add-complaint-btn span{display:none}
+}
+</style>
+</head>
 
-      await env.DB.prepare(`
-        INSERT INTO comments (id, complaint_id, name, text, created_at)
-        VALUES (?,?,?,?,?)
-      `).bind(cid, id, name, text, created_at).run();
+<body>
 
-      return json({ ok:true }, 201);
-    }
+<div id="topbar">
+  <div class="logo">
+    <div class="logo-icon">🗺️</div>
+    <div class="logo-words">
+      <strong>منصة بشتيل</strong>
+      <span>بلّغ وغيّر مجتمعك</span>
+    </div>
+  </div>
+  <div class="topbar-stats">
+    <div class="stat-chip">📋 إجمالي: <b id="total-count">0</b></div>
+    <div class="stat-chip">🔴 مفتوحة: <b id="open-count">0</b></div>
+    <div class="stat-chip">✅ محلولة: <b id="resolved-count">0</b></div>
+  </div>
+  <button class="add-complaint-btn" onclick="openModal()">
+    <span class="plus">+</span><span>إضافة شكوى</span>
+  </button>
+</div>
 
-    return json({ ok:false, error:"Method not allowed" }, 405);
-  } catch (e) {
-    return json({ ok:false, error:"Server error", details: String(e?.message || e) }, 500);
+<div id="main">
+  <div id="map">
+    <div id="map-container"></div>
+    <button id="sidebar-toggle" onclick="toggleSidebar()">◀ الشكاوى</button>
+
+    <div id="detail-drawer">
+      <div class="drawer-handle"></div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+      <div class="drawer-content" id="drawer-content"></div>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-tabs">
+        <button class="stab active" onclick="setSort('newest',this)">🕐 الأحدث</button>
+        <button class="stab" onclick="setSort('votes',this)">🔥 الأكثر دعماً</button>
+        <button class="stab" onclick="setSort('comments',this)">💬 الأكثر تعليقاً</button>
+      </div>
+      <div class="sidebar-search">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="ابحث في الشكاوى..." oninput="renderList()">
+      </div>
+      <div class="filter-chips">
+        <div class="fc active" data-type="all" onclick="setFilter('all',this)">الكل</div>
+        <div class="fc" data-type="garbage" onclick="setFilter('garbage',this)">🗑️ قمامة</div>
+        <div class="fc" data-type="fence" onclick="setFilter('fence',this)">🚧 مسورة</div>
+        <div class="fc" data-type="sewage" onclick="setFilter('sewage',this)">🌊 صرف</div>
+        <div class="fc" data-type="water" onclick="setFilter('water',this)">💧 مياه</div>
+        <div class="fc" data-type="other" onclick="setFilter('other',this)">❓ أخرى</div>
+      </div>
+    </div>
+    <div id="complaints-list"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div class="modal-head">
+      <div class="modal-title">📝 إضافة شكوى جديدة</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="fg">
+      <label class="fl">الاسم *</label>
+      <input class="fi" id="f-name" placeholder="اكتب اسمك الحقيقي" maxlength="60">
+    </div>
+
+    <div class="fg">
+      <label class="fl">عنوان الشكوى *</label>
+      <input class="fi" id="f-title" placeholder="مثال: تراكم القمامة في شارع النيل" maxlength="100">
+    </div>
+
+    <div class="fg">
+      <label class="fl">نوع المشكلة *</label>
+      <select class="fs" id="f-type">
+        <option value="">— اختر نوع المشكلة —</option>
+        <option value="garbage">🗑️ قمامة</option>
+        <option value="fence">🚧 مسورة مقصورة / طريق مغلق</option>
+        <option value="sewage">🌊 مشكلة صرف صحي</option>
+        <option value="water">💧 ضعف في المياه</option>
+        <option value="other">❓ أخرى</option>
+      </select>
+    </div>
+
+    <div class="fg">
+      <label class="fl">وصف تفصيلي</label>
+      <textarea class="ft" id="f-desc" placeholder="اكتب تفاصيل المشكلة..." rows="3"></textarea>
+    </div>
+
+    <div class="fg">
+      <label class="fl">الشارع / المنطقة</label>
+      <input class="fi" id="f-street" placeholder="مثال: شارع 15 بشتيل" maxlength="80">
+    </div>
+
+    <div class="fg">
+      <label class="fl">📍 حدد موقع المشكلة على الخريطة *</label>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:7px">الاختيار داخل نطاق بشتيل فقط</div>
+      <div id="pick-map"></div>
+      <div id="pin-status" style="margin-top:6px;font-size:11px;color:var(--red)">⚠️ لم يتم اختيار موقع بعد</div>
+    </div>
+
+    <button class="submit-btn" onclick="submitComplaint()">🚀 نشر الشكوى</button>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+/* ===========================
+   Google Maps Key
+=========================== */
+const GOOGLE_MAPS_API_KEY = "PUT_YOUR_KEY_HERE";
+
+/* ===========================
+   حدود بشتيل (عدّلها لو لزم)
+=========================== */
+const BASHTEEL_CENTER = { lat: 30.0661, lng: 31.1741 };
+const BASHTEEL_BOUNDS = {
+  north: 30.0825,
+  south: 30.0520,
+  east:  31.1955,
+  west:  31.1550
+};
+
+/* ===========================
+   ثابتات
+=========================== */
+const COLORS = {garbage:'#ef4444',fence:'#f59e0b',sewage:'#8b5cf6',water:'#06b6d4',other:'#6b7280'};
+const LABELS = {garbage:'قمامة',fence:'مسورة مقصورة',sewage:'صرف صحي',water:'ضعف مياه',other:'أخرى'};
+const ICONS  = {garbage:'🗑️',fence:'🚧',sewage:'🌊',water:'💧',other:'❓'};
+const STATUS_LABELS = {open:'مفتوحة',progress:'قيد المعالجة',resolved:'تم الحل'};
+const STATUS_CLASSES = {open:'b-open',progress:'b-progress',resolved:'b-resolved'};
+const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#22c55e','#06b6d4','#ef4444'];
+
+/* ===========================
+   State
+=========================== */
+let complaints = [];
+let filterType = 'all';
+let sortMode = 'newest';
+let selectedId = null;
+
+let map, pickMap;
+let markers = new Map();
+let infoWindow;
+
+let pickedLatLng = null;
+let pickMarker = null;
+
+/* ===========================
+   API helpers (Cloudflare Pages Functions)
+=========================== */
+async function apiGet(path){
+  const res = await fetch(path, { headers: { 'Accept':'application/json' } });
+  const data = await res.json().catch(()=> ({}));
+  if(!res.ok) throw new Error(data?.error || 'خطأ في السيرفر');
+  return data;
+}
+async function apiPost(path, body){
+  const res = await fetch(path, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(()=> ({}));
+  if(!res.ok) throw new Error(data?.error || 'خطأ في السيرفر');
+  return data;
+}
+async function apiPatch(path, body){
+  const res = await fetch(path, {
+    method:'PATCH',
+    headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(()=> ({}));
+  if(!res.ok) throw new Error(data?.error || 'خطأ في السيرفر');
+  return data;
+}
+
+/* ===========================
+   Load data
+=========================== */
+async function loadComplaints(){
+  const data = await apiGet('/api/complaints');
+  complaints = (data.complaints || []).map(c => ({
+    id: c.id,
+    title: c.title,
+    type: c.type,
+    desc: c.description || '',
+    street: c.street || 'بشتيل',
+    name: c.reporter_name,
+    lat: Number(c.lat),
+    lng: Number(c.lng),
+    status: c.status || 'open',
+    support: Number(c.support || 0),
+    oppose: Number(c.oppose || 0),
+    time: Number(c.created_at || Date.now()),
+    commentsCount: Number(c.comment_count || 0),
+  }));
+}
+
+/* ===========================
+   Google Maps init
+=========================== */
+function initMaps(){
+  infoWindow = new google.maps.InfoWindow();
+
+  map = new google.maps.Map(document.getElementById('map-container'), {
+    center: BASHTEEL_CENTER,
+    zoom: 16,
+    minZoom: 14,
+    maxZoom: 20,
+    mapTypeId: 'hybrid',            // قمر صناعي + أسماء الشوارع
+    streetViewControl: false,
+    fullscreenControl: true,
+    mapTypeControl: true,
+    restriction: { latLngBounds: BASHTEEL_BOUNDS, strictBounds: true },
+    gestureHandling: 'greedy',
+  });
+
+  map.addListener('click', () => closeDrawer());
+
+  boot();
+}
+
+async function boot(){
+  try{
+    await loadComplaints();
+    renderMarkers();
+    renderList();
+    updateStats();
+  }catch(e){
+    console.error(e);
+    toast('⚠️ تعذر تحميل البيانات. تأكد إن Functions + D1 شغالين.');
   }
 }
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8", ...corsHeaders() },
+/* ===========================
+   Pick map (داخل المودال)
+=========================== */
+function initPickMapIfNeeded(){
+  if(pickMap) return;
+  pickMap = new google.maps.Map(document.getElementById('pick-map'), {
+    center: BASHTEEL_CENTER,
+    zoom: 16,
+    minZoom: 14,
+    maxZoom: 20,
+    mapTypeId: 'hybrid',
+    streetViewControl: false,
+    fullscreenControl: false,
+    mapTypeControl: false,
+    restriction: { latLngBounds: BASHTEEL_BOUNDS, strictBounds: true },
+    gestureHandling: 'greedy',
+  });
+
+  pickMap.addListener('click', (e) => {
+    pickedLatLng = e.latLng;
+    if(pickMarker) pickMarker.setMap(null);
+    pickMarker = new google.maps.Marker({ position: pickedLatLng, map: pickMap });
+
+    const ps = document.getElementById('pin-status');
+    ps.innerHTML = '✅ تم تحديد الموقع: ' + pickedLatLng.lat().toFixed(5) + ', ' + pickedLatLng.lng().toFixed(5);
+    ps.style.color = 'var(--green)';
   });
 }
 
-function corsHeaders() {
+/* ===========================
+   Marker icon (SVG)
+=========================== */
+function markerIcon(color){
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24">
+    <path fill="${color}" stroke="rgba(255,255,255,0.75)" stroke-width="1"
+      d="M12 2c-3.314 0-6 2.686-6 6 0 4.5 6 14 6 14s6-9.5 6-14c0-3.314-2.686-6-6-6zm0 8.5A2.5 2.5 0 1 1 12 5.5a2.5 2.5 0 0 1 0 5z"/>
+  </svg>`;
   return {
-    "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET,POST,PATCH,OPTIONS",
-    "access-control-allow-headers": "content-type",
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+    scaledSize: new google.maps.Size(40,40),
+    anchor: new google.maps.Point(20,40)
   };
 }
+
+/* ===========================
+   Render markers
+=========================== */
+function renderMarkers(){
+  markers.forEach(m => m.setMap(null));
+  markers.clear();
+
+  complaints.forEach(c => {
+    const m = new google.maps.Marker({
+      position: {lat:c.lat, lng:c.lng},
+      map,
+      icon: markerIcon(COLORS[c.type] || '#6b7280'),
+      title: c.title
+    });
+
+    m.addListener('click', () => {
+      selectCard(c.id);
+
+      infoWindow.setContent(`
+        <div style="font-family:Cairo,sans-serif;direction:rtl;min-width:220px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+            <span style="background:rgba(0,0,0,.25);padding:2px 8px;border-radius:6px;font-weight:900;font-size:11px">${ICONS[c.type]} ${LABELS[c.type]}</span>
+            <span style="background:rgba(0,0,0,.25);padding:2px 8px;border-radius:6px;font-weight:900;font-size:11px">${STATUS_LABELS[c.status]}</span>
+          </div>
+          <div style="font-weight:900;margin-bottom:6px">${escapeHtml(c.title)}</div>
+          <div style="font-size:12px;color:#374151;margin-bottom:10px">${escapeHtml(c.desc||'')}</div>
+          <button onclick="openDetail('${c.id}')" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px;font-weight:900;cursor:pointer">
+            عرض التفاصيل
+          </button>
+        </div>
+      `);
+      infoWindow.open(map, m);
+    });
+
+    markers.set(c.id, m);
+  });
+}
+
+/* ===========================
+   List render
+=========================== */
+function renderList(){
+  const query = (document.getElementById('search-input').value||'').trim().toLowerCase();
+  let list = [...complaints];
+
+  if(filterType !== 'all') list = list.filter(c => c.type === filterType);
+  if(query) list = list.filter(c =>
+    (c.title||'').toLowerCase().includes(query) || (c.desc||'').toLowerCase().includes(query)
+  );
+
+  if(sortMode==='newest') list.sort((a,b)=>b.time-a.time);
+  else if(sortMode==='votes') list.sort((a,b)=>(b.support-b.oppose)-(a.support-a.oppose));
+  else if(sortMode==='comments') list.sort((a,b)=>b.commentsCount-a.commentsCount);
+
+  const el = document.getElementById('complaints-list');
+  if(!list.length){
+    el.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🔍</div><p>لا توجد شكاوى تطابق البحث</p></div>`;
+    updateStats();
+    return;
+  }
+
+  el.innerHTML = list.map((c)=>{
+    const isSelected = selectedId===c.id;
+    return `
+      <div class="c-card${isSelected?' selected':''}" data-type="${c.type}" data-id="${c.id}" onclick="openDetail('${c.id}')">
+        <div class="c-card-top">
+          <div class="c-card-badges">
+            <span class="badge ${getBadgeClass(c.type)}">${ICONS[c.type]} ${LABELS[c.type]}</span>
+            <span class="badge ${STATUS_CLASSES[c.status]}">${STATUS_LABELS[c.status]}</span>
+          </div>
+        </div>
+        <div class="c-title">${escapeHtml(c.title)}</div>
+        <div class="c-desc">${escapeHtml(c.desc||'لا يوجد وصف')}</div>
+        <div class="c-meta">
+          <span>📍 ${escapeHtml(c.street||'بشتيل')}</span>
+          <span>${timeAgo(c.time)}</span>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:center">
+          <button class="v-mini" onclick="vote(event,'${c.id}','support')">👍 ${c.support}</button>
+          <button class="v-mini" onclick="vote(event,'${c.id}','oppose')">👎 ${c.oppose}</button>
+          <span style="margin-right:auto;font-size:11px;color:var(--muted)">💬 ${c.commentsCount}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateStats();
+}
+
+/* ===========================
+   Drawer details + comments
+=========================== */
+async function openDetail(id){
+  const c = complaints.find(x=>x.id==id);
+  if(!c) return;
+  selectCard(id);
+
+  let detail, comments;
+  try{
+    const data = await apiGet(`/api/complaint/${encodeURIComponent(id)}`);
+    detail = data.complaint;
+    comments = data.comments || [];
+  }catch(e){
+    console.error(e);
+    return toast('⚠️ تعذر تحميل تفاصيل الشكوى');
+  }
+
+  c.commentsCount = comments.length;
+
+  const totalVotes = (Number(detail.support||0) + Number(detail.oppose||0)) || 1;
+  const supPct = Math.round((Number(detail.support||0)/totalVotes)*100);
+  const oppPct = 100 - supPct;
+
+  const commentsHtml = comments.map(cm=>{
+    const name = cm.name || 'مجهول';
+    const col = AVATAR_COLORS[Math.abs(name.charCodeAt(0))%AVATAR_COLORS.length];
+    return `
+      <div class="comment-item">
+        <div class="ci-head">
+          <div class="ci-avatar" style="background:${col}">${escapeHtml(name.charAt(0))}</div>
+          <span class="ci-name">${escapeHtml(name)}</span>
+          <span class="ci-time">${timeAgo(Number(cm.created_at||Date.now()))}</span>
+        </div>
+        <div class="ci-text">${escapeHtml(cm.text||'')}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('drawer-content').innerHTML = `
+    <div class="drawer-header">
+      <span class="badge ${getBadgeClass(detail.type)}">${ICONS[detail.type]} ${LABELS[detail.type]}</span>
+      <span class="badge ${STATUS_CLASSES[detail.status]}">${STATUS_LABELS[detail.status]}</span>
+    </div>
+
+    <div class="drawer-title">${escapeHtml(detail.title)}</div>
+    <div class="drawer-desc">${escapeHtml(detail.description||'لا يوجد وصف')}</div>
+
+    <div class="drawer-meta">
+      <span>👤 ${escapeHtml(detail.reporter_name||'')}</span>
+      <span>📍 ${escapeHtml(detail.street||'بشتيل')}</span>
+      <span>🕐 ${timeAgo(Number(detail.created_at||Date.now()))}</span>
+      <span>💬 ${comments.length} تعليق</span>
+    </div>
+
+    <div class="drawer-votes">
+      <button class="dv-btn s" onclick="vote(event,'${detail.id}','support');openDetail('${detail.id}')">👍 أدعم</button>
+      <button class="dv-btn o" onclick="vote(event,'${detail.id}','oppose');openDetail('${detail.id}')">👎 لا أدعم</button>
+    </div>
+
+    <div class="vb-label"><span>👍 ${Number(detail.support||0)} دعم</span><span>👎 ${Number(detail.oppose||0)} رفض</span></div>
+    <div class="vote-bar-wrap">
+      <div class="vb-s" style="width:${supPct}%"></div>
+      <div class="vb-o" style="width:${oppPct}%"></div>
+    </div>
+
+    <div style="margin-top:8px;font-weight:900;color:var(--muted)">💬 التعليقات</div>
+    <div style="margin-top:10px">
+      ${commentsHtml || `<div style="text-align:center;color:var(--muted);padding:12px">لا توجد تعليقات بعد</div>`}
+    </div>
+
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">اسمك *</label>
+        <input class="fi" id="comment-name" placeholder="اكتب اسمك" maxlength="60">
+      </div>
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">تعليقك *</label>
+        <textarea class="ft" id="comment-text" placeholder="اكتب تعليقك..." rows="2"></textarea>
+      </div>
+      <button class="submit-btn" onclick="addComment('${detail.id}')">نشر تعليق</button>
+    </div>
+  `;
+
+  document.getElementById('detail-drawer').classList.add('open');
+
+  // حرك الخريطة
+  map.panTo({lat:Number(detail.lat), lng:Number(detail.lng)});
+  map.setZoom(Math.max(map.getZoom(), 17));
+
+  renderList();
+  renderMarkers();
+  updateStats();
+}
+
+function closeDrawer(){
+  document.getElementById('detail-drawer').classList.remove('open');
+  selectedId=null;
+  document.querySelectorAll('.c-card.selected').forEach(el=>el.classList.remove('selected'));
+}
+
+/* ===========================
+   Actions
+=========================== */
+async function vote(e,id,type){
+  e.stopPropagation();
+  try{
+    const data = await apiPatch(`/api/complaint/${encodeURIComponent(id)}`, { action:'vote', vote:type });
+    const updated = data.complaint;
+
+    const c = complaints.find(x=>x.id==id);
+    if(c){
+      c.support = Number(updated.support||0);
+      c.oppose  = Number(updated.oppose||0);
+    }
+
+    renderList(); renderMarkers(); updateStats();
+    toast(type==='support' ? '👍 تم تسجيل دعمك' : '👎 تم تسجيل رأيك');
+  }catch(err){
+    console.error(err);
+    toast('⚠️ تعذر التصويت');
+  }
+}
+
+async function addComment(id){
+  const name = (document.getElementById('comment-name')?.value || '').trim();
+  const text = (document.getElementById('comment-text')?.value || '').trim();
+  if(!name) return toast('⚠️ الاسم مطلوب');
+  if(!text) return toast('⚠️ التعليق مطلوب');
+
+  try{
+    await apiPost(`/api/complaint/${encodeURIComponent(id)}`, { name, text });
+    toast('💬 تم نشر تعليقك');
+    openDetail(id);
+  }catch(err){
+    console.error(err);
+    toast('⚠️ تعذر نشر التعليق');
+  }
+}
+
+async function submitComplaint(){
+  const reporter_name = (document.getElementById('f-name').value||'').trim();
+  const title = (document.getElementById('f-title').value||'').trim();
+  const type  = (document.getElementById('f-type').value||'').trim();
+  const description = (document.getElementById('f-desc').value||'').trim();
+  const street = (document.getElementById('f-street').value||'').trim();
+
+  if(!reporter_name) return toast('⚠️ الاسم مطلوب');
+  if(!title) return toast('⚠️ العنوان مطلوب');
+  if(!type) return toast('⚠️ نوع المشكلة مطلوب');
+  if(!pickedLatLng) return toast('⚠️ اختر موقع على الخريطة');
+
+  try{
+    await apiPost('/api/complaints', {
+      reporter_name, title, type, description, street,
+      lat: pickedLatLng.lat(),
+      lng: pickedLatLng.lng()
+    });
+
+    closeModal();
+    toast('✅ تم نشر الشكوى');
+    await loadComplaints();
+    renderMarkers(); renderList(); updateStats();
+  }catch(err){
+    console.error(err);
+    toast('⚠️ تعذر نشر الشكوى');
+  }
+}
+
+/* ===========================
+   Filter/Sort/Select/UI
+=========================== */
+function setFilter(type, el){
+  filterType=type;
+  document.querySelectorAll('.fc').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+function setSort(mode, el){
+  sortMode=mode;
+  document.querySelectorAll('.stab').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+function selectCard(id){
+  selectedId=id;
+  document.querySelectorAll('.c-card').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.id===String(id));
+  });
+}
+function toggleSidebar(){
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('hidden');
+  const btn = document.getElementById('sidebar-toggle');
+  btn.textContent = sb.classList.contains('hidden') ? '▶ الشكاوى' : '◀ الشكاوى';
+  setTimeout(()=>{ if(map) google.maps.event.trigger(map, 'resize'); }, 350);
+}
+
+function openModal(){
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>{
+    initPickMapIfNeeded();
+    google.maps.event.trigger(pickMap, 'resize');
+    pickMap.setCenter(BASHTEEL_CENTER);
+  }, 150);
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.getElementById('f-name').value='';
+  document.getElementById('f-title').value='';
+  document.getElementById('f-type').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-street').value='';
+  pickedLatLng=null;
+  if(pickMarker){ pickMarker.setMap(null); pickMarker=null; }
+  const ps = document.getElementById('pin-status');
+  ps.innerHTML='⚠️ لم يتم اختيار موقع بعد';
+  ps.style.color='var(--red)';
+}
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay')) closeModal();
+});
+
+/* ===========================
+   Helpers
+=========================== */
+function getBadgeClass(type){
+  return {garbage:'b-garbage',fence:'b-fence',sewage:'b-sewage',water:'b-water',other:'b-other'}[type]||'b-other';
+}
+function timeAgo(ts){
+  const diff = Date.now()-ts;
+  if(diff<60000) return 'الآن';
+  if(diff<3600000) return `${Math.floor(diff/60000)} د`;
+  if(diff<86400000) return `${Math.floor(diff/3600000)} س`;
+  if(diff<2592000000) return `${Math.floor(diff/86400000)} يوم`;
+  return `${Math.floor(diff/2592000000)} شهر`;
+}
+function updateStats(){
+  document.getElementById('total-count').textContent = complaints.length;
+  document.getElementById('open-count').textContent = complaints.filter(c=>c.status==='open').length;
+  document.getElementById('resolved-count').textContent = complaints.filter(c=>c.status==='resolved').length;
+}
+function toast(msg){
+  const el = document.createElement('div');
+  el.className='toast';
+  el.innerHTML = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+function escapeHtml(str){
+  return String(str||'')
+    .replaceAll('&','&amp;').replaceAll('<','&lt;')
+    .replaceAll('>','&gt;').replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
+}
+
+/* ===========================
+   Load Google Maps JS
+=========================== */
+(function loadGoogleMaps(){
+  const s = document.createElement('script');
+  s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&callback=initMaps&v=weekly`;
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
