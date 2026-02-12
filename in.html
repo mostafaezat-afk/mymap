@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>منصة بشتيل — بلّغ وغيّر</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+:root{
+  --bg:#0b1622;--bg2:#111e2e;--bg3:#172535;
+  --card:#1a2d42;--card2:#203350;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --primary:#2563eb;--primary-glow:rgba(37,99,235,.18);
+  --gold:#f59e0b;--gold-glow:rgba(245,158,11,.18);
+  --red:#ef4444;--green:#22c55e;--purple:#8b5cf6;--cyan:#06b6d4;
+  --text:#e2eaf5;--muted:#6b8aaa;
+  --radius:14px;--radius-sm:9px;
+  --shadow:0 8px 40px rgba(0,0,0,.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* ===== TOPBAR ===== */
+#topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:0 20px;height:62px;flex-shrink:0;
+  background:rgba(11,22,34,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);z-index:500;position:relative;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
+.logo-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;box-shadow:0 4px 14px rgba(245,158,11,.3);flex-shrink:0;
+}
+.logo-words strong{font-size:16px;font-weight:900;color:#fff;display:block;line-height:1.1}
+.logo-words span{font-size:10px;color:var(--muted)}
+.topbar-stats{display:flex;gap:10px;margin-right:auto}
+.stat-chip{
+  display:flex;align-items:center;gap:5px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:5px 13px;font-size:12px;color:var(--muted);
+  cursor:default;
+}
+.stat-chip b{color:var(--gold)}
+.add-complaint-btn{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,var(--primary),#1d4ed8);
+  color:#fff;border:none;border-radius:10px;
+  padding:9px 20px;font-size:13px;font-family:inherit;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 4px 18px rgba(37,99,235,.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.add-complaint-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,.5)}
+.add-complaint-btn .plus{font-size:18px;line-height:1}
+
+/* ===== MAIN ===== */
+#main{display:flex;flex:1;overflow:hidden;position:relative}
+
+/* ===== SIDEBAR ===== */
+#sidebar{
+  width:380px;flex-shrink:0;
+  background:var(--bg2);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:transform .3s;z-index:10;
+}
+#sidebar.hidden{transform:translateX(100%)}
+.sidebar-header{padding:14px 16px 0;flex-shrink:0}
+.sidebar-tabs{display:flex;gap:6px;margin-bottom:10px}
+.stab{
+  flex:1;padding:8px;border-radius:8px;
+  font-family:inherit;font-size:12px;font-weight:700;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.stab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.sidebar-search{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:10px;
+}
+.sidebar-search input{
+  background:none;border:none;outline:none;flex:1;
+  color:var(--text);font-family:inherit;font-size:12px;
+}
+.sidebar-search input::placeholder{color:var(--muted)}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fc{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:4px 10px;font-size:11px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.fc:hover{border-color:var(--border2);color:var(--text)}
+.fc.active{color:#fff;font-weight:700}
+.fc[data-type="garbage"].active{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red)}
+.fc[data-type="fence"].active{background:rgba(245,158,11,.15);border-color:var(--gold);color:var(--gold)}
+.fc[data-type="sewage"].active{background:rgba(139,92,246,.15);border-color:var(--purple);color:var(--purple)}
+.fc[data-type="water"].active{background:rgba(6,182,212,.15);border-color:var(--cyan);color:var(--cyan)}
+.fc[data-type="other"].active{background:rgba(107,114,128,.15);border-color:#6b7280;color:#9ca3af}
+.fc[data-type="all"].active{background:var(--primary-glow);border-color:var(--primary);color:#93c5fd}
+#complaints-list{flex:1;overflow-y:auto;padding:0 12px 16px;scrollbar-width:thin;scrollbar-color:var(--card2) transparent}
+
+/* ===== COMPLAINT CARD ===== */
+.c-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  animation:fadeUp .3s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.c-card:hover{border-color:var(--border2);box-shadow:0 6px 24px rgba(0,0,0,.35);transform:translateY(-2px)}
+.c-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
+.c-card::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;border-radius:0 var(--radius) var(--radius) 0}
+.c-card[data-type="garbage"]::before{background:var(--red)}
+.c-card[data-type="fence"]::before{background:var(--gold)}
+.c-card[data-type="sewage"]::before{background:var(--purple)}
+.c-card[data-type="water"]::before{background:var(--cyan)}
+.c-card[data-type="other"]::before{background:#6b7280}
+.c-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.c-card-badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:3px;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700}
+.b-garbage{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.b-fence{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.b-sewage{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.b-water{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2)}
+.b-other{background:rgba(107,114,128,.15);color:#9ca3af;border:1px solid rgba(107,114,128,.2)}
+.b-open{background:rgba(234,179,8,.1);color:#eab308}
+.b-progress{background:rgba(59,130,246,.1);color:#60a5fa}
+.b-resolved{background:rgba(34,197,94,.1);color:#4ade80}
+.c-title{font-size:14px;font-weight:700;margin-bottom:5px;line-height:1.35}
+.c-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
+.v-mini{
+  display:flex;align-items:center;gap:3px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:3px 8px;font-size:11px;
+  cursor:pointer;transition:all .15s;color:var(--muted);
+}
+.v-mini:hover{border-color:var(--border2);color:var(--text)}
+.c-comment-count{display:flex;align-items:center;gap:3px}
+
+/* ===== MAP ===== */
+#map{flex:1;position:relative}
+#map-container{width:100%;height:100%}
+.leaflet-container{background:#0d1f31 !important}
+
+/* ===== MAP TOGGLE ===== */
+#sidebar-toggle{
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  z-index:20;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:8px 0 0 8px;padding:10px 6px;
+  cursor:pointer;color:var(--muted);transition:all .15s;
+  writing-mode:vertical-rl;font-size:11px;font-family:inherit;
+}
+#sidebar-toggle:hover{background:var(--card2);color:var(--text)}
+
+/* ===== DETAIL DRAWER ===== */
+#detail-drawer{
+  position:absolute;bottom:0;right:0;left:0;
+  z-index:30;
+  background:var(--bg2);border-top:1px solid var(--border2);
+  border-radius:20px 20px 0 0;
+  max-height:75vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  scrollbar-width:thin;scrollbar-color:var(--card2) transparent;
+}
+#detail-drawer.open{transform:translateY(0)}
+.drawer-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 0}
+.drawer-content{padding:18px 20px 30px}
+.drawer-close{
+  position:absolute;top:14px;left:16px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);border-radius:8px;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:17px;transition:all .15s;
+}
+.drawer-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
+.drawer-header{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.drawer-title{font-size:20px;font-weight:900;line-height:1.3;margin-bottom:8px}
+.drawer-desc{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:14px}
+.drawer-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.drawer-meta span{display:flex;align-items:center;gap:4px}
+
+.drawer-votes{display:flex;gap:10px;margin-bottom:10px}
+.dv-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px;font-size:14px;font-family:inherit;font-weight:700;
+  cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;
+}
+.dv-btn.s:hover{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)}
+.dv-btn.o:hover{background:rgba(239,68,68,.12);border-color:var(--red);color:var(--red)}
+
+.vote-bar-wrap{height:6px;background:var(--bg3);border-radius:6px;overflow:hidden;display:flex;margin-bottom:12px}
+.vb-s{background:var(--green);transition:width .4s}
+.vb-o{background:var(--red);transition:width .4s}
+.vb-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:10px}
+
+.status-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.sts-btn{
+  display:flex;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);border-radius:7px;padding:6px 11px;
+  font-size:12px;font-family:inherit;cursor:pointer;transition:all .15s;
+}
+.sts-btn:hover{border-color:var(--border2);color:var(--text);background:var(--card2)}
+
+.comments-title{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.comment-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
+.ci-head{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.ci-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.ci-name{font-size:12px;font-weight:600}
+.ci-time{font-size:10px;color:var(--muted);margin-right:auto}
+.ci-text{font-size:12px;color:var(--muted);line-height:1.55}
+
+.add-comment{margin-top:12px}
+.add-comment-row{display:flex;gap:7px;align-items:flex-end}
+.ac-input{
+  flex:1;background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:9px 12px;color:var(--text);
+  font-family:inherit;font-size:12px;outline:none;resize:none;
+  min-height:38px;max-height:90px;transition:border-color .15s;line-height:1.5;
+}
+.ac-input:focus{border-color:var(--primary)}
+.ac-send{
+  background:var(--primary);color:#fff;border:none;
+  border-radius:8px;width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;cursor:pointer;flex-shrink:0;transition:background .15s;
+}
+.ac-send:hover{background:#1d4ed8}
+
+/* ===== MODAL ===== */
+#modal-overlay{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#modal-overlay.open{opacity:1;pointer-events:all}
+#modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;padding:24px;max-width:520px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  transform:translateY(20px);transition:transform .25s;
+  scrollbar-width:thin;scrollbar-color:var(--card2) transparent;
+}
+#modal-overlay.open #modal{transform:translateY(0)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:19px;font-weight:900}
+.modal-close{
+  width:32px;height:32px;border-radius:8px;background:var(--card);
+  border:1px solid var(--border);color:var(--muted);cursor:pointer;
+  font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.modal-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--muted)}
+.fi,.fs,.ft{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:9px;padding:10px 13px;color:var(--text);
+  font-family:inherit;font-size:13px;outline:none;transition:border-color .15s;
+}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.fs{cursor:pointer}.fs option{background:var(--bg2)}
+.ft{resize:vertical;min-height:85px;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.map-pick-section{margin-bottom:16px}
+.map-pick-info{font-size:11px;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+#pick-map{height:160px;border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:crosshair}
+.submit-btn{
+  width:100%;background:linear-gradient(135deg,var(--primary),#1d4ed8);
+  color:#fff;border:none;border-radius:11px;
+  padding:13px;font-size:15px;font-family:inherit;font-weight:700;
+  cursor:pointer;box-shadow:0 4px 18px rgba(37,99,235,.35);
+  transition:transform .15s,box-shadow .15s;margin-top:4px;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,.5)}
+
+/* ===== TOAST ===== */
+#toasts{position:fixed;bottom:20px;left:20px;z-index:700;display:flex;flex-direction:column;gap:8px}
+.toast{
+  display:flex;align-items:center;gap:9px;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:9px;padding:11px 16px;font-size:13px;
+  box-shadow:var(--shadow);animation:toastIn .3s ease;
+  max-width:320px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+
+/* ===== LEGEND ===== */
+#legend{
+  position:absolute;bottom:24px;left:24px;z-index:20;
+  background:rgba(17,30,46,.9);backdrop-filter:blur(12px);
+  border:1px solid var(--border);border-radius:12px;padding:12px 14px;
+  pointer-events:none;
+}
+.legend-title{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-bottom:5px}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.ld-g{background:var(--red)}.ld-f{background:var(--gold)}.ld-s{background:var(--purple)}.ld-w{background:var(--cyan)}.ld-o{background:#6b7280}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  #sidebar{position:absolute;right:0;top:0;bottom:0;z-index:40;transform:translateX(100%)}
+  #sidebar:not(.hidden){transform:translateX(0)}
+  .topbar-stats{display:none}
+  .add-complaint-btn span{display:none}
+  #legend{bottom:auto;top:14px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="topbar">
+  <div class="logo" id="logo-admin">
+    <div class="logo-icon">🗺️</div>
+    <div class="logo-words">
+      <strong>منصة بشتيل</strong>
+      <span>بلّغ وغيّر مجتمعك</span>
+    </div>
+  </div>
+
+  <div class="topbar-stats">
+    <div class="stat-chip">📋 إجمالي: <b id="total-count">0</b></div>
+    <div class="stat-chip">🔴 مفتوحة: <b id="open-count">0</b></div>
+    <div class="stat-chip">✅ محلولة: <b id="resolved-count">0</b></div>
+  </div>
+
+  <button class="add-complaint-btn" onclick="openModal()">
+    <span class="plus">+</span>
+    <span>إضافة شكوى</span>
+  </button>
+</div>
+
+<div id="main">
+  <div id="map">
+    <div id="map-container"></div>
+    <button id="sidebar-toggle" onclick="toggleSidebar()">◀ الشكاوى</button>
+
+    <div id="legend">
+      <div class="legend-title">نوع المشكلة</div>
+      <div class="legend-item"><div class="legend-dot ld-g"></div>قمامة</div>
+      <div class="legend-item"><div class="legend-dot ld-f"></div>مسورة مقصورة</div>
+      <div class="legend-item"><div class="legend-dot ld-s"></div>صرف صحي</div>
+      <div class="legend-item"><div class="legend-dot ld-w"></div>ضعف مياه</div>
+      <div class="legend-item"><div class="legend-dot ld-o"></div>أخرى</div>
+    </div>
+
+    <div id="detail-drawer">
+      <div class="drawer-handle"></div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+      <div class="drawer-content" id="drawer-content"></div>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-tabs">
+        <button class="stab active" onclick="setSort('newest',this)">🕐 الأحدث</button>
+        <button class="stab" onclick="setSort('votes',this)">🔥 الأكثر دعماً</button>
+        <button class="stab" onclick="setSort('comments',this)">💬 الأكثر تعليقاً</button>
+      </div>
+
+      <div class="sidebar-search">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="ابحث في الشكاوى..." oninput="renderList()">
+      </div>
+
+      <div class="filter-chips">
+        <div class="fc active" data-type="all" onclick="setFilter('all',this)">الكل</div>
+        <div class="fc" data-type="garbage" onclick="setFilter('garbage',this)">🗑️ قمامة</div>
+        <div class="fc" data-type="fence" onclick="setFilter('fence',this)">🚧 مسورة</div>
+        <div class="fc" data-type="sewage" onclick="setFilter('sewage',this)">🌊 صرف</div>
+        <div class="fc" data-type="water" onclick="setFilter('water',this)">💧 مياه</div>
+        <div class="fc" data-type="other" onclick="setFilter('other',this)">❓ أخرى</div>
+      </div>
+    </div>
+
+    <div id="complaints-list"></div>
+  </div>
+</div>
+
+<!-- Add complaint modal -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div class="modal-head">
+      <div class="modal-title">📝 إضافة شكوى جديدة</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="fg">
+      <label class="fl">عنوان الشكوى *</label>
+      <input class="fi" id="f-title" placeholder="مثال: تراكم القمامة في شارع النيل" maxlength="100">
+    </div>
+
+    <div class="fg">
+      <label class="fl">نوع المشكلة *</label>
+      <select class="fs" id="f-type">
+        <option value="">— اختر نوع المشكلة —</option>
+        <option value="garbage">🗑️ قمامة</option>
+        <option value="fence">🚧 مسورة مقصورة / طريق مغلق</option>
+        <option value="sewage">🌊 مشكلة صرف صحي</option>
+        <option value="water">💧 ضعف في المياه</option>
+        <option value="other">❓ أخرى</option>
+      </select>
+    </div>
+
+    <div class="fg">
+      <label class="fl">وصف تفصيلي</label>
+      <textarea class="ft" id="f-desc" placeholder="اكتب تفاصيل المشكلة..." rows="3"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="fg">
+        <label class="fl">الشارع / المنطقة</label>
+        <input class="fi" id="f-street" placeholder="مثال: شارع 15 بشتيل">
+      </div>
+      <div class="fg">
+        <label class="fl">اسم المُبلِّغ</label>
+        <input class="fi" id="f-name" placeholder="اختياري — أو 'مجهول'">
+      </div>
+    </div>
+
+    <div class="fg map-pick-section">
+      <label class="fl">📍 حدد موقع المشكلة على الخريطة *</label>
+      <div class="map-pick-info">انقر على الخريطة أدناه لتثبيت الموقع بدقة (مقفولة على بشتيل)</div>
+      <div id="pick-map"></div>
+      <div id="pin-status" class="map-pick-info" style="margin-top:5px;color:var(--red)">⚠️ لم يتم اختيار موقع بعد</div>
+    </div>
+
+    <button class="submit-btn" onclick="submitComplaint()">🚀 نشر الشكوى للعموم</button>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API = "https://mymap.mostafaharun56.workers.dev";
+
+const COLORS = {garbage:'#ef4444',fence:'#f59e0b',sewage:'#8b5cf6',water:'#06b6d4',other:'#6b7280'};
+const LABELS = {garbage:'قمامة',fence:'مسورة مقصورة',sewage:'صرف صحي',water:'ضعف مياه',other:'أخرى'};
+const ICONS  = {garbage:'🗑️',fence:'🚧',sewage:'🌊',water:'💧',other:'❓'};
+const STATUS_LABELS = {open:'مفتوحة',progress:'قيد المعالجة',resolved:'تم الحل'};
+const STATUS_CLASSES = {open:'b-open',progress:'b-progress',resolved:'b-resolved'};
+const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#22c55e','#06b6d4','#ef4444'];
+
+// Bashteel center + bounds (عدّل لو تحب تضييق/توسيع)
+const BASHTEEL = [30.0661, 31.1741];
+// حدود تقريبية لبشتيل وما حولها فقط
+const BOUNDS = L.latLngBounds(
+  L.latLng(30.0520, 31.1550), // SW
+  L.latLng(30.0825, 31.1955)  // NE
+);
+
+let complaints = [];
+let selectedId = null;
+let filterType = 'all';
+let sortMode = 'newest';
+
+let map, pickMap;
+let pickMarker = null;
+let pickedLatLng = null;
+let markers = {};
+
+let adminPin = sessionStorage.getItem("bashtel_admin_pin") || "";
+
+// ============================================================
+// DEVICE + VOTER KEY
+// ============================================================
+function getDeviceId(){
+  let id = localStorage.getItem("bashtel_device_id");
+  if(!id){
+    id = "dev_" + crypto.getRandomValues(new Uint32Array(4)).join("_");
+    localStorage.setItem("bashtel_device_id", id);
+  }
+  return id;
+}
+
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", enc);
+  const arr = Array.from(new Uint8Array(hash));
+  return arr.map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+async function makeVoterKey(name){
+  name = (name || "مجهول").trim().toLowerCase();
+  const raw = name + "|" + getDeviceId();
+  const h = await sha256(raw);
+  return "vk_" + h.slice(0, 32);
+}
+
+function mapFromAPI(c){
+  return {
+    id: c.id,
+    title: c.title,
+    type: c.type,
+    desc: c.description || "",
+    street: c.street || "بشتيل",
+    name: c.reporter_name || "مجهول",
+    lat: Number(c.lat),
+    lng: Number(c.lng),
+    status: c.status || "open",
+    support: Number(c.support_count || 0),
+    oppose: Number(c.oppose_count || 0),
+    time: Number(c.created_at || Date.now()),
+    admin_note: c.admin_note || "",
+    comments: []
+  };
+}
+
+// ============================================================
+// MAP INIT (Satellite + Labels + Bounds Lock)
+// ============================================================
+function initMap(){
+  map = L.map('map-container',{
+    center: BASHTEEL,
+    zoom: 16,
+    zoomControl:false,
+    maxBounds: BOUNDS,
+    maxBoundsViscosity: 1.0,
+    minZoom: 14,
+    maxZoom: 19,
+  });
+
+  // Satellite (Esri World Imagery)
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+    attribution: 'Tiles © Esri'
+  }).addTo(map);
+
+  // Labels (Carto labels only) فوق الساتلايت عشان تفاصيل الشوارع
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',{
+    subdomains: 'abcd',
+    opacity: 0.95
+  }).addTo(map);
+
+  L.control.zoom({position:'bottomleft'}).addTo(map);
+
+  map.on('click',()=>closeDrawer());
+
+  renderMarkers();
+}
+
+function initPickMap(){
+  pickMap = L.map('pick-map',{
+    center: BASHTEEL,
+    zoom: 16,
+    zoomControl:true,
+    maxBounds: BOUNDS,
+    maxBoundsViscosity: 1.0,
+    minZoom: 14,
+    maxZoom: 19,
+  });
+
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+    attribution:'Tiles © Esri'
+  }).addTo(pickMap);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',{
+    subdomains:'abcd', opacity:0.95
+  }).addTo(pickMap);
+
+  pickMap.on('click',e=>{
+    const ll = e.latlng;
+
+    // منع اختيار خارج الحدود
+    if(!BOUNDS.contains(ll)){
+      toast("⚠️ الاختيار يجب أن يكون داخل نطاق بشتيل");
+      return;
+    }
+
+    pickedLatLng = ll;
+    if(pickMarker) pickMap.removeLayer(pickMarker);
+    pickMarker = L.marker(ll).addTo(pickMap);
+
+    document.getElementById('pin-status').innerHTML='✅ تم تحديد الموقع: '+ll.lat.toFixed(5)+', '+ll.lng.toFixed(5);
+    document.getElementById('pin-status').style.color='var(--green)';
+  });
+
+  // اظهر الحدود (اختياري) - كخط خفيف
+  L.rectangle(BOUNDS, {weight:1, color:"#93c5fd", fill:false, opacity:0.4}).addTo(pickMap);
+}
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadComplaints(){
+  try{
+    const r = await fetch(`${API}/api/complaints`);
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"error");
+    complaints = (j.complaints || []).map(mapFromAPI);
+    renderList();
+    renderMarkers();
+    updateStats();
+    openFromHash();
+  }catch(e){
+    console.error(e);
+    toast("⚠️ تعذر تحميل الشكاوى");
+  }
+}
+
+// ============================================================
+// MARKERS
+// ============================================================
+function createMarkerIcon(type){
+  const color = COLORS[type]||'#6b7280';
+  const icon  = ICONS[type]||'❓';
+  const html = `<div style="
+    width:38px;height:38px;border-radius:50% 50% 50% 0;
+    background:${color};transform:rotate(-45deg);
+    border:3px solid rgba(255,255,255,0.4);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.5);cursor:pointer;
+  "><span style="transform:rotate(45deg);font-size:16px;line-height:1">${icon}</span></div>`;
+  return L.divIcon({html,className:'',iconSize:[38,38],iconAnchor:[19,38],popupAnchor:[0,-40]});
+}
+
+function renderMarkers(){
+  Object.values(markers).forEach(m=>m.remove());
+  markers={};
+
+  complaints.forEach(c=>{
+    const m = L.marker([c.lat,c.lng],{icon:createMarkerIcon(c.type)}).addTo(map);
+    m.bindPopup(`
+      <div style="font-family:Cairo,sans-serif;color:#e2eaf5">
+        <div style="padding:12px">
+          <div style="display:flex;gap:5px;margin-bottom:7px;flex-wrap:wrap">
+            <span class="badge ${getBadgeClass(c.type)}">${ICONS[c.type]} ${LABELS[c.type]}</span>
+            <span class="badge ${STATUS_CLASSES[c.status]}">${STATUS_LABELS[c.status]}</span>
+          </div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:5px;line-height:1.35">${escapeHtml(c.title)}</div>
+          <div style="font-size:11px;color:#6b8aaa;margin-bottom:9px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(c.desc||'')}</div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;font-size:11px;color:#6b8aaa">
+            <span>👍 ${c.support}</span>
+            <span>👎 ${c.oppose}</span>
+          </div>
+          <button onclick="openDetail('${c.id}')" style="
+            width:100%;background:#2563eb;color:#fff;border:none;
+            border-radius:8px;padding:7px;font-family:Cairo,sans-serif;
+            font-size:12px;font-weight:700;cursor:pointer;
+          ">عرض التفاصيل</button>
+        </div>
+      </div>
+    `,{maxWidth:280});
+
+    m.on('click',e=>{
+      e.originalEvent.stopPropagation();
+      selectCard(c.id);
+    });
+    markers[c.id]=m;
+  });
+}
+
+// ============================================================
+// LIST
+// ============================================================
+function renderList(){
+  const query = (document.getElementById('search-input').value||'').trim().toLowerCase();
+  let list = [...complaints];
+
+  if(filterType!=='all') list=list.filter(c=>c.type===filterType);
+  if(query) list=list.filter(c=>
+    (c.title||'').toLowerCase().includes(query) ||
+    (c.desc||'').toLowerCase().includes(query) ||
+    (c.street||'').toLowerCase().includes(query)
+  );
+
+  if(sortMode==='newest') list.sort((a,b)=>b.time-a.time);
+  else if(sortMode==='votes') list.sort((a,b)=>(b.support-b.oppose)-(a.support-a.oppose));
+  else if(sortMode==='comments') list.sort((a,b)=>(b.comments?.length||0)-(a.comments?.length||0));
+
+  const el = document.getElementById('complaints-list');
+  if(!list.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px 16px;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:10px">🔍</div><p>لا توجد شكاوى تطابق البحث</p></div>`;
+    return;
+  }
+
+  el.innerHTML = list.map((c,i)=>{
+    const isSelected = selectedId===c.id;
+    return `<div class="c-card${isSelected?' selected':''}" data-type="${c.type}" data-id="${c.id}" onclick="openDetail('${c.id}')" style="animation-delay:${i*0.04}s">
+      <div class="c-card-top">
+        <div class="c-card-badges">
+          <span class="badge ${getBadgeClass(c.type)}">${ICONS[c.type]} ${LABELS[c.type]}</span>
+          <span class="badge ${STATUS_CLASSES[c.status]}">${STATUS_LABELS[c.status]}</span>
+        </div>
+      </div>
+      <div class="c-title">${escapeHtml(c.title)}</div>
+      <div class="c-desc">${escapeHtml(c.desc||'لا يوجد وصف')}</div>
+      <div class="c-meta">
+        <span>📍 ${escapeHtml(c.street||'بشتيل')}</span>
+        <span>${timeAgo(c.time)}</span>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:center">
+        <button class="v-mini" onclick="vote(event,'${c.id}','support')">👍 ${c.support}</button>
+        <button class="v-mini" onclick="vote(event,'${c.id}','oppose')">👎 ${c.oppose}</button>
+        <span class="c-comment-count" style="margin-right:auto;font-size:11px;color:var(--muted)">🧾 الحالة: ${STATUS_LABELS[c.status]}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateStats();
+}
+
+// ============================================================
+// DETAIL
+// ============================================================
+async function openDetail(id){
+  const base = complaints.find(x=>x.id==id);
+  if(!base) return;
+
+  selectCard(id);
+
+  // fetch details + comments
+  let c = base;
+  try{
+    const r = await fetch(`${API}/api/complaint/${id}`);
+    const j = await r.json();
+    if(j.ok){
+      c = mapFromAPI(j.complaint);
+      c.comments = (j.comments||[]).map(cm=>({
+        id: cm.id,
+        name: cm.name || "مجهول",
+        text: cm.text,
+        time: cm.created_at
+      }));
+      // update memory
+      const idx = complaints.findIndex(x=>x.id==id);
+      if(idx>=0) complaints[idx] = {...complaints[idx], ...c};
+    }
+  }catch(e){
+    console.error(e);
+  }
+
+  const drawer = document.getElementById('detail-drawer');
+  const content = document.getElementById('drawer-content');
+
+  const totalVotes = (c.support + c.oppose) || 1;
+  const supPct = Math.round(c.support/totalVotes*100);
+  const oppPct = 100 - supPct;
+
+  const commentsHtml = (c.comments||[]).map(cm=>{
+    const col = AVATAR_COLORS[Math.abs((cm.name||'م').charCodeAt(0))%AVATAR_COLORS.length];
+    return `<div class="comment-item">
+      <div class="ci-head">
+        <div class="ci-avatar" style="background:${col}">${escapeHtml((cm.name||'م').charAt(0))}</div>
+        <span class="ci-name">${escapeHtml(cm.name||'مجهول')}</span>
+        <span class="ci-time">${timeAgo(cm.time)}</span>
+      </div>
+      <div class="ci-text">${escapeHtml(cm.text||'')}</div>
+    </div>`;
+  }).join('');
+
+  const shareUrl = getShareUrl(c.id);
+
+  const adminBlock = adminPin ? `
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:900;color:var(--muted);margin-bottom:8px">🛠️ لوحة الإدارة</div>
+      <div class="status-row">
+        <button class="sts-btn" onclick="adminUpdate('${c.id}','open')">🔴 مفتوحة</button>
+        <button class="sts-btn" onclick="adminUpdate('${c.id}','progress')">🔵 قيد المعالجة</button>
+        <button class="sts-btn" onclick="adminUpdate('${c.id}','resolved')">🟢 تم الحل</button>
+        <button class="sts-btn" onclick="adminLogout()">🚪 خروج</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin:6px 0">ملاحظات الإدارة:</div>
+      <textarea id="admin-note-${c.id}" class="ft" style="min-height:70px">${escapeHtml(c.admin_note||'')}</textarea>
+      <button class="submit-btn" style="margin-top:10px" onclick="adminSaveNote('${c.id}')">💾 حفظ الملاحظات</button>
+    </div>
+  ` : `
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="sts-btn" onclick="adminLogin()">🔒 دخول الإدارة</button>
+      <span style="font-size:11px;color:var(--muted);margin-right:8px">* مخفي — اضغط على شعار منصة بشتيل 6 مرات</span>
+    </div>
+  `;
+
+  content.innerHTML = `
+    <div class="drawer-header">
+      <span class="badge ${getBadgeClass(c.type)}">${ICONS[c.type]} ${LABELS[c.type]}</span>
+      <span class="badge ${STATUS_CLASSES[c.status]}">${STATUS_LABELS[c.status]}</span>
+    </div>
+
+    <div class="drawer-title">${escapeHtml(c.title)}</div>
+    <div class="drawer-desc">${escapeHtml(c.desc||'لا يوجد وصف تفصيلي')}</div>
+
+    <div class="drawer-meta">
+      <span>👤 ${escapeHtml(c.name||'مجهول')}</span>
+      <span>📍 ${escapeHtml(c.street||'بشتيل')}</span>
+      <span>🕐 ${timeAgo(c.time)}</span>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="sts-btn" onclick="shareWhatsApp('${c.id}')">🟢 مشاركة واتساب</button>
+      <button class="sts-btn" onclick="shareFacebook('${c.id}')">🔵 مشاركة فيسبوك</button>
+      <button class="sts-btn" onclick="copyLink('${c.id}')">🔗 نسخ الرابط</button>
+    </div>
+
+    <div class="drawer-votes">
+      <button class="dv-btn s" onclick="vote(event,'${c.id}','support')">👍 أدعم (${c.support})</button>
+      <button class="dv-btn o" onclick="vote(event,'${c.id}','oppose')">👎 لا أدعم (${c.oppose})</button>
+    </div>
+
+    <div class="vb-label"><span>👍 ${c.support} دعم</span><span>👎 ${c.oppose} رفض</span></div>
+    <div class="vote-bar-wrap"><div class="vb-s" style="width:${supPct}%"></div><div class="vb-o" style="width:${oppPct}%"></div></div>
+
+    <div class="comments-section">
+      <div class="comments-title">💬 التعليقات (${(c.comments||[]).length})</div>
+      <div id="comments-list-${c.id}">
+        ${commentsHtml || '<p style="font-size:12px;color:var(--muted);text-align:center;padding:12px">لا توجد تعليقات بعد — كن أول المعلقين!</p>'}
+      </div>
+
+      <div class="add-comment">
+        <div class="add-comment-row">
+          <textarea class="ac-input" id="comment-input-${c.id}" placeholder="اكتب تعليقك هنا..." rows="1" oninput="autoResize(this)"></textarea>
+          <button class="ac-send" onclick="addComment('${c.id}')" title="إرسال">↑</button>
+        </div>
+        <div style="margin-top:6px">
+          <input class="fi" style="font-size:11px;padding:6px 10px" id="comment-name-${c.id}" placeholder="اسمك (اختياري)">
+        </div>
+      </div>
+    </div>
+
+    ${adminBlock}
+
+    <div style="margin-top:14px;color:var(--muted);font-size:11px">
+      رابط الشكوى: <span style="color:#93c5fd">${escapeHtml(shareUrl)}</span>
+    </div>
+  `;
+
+  drawer.classList.add('open');
+  setTimeout(()=>{ if(markers[id]) markers[id].openPopup(); },300);
+  setHash(id);
+}
+
+function closeDrawer(){
+  document.getElementById('detail-drawer').classList.remove('open');
+  selectedId=null;
+  document.querySelectorAll('.c-card.selected').forEach(el=>el.classList.remove('selected'));
+  clearHash();
+}
+
+// ============================================================
+// COMMENTS
+// ============================================================
+async function addComment(id){
+  const input = document.getElementById(`comment-input-${id}`);
+  const nameInput = document.getElementById(`comment-name-${id}`);
+  const text = (input?.value||'').trim();
+  if(!text) return toast('⚠️ اكتب تعليقك أولاً');
+  const name = (nameInput?.value||'').trim()||'مجهول';
+
+  try{
+    const r = await fetch(`${API}/api/comment`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ complaint_id:id, name, text })
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"error");
+    toast('💬 تم نشر تعليقك بنجاح!');
+    openDetail(id);
+    await loadComplaints(); // للتحديث العام
+  }catch(e){
+    console.error(e);
+    toast("⚠️ فشل نشر التعليق");
+  }
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,90)+'px';
+}
+
+// ============================================================
+// VOTE (one per name+device)
+// ============================================================
+async function vote(e, id, voteType){
+  e.stopPropagation();
+
+  let name = localStorage.getItem("bashtel_vote_name") || "";
+  name = prompt("اكتب اسمك للتصويت (تصويت واحد بالاسم على نفس الجهاز):", name);
+  if(name === null) return;
+  name = (name||"").trim();
+  if(!name) return toast("⚠️ لازم تكتب اسم");
+  localStorage.setItem("bashtel_vote_name", name);
+
+  try{
+    const voter_key = await makeVoterKey(name);
+    const r = await fetch(`${API}/api/vote`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ complaint_id:id, voter_key, vote_type: voteType })
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"error");
+
+    toast(voteType==='support' ? '👍 تم تسجيل دعمك' : '👎 تم تسجيل رأيك');
+    await loadComplaints();
+    openDetail(id);
+  }catch(e){
+    console.error(e);
+    toast("⚠️ فشل التصويت");
+  }
+}
+
+// ============================================================
+// ADMIN (hidden)
+// ============================================================
+function adminLogin(){
+  const pin = prompt("أدخل PIN الإدارة:");
+  if(pin === null) return;
+  adminPin = (pin||"").trim();
+  if(!adminPin) return toast("⚠️ أدخل PIN صحيح");
+  sessionStorage.setItem("bashtel_admin_pin", adminPin);
+  toast("✅ تم تفعيل وضع الإدارة");
+  // اعادة فتح الدرج لو مفتوح
+  if(selectedId) openDetail(selectedId);
+}
+
+function adminLogout(){
+  adminPin = "";
+  sessionStorage.removeItem("bashtel_admin_pin");
+  toast("🚪 تم الخروج من وضع الإدارة");
+  if(selectedId) openDetail(selectedId);
+}
+
+async function adminUpdate(id, status){
+  try{
+    const noteEl = document.getElementById(`admin-note-${id}`);
+    const admin_note = (noteEl?.value||"").trim();
+
+    const r = await fetch(`${API}/api/admin/update`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "X-Admin-Pin": adminPin
+      },
+      body: JSON.stringify({ id, status, admin_note })
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"error");
+
+    toast(`🔄 تم تحديث الحالة إلى: ${STATUS_LABELS[status]}`);
+    await loadComplaints();
+    openDetail(id);
+  }catch(e){
+    console.error(e);
+    toast("⚠️ فشل تحديث الإدارة (تأكد من PIN)");
+  }
+}
+
+async function adminSaveNote(id){
+  try{
+    const noteEl = document.getElementById(`admin-note-${id}`);
+    const admin_note = (noteEl?.value||"").trim();
+
+    const r = await fetch(`${API}/api/admin/update`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "X-Admin-Pin": adminPin
+      },
+      body: JSON.stringify({ id, admin_note })
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"error");
+
+    toast("💾 تم حفظ ملاحظات الإدارة");
+    await loadComplaints();
+    openDetail(id);
+  }catch(e){
+    console.error(e);
+    toast("⚠️ فشل حفظ الملاحظات (تأكد من PIN)");
+  }
+}
+
+// logo click: 6 taps => admin login
+let logoClicks = 0;
+document.getElementById("logo-admin").addEventListener("click", ()=>{
+  logoClicks++;
+  if(logoClicks >= 6){
+    logoClicks = 0;
+    adminLogin();
+  }
+  setTimeout(()=>{ logoClicks = 0; }, 1200);
+});
+
+// ============================================================
+// ADD COMPLAINT MODAL
+// ============================================================
+function openModal(){
+  document.getElementById('modal-overlay').classList.add('open');
+  if(!pickMap) setTimeout(()=>{initPickMap();},200);
+  else pickMap.invalidateSize();
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.getElementById('f-title').value='';
+  document.getElementById('f-type').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-street').value='';
+  document.getElementById('f-name').value='';
+  document.getElementById('pin-status').innerHTML='⚠️ لم يتم اختيار موقع بعد';
+  document.getElementById('pin-status').style.color='var(--red)';
+  pickedLatLng=null;
+  if(pickMarker){ pickMap.removeLayer(pickMarker); pickMarker=null; }
+}
+
+async function submitComplaint(){
+  const title = document.getElementById('f-title').value.trim();
+  const type  = document.getElementById('f-type').value;
+  if(!title){ toast('⚠️ أدخل عنوان الشكوى'); return; }
+  if(!type)  { toast('⚠️ اختر نوع المشكلة'); return; }
+  if(!pickedLatLng){ toast('⚠️ حدد موقع المشكلة على الخريطة'); return; }
+
+  // منع نشر خارج حدود بشتيل (احتياطي)
+  if(!BOUNDS.contains(pickedLatLng)){
+    toast("⚠️ الموقع يجب أن يكون داخل نطاق بشتيل");
+    return;
+  }
+
+  const payload = {
+    title,
+    type,
+    desc: document.getElementById('f-desc').value.trim(),
+    street: document.getElementById('f-street').value.trim()||'بشتيل',
+    name: document.getElementById('f-name').value.trim()||'مجهول',
+    lat: pickedLatLng.lat,
+    lng: pickedLatLng.lng
+  };
+
+  try{
+    const r = await fetch(`${API}/api/complaints`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||"error");
+
+    closeModal();
+    toast('✅ تم نشر شكواك بنجاح!');
+    await loadComplaints();
+
+    const created = complaints.find(x=>x.id===j.id);
+    if(created){
+      map.setView([created.lat,created.lng],17);
+      setTimeout(()=>{ if(markers[created.id]) markers[created.id].openPopup(); },400);
+      openDetail(created.id);
+    }
+  }catch(e){
+    console.error(e);
+    toast('⚠️ فشل نشر الشكوى');
+  }
+}
+
+// close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay')) closeModal();
+});
+
+// ============================================================
+// FILTER / SORT / SELECT
+// ============================================================
+function setFilter(type, el){
+  filterType=type;
+  document.querySelectorAll('.fc').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+function setSort(mode, el){
+  sortMode=mode;
+  document.querySelectorAll('.stab').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+function selectCard(id){
+  selectedId=id;
+  document.querySelectorAll('.c-card').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.id===String(id));
+  });
+  const c = complaints.find(x=>x.id==id);
+  if(c) map.flyTo([c.lat,c.lng],17,{duration:.7});
+}
+function toggleSidebar(){
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('hidden');
+  const btn = document.getElementById('sidebar-toggle');
+  btn.textContent = sb.classList.contains('hidden') ? '▶ الشكاوى' : '◀ الشكاوى';
+  setTimeout(()=>map.invalidateSize(),300);
+}
+
+// ============================================================
+// SHARE
+// ============================================================
+function getShareUrl(id){
+  return `${location.origin}${location.pathname}#c=${encodeURIComponent(id)}`;
+}
+function setHash(id){
+  location.hash = `c=${encodeURIComponent(id)}`;
+}
+function clearHash(){
+  history.replaceState(null, "", location.pathname + location.search);
+}
+function openFromHash(){
+  const h = (location.hash || "").replace("#","");
+  if(!h.startsWith("c=")) return;
+  const id = decodeURIComponent(h.slice(2));
+  if(!id) return;
+  const exists = complaints.find(x=>x.id===id);
+  if(exists) openDetail(id);
+}
+function shareWhatsApp(id){
+  const c = complaints.find(x=>x.id==id);
+  const text = `شكوى: ${c?.title||''}\n📍 ${c?.street||'بشتيل'}\n🔗 ${getShareUrl(id)}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank');
+}
+function shareFacebook(id){
+  const url = getShareUrl(id);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,'_blank');
+}
+async function copyLink(id){
+  try{
+    await navigator.clipboard.writeText(getShareUrl(id));
+    toast("✅ تم نسخ الرابط");
+  }catch{
+    toast("⚠️ لم أستطع نسخ الرابط");
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getBadgeClass(type){
+  return {garbage:'b-garbage',fence:'b-fence',sewage:'b-sewage',water:'b-water',other:'b-other'}[type]||'b-other';
+}
+
+function timeAgo(ts){
+  const diff = Date.now()-Number(ts||0);
+  if(diff<60000) return 'الآن';
+  if(diff<3600000) return `${Math.floor(diff/60000)} د`;
+  if(diff<86400000) return `${Math.floor(diff/3600000)} س`;
+  if(diff<2592000000) return `${Math.floor(diff/86400000)} يوم`;
+  return `${Math.floor(diff/2592000000)} شهر`;
+}
+
+function updateStats(){
+  document.getElementById('total-count').textContent = complaints.length;
+  document.getElementById('open-count').textContent = complaints.filter(c=>c.status==='open').length;
+  document.getElementById('resolved-count').textContent = complaints.filter(c=>c.status==='resolved').length;
+}
+
+function toast(msg){
+  const el = document.createElement('div');
+  el.className='toast';
+  el.innerHTML = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+function escapeHtml(s){
+  s = String(s ?? "");
+  return s
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+initMap();
+loadComplaints();
+window.addEventListener("hashchange", openFromHash);
+</script>
+
+</body>
+</html>
