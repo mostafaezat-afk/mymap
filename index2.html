@@ -1,898 +1,1440 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>منصة بشتيل — بلّغ وغيّر</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة بشتيل — بلّغ وغيّر</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-<style>
-:root {
-  --bg:#0b1622; --bg2:#111e2e; --bg3:#172535;
-  --card:#1a2d42; --card2:#203350;
-  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
-  --primary:#2563eb; --primary-glow:rgba(37,99,235,0.18);
-  --gold:#f59e0b; --red:#ef4444; --green:#22c55e; --purple:#8b5cf6; --cyan:#06b6d4;
-  --text:#e2eaf5; --muted:#6b8aaa;
-  --radius:14px; --radius-sm:9px;
-  --shadow:0 8px 40px rgba(0,0,0,0.45);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+    <!-- Font Awesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-#topbar{
-  display:flex;align-items:center;gap:14px;
-  padding:0 20px;height:62px;flex-shrink:0;
-  background:rgba(11,22,34,0.95);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);z-index:500;position:relative;
-}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{
-  width:38px;height:38px;border-radius:10px;
-  background:linear-gradient(135deg,var(--primary),var(--gold));
-  display:flex;align-items:center;justify-content:center;
-  font-size:19px;box-shadow:0 4px 14px rgba(245,158,11,0.3);flex-shrink:0;
-}
-.logo-words strong{font-size:16px;font-weight:900;color:#fff;display:block;line-height:1.1}
-.logo-words span{font-size:10px;color:var(--muted)}
-.topbar-stats{display:flex;gap:10px;margin-right:auto}
-.stat-chip{
-  display:flex;align-items:center;gap:5px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:5px 13px;font-size:12px;color:var(--muted);
-}
-.stat-chip b{color:var(--gold)}
-.add-complaint-btn{
-  display:flex;align-items:center;gap:7px;
-  background:linear-gradient(135deg,var(--primary),#1d4ed8);
-  color:#fff;border:none;border-radius:10px;
-  padding:9px 20px;font-size:13px;font-family:inherit;font-weight:800;
-  cursor:pointer;white-space:nowrap;
-  box-shadow:0 4px 18px rgba(37,99,235,0.35);
-  transition:transform .15s,box-shadow .15s;
-}
-.add-complaint-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,0.5)}
-.add-complaint-btn .plus{font-size:18px;line-height:1}
+    <!-- Google Fonts (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
-#main{display:flex;flex:1;overflow:hidden;position:relative}
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-card: #2d2d2d;
+            --bg-sidebar: #222222;
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0;
+            --accent-color: #3b82f6;
+            /* Blue */
+            --accent-hover: #2563eb;
+            --status-open: #ef4444;
+            /* Red */
+            --status-progress: #f59e0b;
+            /* Amber */
+            --status-solved: #10b981;
+            /* Emerald */
+            --border-color: #404040;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --font-main: 'Cairo', sans-serif;
+            --header-height: 60px;
+        }
 
-#sidebar{
-  width:380px;flex-shrink:0;
-  background:var(--bg2);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-  transition:transform .3s;z-index:10;
-}
-#sidebar.hidden{transform:translateX(100%)}
-.sidebar-header{padding:14px 16px 0;flex-shrink:0;}
-.sidebar-tabs{display:flex;gap:6px;margin-bottom:10px}
-.stab{
-  flex:1;padding:8px;border-radius:8px;
-  font-family:inherit;font-size:12px;font-weight:800;
-  background:var(--card);border:1px solid var(--border);
-  color:var(--muted);cursor:pointer;transition:all .15s;
-}
-.stab.active{background:var(--primary);border-color:var(--primary);color:#fff}
-.sidebar-search{
-  display:flex;align-items:center;gap:8px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:10px;
-}
-.sidebar-search input{
-  background:none;border:none;outline:none;flex:1;
-  color:var(--text);font-family:inherit;font-size:12px;
-}
-.sidebar-search input::placeholder{color:var(--muted)}
-.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.fc{
-  display:flex;align-items:center;gap:4px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:4px 10px;font-size:11px;
-  color:var(--muted);cursor:pointer;transition:all .15s;
-}
-.fc:hover{border-color:var(--border2);color:var(--text)}
-.fc.active{color:#fff;font-weight:800}
-.fc[data-type="garbage"].active{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red)}
-.fc[data-type="fence"].active{background:rgba(245,158,11,.15);border-color:var(--gold);color:var(--gold)}
-.fc[data-type="sewage"].active{background:rgba(139,92,246,.15);border-color:var(--purple);color:var(--purple)}
-.fc[data-type="water"].active{background:rgba(6,182,212,.15);border-color:var(--cyan);color:var(--cyan)}
-.fc[data-type="other"].active{background:rgba(107,114,128,.15);border-color:#6b7280;color:#9ca3af}
-.fc[data-type="all"].active{background:var(--primary-glow);border-color:var(--primary);color:#93c5fd}
-#complaints-list{flex:1;overflow-y:auto;padding:0 12px 16px;scrollbar-width:thin;scrollbar-color:var(--card2) transparent}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.c-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:14px;margin-bottom:10px;
-  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
-}
-.c-card:hover{border-color:var(--border2);box-shadow:0 6px 24px rgba(0,0,0,.35);transform:translateY(-2px)}
-.c-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
-.c-card::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%}
-.c-card[data-type="garbage"]::before{background:var(--red)}
-.c-card[data-type="fence"]::before{background:var(--gold)}
-.c-card[data-type="sewage"]::before{background:var(--purple)}
-.c-card[data-type="water"]::before{background:var(--cyan)}
-.c-card[data-type="other"]::before{background:#6b7280}
-.c-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
-.c-card-badges{display:flex;gap:5px;flex-wrap:wrap}
-.badge{display:inline-flex;align-items:center;gap:3px;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:900}
-.b-garbage{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2)}
-.b-fence{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
-.b-sewage{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
-.b-water{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2)}
-.b-other{background:rgba(107,114,128,.15);color:#9ca3af;border:1px solid rgba(107,114,128,.2)}
-.b-open{background:rgba(234,179,8,.1);color:#eab308}
-.b-progress{background:rgba(59,130,246,.1);color:#60a5fa}
-.b-resolved{background:rgba(34,197,94,.1);color:#4ade80}
-.c-title{font-size:14px;font-weight:900;margin-bottom:5px;line-height:1.35}
-.c-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.c-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
-.v-mini{
-  display:flex;align-items:center;gap:3px;
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:6px;padding:3px 8px;font-size:11px;
-  cursor:pointer;transition:all .15s;color:var(--muted);
-}
-.v-mini:hover{border-color:var(--border2);color:var(--text)}
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+            /* App-like feel */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-#map{flex:1;position:relative}
-#map-container{width:100%;height:100%}
+        /* --- Header --- */
+        header {
+            height: var(--header-height);
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
 
-#sidebar-toggle{
-  position:absolute;right:0;top:50%;transform:translateY(-50%);
-  z-index:20;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:8px 0 0 8px;padding:10px 6px;
-  cursor:pointer;color:var(--muted);transition:all .15s;
-  writing-mode:vertical-rl;font-size:11px;font-family:inherit;
-}
-#sidebar-toggle:hover{background:var(--card2);color:var(--text)}
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-#detail-drawer{
-  position:absolute;bottom:0;right:0;left:0;
-  z-index:30;
-  background:var(--bg2);border-top:1px solid var(--border2);
-  border-radius:20px 20px 0 0;
-  max-height:75vh;overflow-y:auto;
-  transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
-}
-#detail-drawer.open{transform:translateY(0)}
-.drawer-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 0}
-.drawer-content{padding:18px 20px 30px}
-.drawer-close{
-  position:absolute;top:14px;left:16px;
-  background:var(--card);border:1px solid var(--border);
-  color:var(--muted);border-radius:8px;width:32px;height:32px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:17px;transition:all .15s;
-}
-.drawer-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
-.drawer-header{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.drawer-title{font-size:20px;font-weight:900;line-height:1.3;margin-bottom:8px}
-.drawer-desc{color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:14px}
-.drawer-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.drawer-meta span{display:flex;align-items:center;gap:4px}
-.drawer-votes{display:flex;gap:10px;margin-bottom:14px}
-.dv-btn{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
-  border:1px solid var(--border);border-radius:10px;
-  padding:10px;font-size:14px;font-family:inherit;font-weight:900;
-  cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;
-}
-.dv-btn.s:hover{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)}
-.dv-btn.o:hover{background:rgba(239,68,68,.12);border-color:var(--red);color:var(--red)}
-.vote-bar-wrap{height:6px;background:var(--bg3);border-radius:6px;overflow:hidden;display:flex;margin-bottom:16px}
-.vb-s{background:var(--green);transition:width .4s}
-.vb-o{background:var(--red);transition:width .4s}
-.vb-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:12px}
+        .logo i {
+            font-size: 1.4rem;
+        }
 
-.comment-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
-.ci-head{display:flex;align-items:center;gap:7px;margin-bottom:6px}
-.ci-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0}
-.ci-name{font-size:12px;font-weight:800}
-.ci-time{font-size:10px;color:var(--muted);margin-right:auto}
-.ci-text{font-size:12px;color:var(--muted);line-height:1.55}
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
 
-#modal-overlay{
-  position:fixed;inset:0;z-index:600;
-  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
-  display:flex;align-items:center;justify-content:center;padding:16px;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
-#modal-overlay.open{opacity:1;pointer-events:all}
-#modal{
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:20px;padding:24px;max-width:520px;width:100%;
-  max-height:90vh;overflow-y:auto;
-  transform:translateY(20px);transition:transform .25s;
-}
-#modal-overlay.open #modal{transform:translateY(0)}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.modal-title{font-size:19px;font-weight:900}
-.modal-close{
-  width:32px;height:32px;border-radius:8px;background:var(--card);
-  border:1px solid var(--border);color:var(--muted);cursor:pointer;
-  font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;
-}
-.modal-close:hover{background:rgba(239,68,68,.15);color:var(--red)}
-.fg{margin-bottom:16px}
-.fl{display:block;font-size:12px;font-weight:900;margin-bottom:6px;color:var(--muted)}
-.fi,.fs,.ft{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:9px;padding:10px 13px;color:var(--text);
-  font-family:inherit;font-size:13px;outline:none;transition:border-color .15s;
-}
-.fi:focus,.fs:focus,.ft:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
-.fs{cursor:pointer}.fs option{background:var(--bg2)}
-.ft{resize:vertical;min-height:85px;line-height:1.6}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-#pick-map{height:180px;border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:crosshair}
-.submit-btn{
-  width:100%;background:linear-gradient(135deg,var(--primary),#1d4ed8);
-  color:#fff;border:none;border-radius:11px;
-  padding:13px;font-size:15px;font-family:inherit;font-weight:900;
-  cursor:pointer;box-shadow:0 4px 18px rgba(37,99,235,.35);
-  transition:transform .15s,box-shadow .15s;margin-top:4px;
-}
-.submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,.5)}
+        .btn {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-#toasts{position:fixed;bottom:20px;left:20px;z-index:700;display:flex;flex-direction:column;gap:8px}
-.toast{
-  display:flex;align-items:center;gap:9px;
-  background:var(--card2);border:1px solid var(--border2);
-  border-radius:9px;padding:11px 16px;font-size:13px;
-  box-shadow:var(--shadow);max-width:320px;
-}
+        .btn:hover {
+            background-color: var(--border-color);
+        }
 
-@media(max-width:768px){
-  #sidebar{position:absolute;right:0;top:0;bottom:0;z-index:40;transform:translateX(100%)}
-  #sidebar:not(.hidden){transform:translateX(0)}
-  .topbar-stats{display:none}
-  .add-complaint-btn span{display:none}
-}
-</style>
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            justify-content: center;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        /* --- Main Layout --- */
+        main {
+            display: flex;
+            height: calc(100vh - var(--header-height));
+            position: relative;
+        }
+
+        .sidebar {
+            width: 400px;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 900;
+            transition: transform 0.3s ease;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            background-color: #333;
+        }
+
+        /* --- Sidebar Content --- */
+        .filters {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            width: 100%;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 35px 10px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            font-family: var(--font-main);
+        }
+
+        .complaints-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .bg-open {
+            background-color: var(--status-open);
+        }
+
+        .bg-progress {
+            background-color: var(--status-progress);
+            color: black;
+        }
+
+        .bg-solved {
+            background-color: var(--status-solved);
+        }
+
+        .bg-type {
+            background-color: #4b5563;
+            margin-left: 5px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            border-top: 1px solid #404040;
+            padding-top: 8px;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* --- Modals & Drawers --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Mini Map in Form */
+        #mini-map {
+            height: 200px;
+            width: 100%;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- Details Drawer --- */
+        .drawer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: 450px;
+            background: var(--bg-card);
+            z-index: 1000;
+            border-left: 1px solid var(--border-color);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer.active {
+            transform: translateX(0);
+        }
+
+        /* --- Mobile Responsive --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: 60%;
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+                transform: translateY(100%);
+                padding-bottom: 60px;
+                /* Space for nav */
+            }
+
+            .sidebar.active {
+                transform: translateY(0);
+            }
+
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-sidebar);
+                border-top: 1px solid var(--border-color);
+                height: 60px;
+                z-index: 1100;
+                justify-content: space-around;
+                align-items: center;
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+                cursor: pointer;
+            }
+
+            .mobile-nav-item.active {
+                color: var(--accent-color);
+            }
+
+            main {
+                height: calc(100vh - 120px);
+            }
+
+            #desktop-add-btn {
+                display: none !important;
+            }
+
+            .drawer {
+                width: 100%;
+                max-width: 100%;
+                transform: translateY(100%);
+                bottom: 0px;
+                /* Covers nav */
+                z-index: 1200;
+            }
+
+            .drawer.active {
+                transform: translateY(0);
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-nav {
+                display: none;
+            }
+
+            .sidebar {
+                transform: none;
+                height: 100%;
+            }
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border-left: 4px solid var(--accent-color);
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            color: white;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 250px;
+        }
+
+        .toast.error {
+            border-color: var(--status-open);
+        }
+
+        .toast.success {
+            border-color: var(--status-solved);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Comments Section */
+        .comments-section {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .comment {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .comment-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* Admin Controls */
+        .admin-panel {
+            background: #2c0b0e;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #ef4444;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="topbar">
-  <div class="logo">
-    <div class="logo-icon">🗺️</div>
-    <div class="logo-words">
-      <strong>منصة بشتيل</strong>
-      <span>بلّغ وغيّر مجتمعك</span>
-    </div>
-  </div>
-  <div class="topbar-stats">
-    <div class="stat-chip">📋 إجمالي: <b id="total-count">0</b></div>
-    <div class="stat-chip">🔴 مفتوحة: <b id="open-count">0</b></div>
-    <div class="stat-chip">✅ محلولة: <b id="resolved-count">0</b></div>
-  </div>
-  <button class="add-complaint-btn" onclick="openModal()">
-    <span class="plus">+</span><span>إضافة شكوى</span>
-  </button>
-</div>
-
-<div id="main">
-  <div id="map">
-    <div id="map-container"></div>
-    <button id="sidebar-toggle" onclick="toggleSidebar()">◀ الشكاوى</button>
-
-    <div id="detail-drawer">
-      <div class="drawer-handle"></div>
-      <button class="drawer-close" onclick="closeDrawer()">✕</button>
-      <div class="drawer-content" id="drawer-content"></div>
-    </div>
-  </div>
-
-  <div id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-tabs">
-        <button class="stab active" onclick="setSort('newest',this)">🕐 الأحدث</button>
-        <button class="stab" onclick="setSort('votes',this)">🔥 الأكثر دعماً</button>
-        <button class="stab" onclick="setSort('comments',this)">💬 الأكثر تعليقاً</button>
-      </div>
-      <div class="sidebar-search">
-        <span>🔍</span>
-        <input type="text" id="search-input" placeholder="ابحث في الشكاوى..." oninput="renderList()">
-      </div>
-      <div class="filter-chips">
-        <div class="fc active" data-type="all" onclick="setFilter('all',this)">الكل</div>
-        <div class="fc" data-type="garbage" onclick="setFilter('garbage',this)">🗑️ قمامة</div>
-        <div class="fc" data-type="fence" onclick="setFilter('fence',this)">🚧 مسورة</div>
-        <div class="fc" data-type="sewage" onclick="setFilter('sewage',this)">🌊 صرف</div>
-        <div class="fc" data-type="water" onclick="setFilter('water',this)">💧 مياه</div>
-        <div class="fc" data-type="other" onclick="setFilter('other',this)">❓ أخرى</div>
-      </div>
-    </div>
-    <div id="complaints-list"></div>
-  </div>
-</div>
-
-<!-- MODAL -->
-<div id="modal-overlay">
-  <div id="modal">
-    <div class="modal-head">
-      <div class="modal-title">📝 إضافة شكوى جديدة</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-
-    <div class="fg">
-      <label class="fl">الاسم *</label>
-      <input class="fi" id="f-name" placeholder="اكتب اسمك الحقيقي" maxlength="60">
-    </div>
-
-    <div class="fg">
-      <label class="fl">عنوان الشكوى *</label>
-      <input class="fi" id="f-title" placeholder="مثال: تراكم القمامة في شارع النيل" maxlength="100">
-    </div>
-
-    <div class="fg">
-      <label class="fl">نوع المشكلة *</label>
-      <select class="fs" id="f-type">
-        <option value="">— اختر نوع المشكلة —</option>
-        <option value="garbage">🗑️ قمامة</option>
-        <option value="fence">🚧 مسورة مقصورة / طريق مغلق</option>
-        <option value="sewage">🌊 مشكلة صرف صحي</option>
-        <option value="water">💧 ضعف في المياه</option>
-        <option value="other">❓ أخرى</option>
-      </select>
-    </div>
-
-    <div class="fg">
-      <label class="fl">وصف تفصيلي</label>
-      <textarea class="ft" id="f-desc" placeholder="اكتب تفاصيل المشكلة..." rows="3"></textarea>
-    </div>
-
-    <div class="fg">
-      <label class="fl">الشارع / المنطقة</label>
-      <input class="fi" id="f-street" placeholder="مثال: شارع 15 بشتيل" maxlength="80">
-    </div>
-
-    <div class="fg">
-      <label class="fl">📍 حدد موقع المشكلة على الخريطة *</label>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:7px">الاختيار داخل نطاق بشتيل فقط</div>
-      <div id="pick-map"></div>
-      <div id="pin-status" style="margin-top:6px;font-size:11px;color:var(--red)">⚠️ لم يتم اختيار موقع بعد</div>
-    </div>
-
-    <button class="submit-btn" onclick="submitComplaint()">🚀 نشر الشكوى</button>
-  </div>
-</div>
-
-<div id="toasts"></div>
-
-<script>
-/* ===========================https://maps.googleapis.com/maps/api/js?key=AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8&callback=initMap&language=ar&region=EG
-   Google Maps Key
-=========================== */
-const GOOGLE_MAPS_API_KEY = "AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8";
-
-/* ===========================
-   حدود بشتيل (عدّلها لو لزم)
-=========================== */
-const BASHTEEL_CENTER = { lat: 30.0661, lng: 31.1741 };
-const BASHTEEL_BOUNDS = {
-  north: 30.0825,
-  south: 30.0520,
-  east:  31.1955,
-  west:  31.1550
-};
-
-/* ===========================
-   ثابتات
-=========================== */
-const COLORS = {garbage:'#ef4444',fence:'#f59e0b',sewage:'#8b5cf6',water:'#06b6d4',other:'#6b7280'};
-const LABELS = {garbage:'قمامة',fence:'مسورة مقصورة',sewage:'صرف صحي',water:'ضعف مياه',other:'أخرى'};
-const ICONS  = {garbage:'🗑️',fence:'🚧',sewage:'🌊',water:'💧',other:'❓'};
-const STATUS_LABELS = {open:'مفتوحة',progress:'قيد المعالجة',resolved:'تم الحل'};
-const STATUS_CLASSES = {open:'b-open',progress:'b-progress',resolved:'b-resolved'};
-const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#22c55e','#06b6d4','#ef4444'];
-
-/* ===========================
-   State
-=========================== */
-let complaints = [];
-let filterType = 'all';
-let sortMode = 'newest';
-let selectedId = null;
-
-let map, pickMap;
-let markers = new Map();
-let infoWindow;
-
-let pickedLatLng = null;
-let pickMarker = null;
-
-/* ===========================
-   API helpers (Cloudflare Pages Functions)
-=========================== */
-async function apiGet(path){
-  const res = await fetch(path, { headers: { 'Accept':'application/json' } });
-  const data = await res.json().catch(()=> ({}));
-  if(!res.ok) throw new Error(data?.error || 'خطأ في السيرفر');
-  return data;
-}
-async function apiPost(path, body){
-  const res = await fetch(path, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json().catch(()=> ({}));
-  if(!res.ok) throw new Error(data?.error || 'خطأ في السيرفر');
-  return data;
-}
-async function apiPatch(path, body){
-  const res = await fetch(path, {
-    method:'PATCH',
-    headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json().catch(()=> ({}));
-  if(!res.ok) throw new Error(data?.error || 'خطأ في السيرفر');
-  return data;
-}
-
-/* ===========================
-   Load data
-=========================== */
-async function loadComplaints(){
-  const data = await apiGet('/api/complaints');
-  complaints = (data.complaints || []).map(c => ({
-    id: c.id,
-    title: c.title,
-    type: c.type,
-    desc: c.description || '',
-    street: c.street || 'بشتيل',
-    name: c.reporter_name,
-    lat: Number(c.lat),
-    lng: Number(c.lng),
-    status: c.status || 'open',
-    support: Number(c.support || 0),
-    oppose: Number(c.oppose || 0),
-    time: Number(c.created_at || Date.now()),
-    commentsCount: Number(c.comment_count || 0),
-  }));
-}
-
-/* ===========================
-   Google Maps init
-=========================== */
-function initMaps(){
-  infoWindow = new google.maps.InfoWindow();
-
-  map = new google.maps.Map(document.getElementById('map-container'), {
-    center: BASHTEEL_CENTER,
-    zoom: 16,
-    minZoom: 14,
-    maxZoom: 20,
-    mapTypeId: 'hybrid',            // قمر صناعي + أسماء الشوارع
-    streetViewControl: false,
-    fullscreenControl: true,
-    mapTypeControl: true,
-    restriction: { latLngBounds: BASHTEEL_BOUNDS, strictBounds: true },
-    gestureHandling: 'greedy',
-  });
-
-  map.addListener('click', () => closeDrawer());
-
-  boot();
-}
-
-async function boot(){
-  try{
-    await loadComplaints();
-    renderMarkers();
-    renderList();
-    updateStats();
-  }catch(e){
-    console.error(e);
-    toast('⚠️ تعذر تحميل البيانات. تأكد إن Functions + D1 شغالين.');
-  }
-}
-
-/* ===========================
-   Pick map (داخل المودال)
-=========================== */
-function initPickMapIfNeeded(){
-  if(pickMap) return;
-  pickMap = new google.maps.Map(document.getElementById('pick-map'), {
-    center: BASHTEEL_CENTER,
-    zoom: 16,
-    minZoom: 14,
-    maxZoom: 20,
-    mapTypeId: 'hybrid',
-    streetViewControl: false,
-    fullscreenControl: false,
-    mapTypeControl: false,
-    restriction: { latLngBounds: BASHTEEL_BOUNDS, strictBounds: true },
-    gestureHandling: 'greedy',
-  });
-
-  pickMap.addListener('click', (e) => {
-    pickedLatLng = e.latLng;
-    if(pickMarker) pickMarker.setMap(null);
-    pickMarker = new google.maps.Marker({ position: pickedLatLng, map: pickMap });
-
-    const ps = document.getElementById('pin-status');
-    ps.innerHTML = '✅ تم تحديد الموقع: ' + pickedLatLng.lat().toFixed(5) + ', ' + pickedLatLng.lng().toFixed(5);
-    ps.style.color = 'var(--green)';
-  });
-}
-
-/* ===========================
-   Marker icon (SVG)
-=========================== */
-function markerIcon(color){
-  const svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24">
-    <path fill="${color}" stroke="rgba(255,255,255,0.75)" stroke-width="1"
-      d="M12 2c-3.314 0-6 2.686-6 6 0 4.5 6 14 6 14s6-9.5 6-14c0-3.314-2.686-6-6-6zm0 8.5A2.5 2.5 0 1 1 12 5.5a2.5 2.5 0 0 1 0 5z"/>
-  </svg>`;
-  return {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-    scaledSize: new google.maps.Size(40,40),
-    anchor: new google.maps.Point(20,40)
-  };
-}
-
-/* ===========================
-   Render markers
-=========================== */
-function renderMarkers(){
-  markers.forEach(m => m.setMap(null));
-  markers.clear();
-
-  complaints.forEach(c => {
-    const m = new google.maps.Marker({
-      position: {lat:c.lat, lng:c.lng},
-      map,
-      icon: markerIcon(COLORS[c.type] || '#6b7280'),
-      title: c.title
-    });
-
-    m.addListener('click', () => {
-      selectCard(c.id);
-
-      infoWindow.setContent(`
-        <div style="font-family:Cairo,sans-serif;direction:rtl;min-width:220px">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-            <span style="background:rgba(0,0,0,.25);padding:2px 8px;border-radius:6px;font-weight:900;font-size:11px">${ICONS[c.type]} ${LABELS[c.type]}</span>
-            <span style="background:rgba(0,0,0,.25);padding:2px 8px;border-radius:6px;font-weight:900;font-size:11px">${STATUS_LABELS[c.status]}</span>
-          </div>
-          <div style="font-weight:900;margin-bottom:6px">${escapeHtml(c.title)}</div>
-          <div style="font-size:12px;color:#374151;margin-bottom:10px">${escapeHtml(c.desc||'')}</div>
-          <button onclick="openDetail('${c.id}')" style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px;font-weight:900;cursor:pointer">
-            عرض التفاصيل
-          </button>
+    <!-- Header -->
+    <header>
+        <div class="logo" id="app-logo">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>منصة بشتيل</span>
         </div>
-      `);
-      infoWindow.open(map, m);
-    });
-
-    markers.set(c.id, m);
-  });
-}
-
-/* ===========================
-   List render
-=========================== */
-function renderList(){
-  const query = (document.getElementById('search-input').value||'').trim().toLowerCase();
-  let list = [...complaints];
-
-  if(filterType !== 'all') list = list.filter(c => c.type === filterType);
-  if(query) list = list.filter(c =>
-    (c.title||'').toLowerCase().includes(query) || (c.desc||'').toLowerCase().includes(query)
-  );
-
-  if(sortMode==='newest') list.sort((a,b)=>b.time-a.time);
-  else if(sortMode==='votes') list.sort((a,b)=>(b.support-b.oppose)-(a.support-a.oppose));
-  else if(sortMode==='comments') list.sort((a,b)=>b.commentsCount-a.commentsCount);
-
-  const el = document.getElementById('complaints-list');
-  if(!list.length){
-    el.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🔍</div><p>لا توجد شكاوى تطابق البحث</p></div>`;
-    updateStats();
-    return;
-  }
-
-  el.innerHTML = list.map((c)=>{
-    const isSelected = selectedId===c.id;
-    return `
-      <div class="c-card${isSelected?' selected':''}" data-type="${c.type}" data-id="${c.id}" onclick="openDetail('${c.id}')">
-        <div class="c-card-top">
-          <div class="c-card-badges">
-            <span class="badge ${getBadgeClass(c.type)}">${ICONS[c.type]} ${LABELS[c.type]}</span>
-            <span class="badge ${STATUS_CLASSES[c.status]}">${STATUS_LABELS[c.status]}</span>
-          </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="window.app.openAddModal()" id="desktop-add-btn">
+                <i class="fa-solid fa-plus"></i>
+                <span style="margin-right:5px">إضافة شكوى</span>
+            </button>
         </div>
-        <div class="c-title">${escapeHtml(c.title)}</div>
-        <div class="c-desc">${escapeHtml(c.desc||'لا يوجد وصف')}</div>
-        <div class="c-meta">
-          <span>📍 ${escapeHtml(c.street||'بشتيل')}</span>
-          <span>${timeAgo(c.time)}</span>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Map -->
+        <div class="map-container">
+            <div id="map"></div>
         </div>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:center">
-          <button class="v-mini" onclick="vote(event,'${c.id}','support')">👍 ${c.support}</button>
-          <button class="v-mini" onclick="vote(event,'${c.id}','oppose')">👎 ${c.oppose}</button>
-          <span style="margin-right:auto;font-size:11px;color:var(--muted)">💬 ${c.commentsCount}</span>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="filters">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="بحث باسم الشارع أو الوصف...">
+                    <i class="fa-solid fa-search"></i>
+                </div>
+                <div style="display:flex; width:100%; gap:5px; margin-top:10px;">
+                    <select class="filter-select" id="filter-type">
+                        <option value="all">كل المشاكل</option>
+                        <option value="قمامة">قمامة</option>
+                        <option value="طريق">طريق/حفر</option>
+                        <option value="صرف">صرف صحي</option>
+                        <option value="مياه">ضعف مياه</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                    <select class="filter-select" id="sort-by">
+                        <option value="newest">الأحدث</option>
+                        <option value="votes">الأكثر دعماً</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="complaints-list" id="complaints-list">
+                <!-- Cards injected here -->
+            </div>
+        </aside>
+
+        <!-- Complaint Details Drawer -->
+        <div class="drawer" id="details-drawer">
+            <div class="modal-header">
+                <span id="drawer-title">تفاصيل الشكوى</span>
+                <button class="btn btn-icon" onclick="window.app.closeDrawer()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="drawer-content">
+                <!-- Content injected here -->
+            </div>
+            <div class="modal-footer" id="drawer-footer" style="justify-content: space-between;">
+                <!-- Vote/Share injected -->
+            </div>
         </div>
-      </div>
-    `;
-  }).join('');
+    </main>
 
-  updateStats();
-}
-
-/* ===========================
-   Drawer details + comments
-=========================== */
-async function openDetail(id){
-  const c = complaints.find(x=>x.id==id);
-  if(!c) return;
-  selectCard(id);
-
-  let detail, comments;
-  try{
-    const data = await apiGet(`/api/complaint/${encodeURIComponent(id)}`);
-    detail = data.complaint;
-    comments = data.comments || [];
-  }catch(e){
-    console.error(e);
-    return toast('⚠️ تعذر تحميل تفاصيل الشكوى');
-  }
-
-  c.commentsCount = comments.length;
-
-  const totalVotes = (Number(detail.support||0) + Number(detail.oppose||0)) || 1;
-  const supPct = Math.round((Number(detail.support||0)/totalVotes)*100);
-  const oppPct = 100 - supPct;
-
-  const commentsHtml = comments.map(cm=>{
-    const name = cm.name || 'مجهول';
-    const col = AVATAR_COLORS[Math.abs(name.charCodeAt(0))%AVATAR_COLORS.length];
-    return `
-      <div class="comment-item">
-        <div class="ci-head">
-          <div class="ci-avatar" style="background:${col}">${escapeHtml(name.charAt(0))}</div>
-          <span class="ci-name">${escapeHtml(name)}</span>
-          <span class="ci-time">${timeAgo(Number(cm.created_at||Date.now()))}</span>
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-item active" onclick="window.app.showMobileView('map')">
+            <i class="fa-solid fa-map"></i>
+            <span>الخريطة</span>
         </div>
-        <div class="ci-text">${escapeHtml(cm.text||'')}</div>
-      </div>
-    `;
-  }).join('');
-
-  document.getElementById('drawer-content').innerHTML = `
-    <div class="drawer-header">
-      <span class="badge ${getBadgeClass(detail.type)}">${ICONS[detail.type]} ${LABELS[detail.type]}</span>
-      <span class="badge ${STATUS_CLASSES[detail.status]}">${STATUS_LABELS[detail.status]}</span>
+        <div class="mobile-nav-item" onclick="window.app.openAddModal()">
+            <div
+                style="background:var(--accent-color); color:white; padding:10px; border-radius:50%; margin-top:-20px; box-shadow:0 4px 6px rgba(0,0,0,0.3);">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+        <div class="mobile-nav-item" onclick="window.app.showMobileView('list')">
+            <i class="fa-solid fa-list"></i>
+            <span>القائمة</span>
+        </div>
     </div>
 
-    <div class="drawer-title">${escapeHtml(detail.title)}</div>
-    <div class="drawer-desc">${escapeHtml(detail.description||'لا يوجد وصف')}</div>
-
-    <div class="drawer-meta">
-      <span>👤 ${escapeHtml(detail.reporter_name||'')}</span>
-      <span>📍 ${escapeHtml(detail.street||'بشتيل')}</span>
-      <span>🕐 ${timeAgo(Number(detail.created_at||Date.now()))}</span>
-      <span>💬 ${comments.length} تعليق</span>
+    <!-- Add Complaint Modal -->
+    <div class="modal-overlay" id="add-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span>إبلاغ عن مشكلة جديدة</span>
+                <button class="btn btn-icon" onclick="window.app.closeAddModal()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-form" onsubmit="event.preventDefault(); window.app.submitComplaint();">
+                    <div class="form-group">
+                        <label class="form-label">عنوان المشكلة <span style="color:red">*</span></label>
+                        <input type="text" class="form-control" name="title" required
+                            placeholder="مثال: تراكم قمامة في شارع...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">نوع المشكلة <span style="color:red">*</span></label>
+                        <select class="form-control" name="type" required>
+                            <option value="قمامة">تراكم قمامة</option>
+                            <option value="طريق">طريق مكسر / حفر</option>
+                            <option value="صرف">طفح صرف صحي</option>
+                            <option value="مياه">انقطاع / ضعف مياه</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">موقع المشكلة (اضغط على الخريطة) <span
+                                style="color:red">*</span></label>
+                        <div id="mini-map"></div>
+                        <input type="hidden" name="lat" id="form-lat" required>
+                        <input type="hidden" name="lng" id="form-lng" required>
+                        <div id="location-hint" style="font-size:0.8rem; color:var(--text-secondary)">لم يتم تحديد موقع
+                            بعد</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">التفاصيل (اختياري)</label>
+                        <textarea class="form-control" name="desc" placeholder="اوصف المشكلة بدقة..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">اسمك (اختياري)</label>
+                        <input type="text" class="form-control" name="author" placeholder="فاعل خير">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">صورة (اختياري - max 5MB)</label>
+                        <input type="file" class="form-control" id="form-image" accept="image/*"
+                            onchange="window.app.handleImagePreview(this)">
+                        <div id="image-preview" style="margin-top:10px; display:none;">
+                            <img id="preview-img" style="max-width:100%; max-height:150px; border-radius:6px;">
+                            <button type="button" class="btn btn-sm btn-danger" style="display:block; margin-top:5px"
+                                onclick="window.app.clearImage()">حذف الصورة</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="window.app.closeAddModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="window.app.submitComplaint()">إرسال البلاغ</button>
+            </div>
+        </div>
     </div>
 
-    <div class="drawer-votes">
-      <button class="dv-btn s" onclick="vote(event,'${detail.id}','support');openDetail('${detail.id}')">👍 أدعم</button>
-      <button class="dv-btn o" onclick="vote(event,'${detail.id}','oppose');openDetail('${detail.id}')">👎 لا أدعم</button>
+    <!-- Admin Login Input (Hidden Overlay) -->
+    <div class="modal-overlay" id="admin-modal">
+        <div class="modal" style="max-width: 300px;">
+            <div class="modal-header">لوحة الإدارة</div>
+            <div class="modal-body">
+                <input type="password" id="admin-pin" class="form-control" placeholder="PIN CODE"
+                    style="text-align:center; letter-spacing:5px;">
+            </div>
+            <div class="modal-footer">
+                <button class="btn"
+                    onclick="document.getElementById('admin-modal').classList.remove('active')">إغلاق</button>
+                <button class="btn btn-primary" onclick="window.app.verifyAdmin()">دخول</button>
+            </div>
+        </div>
     </div>
 
-    <div class="vb-label"><span>👍 ${Number(detail.support||0)} دعم</span><span>👎 ${Number(detail.oppose||0)} رفض</span></div>
-    <div class="vote-bar-wrap">
-      <div class="vb-s" style="width:${supPct}%"></div>
-      <div class="vb-o" style="width:${oppPct}%"></div>
-    </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
 
-    <div style="margin-top:8px;font-weight:900;color:var(--muted)">💬 التعليقات</div>
-    <div style="margin-top:10px">
-      ${commentsHtml || `<div style="text-align:center;color:var(--muted);padding:12px">لا توجد تعليقات بعد</div>`}
-    </div>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
-      <div class="fg" style="margin-bottom:10px">
-        <label class="fl">اسمك *</label>
-        <input class="fi" id="comment-name" placeholder="اكتب اسمك" maxlength="60">
-      </div>
-      <div class="fg" style="margin-bottom:10px">
-        <label class="fl">تعليقك *</label>
-        <textarea class="ft" id="comment-text" placeholder="اكتب تعليقك..." rows="2"></textarea>
-      </div>
-      <button class="submit-btn" onclick="addComment('${detail.id}')">نشر تعليق</button>
-    </div>
-  `;
+    <script>
+        /**
+         * Bashtil Platform
+         */
 
-  document.getElementById('detail-drawer').classList.add('open');
+        const CONSTANTS = {
+            BOUNDS: {
+                SW: [30.0520, 31.1550],
+                NE: [30.0825, 31.1955],
+                CENTER: [30.0661, 31.1741]
+            },
+            ADMIN_PIN: "123456",
+            STORAGE_KEY: "bashtil_data_v1",
+            VOTER_KEY: "bashtil_voter_id",
+            API_URL: "https://script.google.com/macros/s/AKfycbzud-iO5VljiS5ORstd2_VcU4C4CZhAaGm-6-KpcNEWw9aIGJROrz1Rsa340IuLevxKKA/exec"
+        };
 
-  // حرك الخريطة
-  map.panTo({lat:Number(detail.lat), lng:Number(detail.lng)});
-  map.setZoom(Math.max(map.getZoom(), 17));
+        class AppState {
+            constructor() {
+                this.data = [];
+                this.voterId = this.getVoterId();
+                this.isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+                window.addEventListener('hashchange', () => this.checkHash());
+            }
 
-  renderList();
-  renderMarkers();
-  updateStats();
-}
+            getVoterId() {
+                let id = localStorage.getItem(CONSTANTS.VOTER_KEY);
+                if (!id) {
+                    id = 'user_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem(CONSTANTS.VOTER_KEY, id);
+                }
+                return id;
+            }
 
-function closeDrawer(){
-  document.getElementById('detail-drawer').classList.remove('open');
-  selectedId=null;
-  document.querySelectorAll('.c-card.selected').forEach(el=>el.classList.remove('selected'));
-}
+            async fetchData() {
+                // Return promise for loading state
+                if (CONSTANTS.API_URL.includes("استبدل هذا الرابط")) {
+                    window.app.ui.showToast('تنبيه: لم يتم ربط API بعد. جاري استخدام بيانات تجريبية', 'error');
+                    return this.loadMockData();
+                }
 
-/* ===========================
-   Actions
-=========================== */
-async function vote(e,id,type){
-  e.stopPropagation();
-  try{
-    const data = await apiPatch(`/api/complaint/${encodeURIComponent(id)}`, { action:'vote', vote:type });
-    const updated = data.complaint;
+                window.app.ui.setLoading(true);
+                try {
+                    const res = await fetch(`${CONSTANTS.API_URL}?action=get_data`);
+                    const json = await res.json();
+                    if (json.status === 'success') {
+                        this.data = json.data;
+                        window.app.ui.renderList();
+                        window.app.mapManager.resetMarkers();
+                        this.data.forEach(c => window.app.mapManager.addMarker(c));
+                    }
+                } catch (e) {
+                    console.error(e);
+                    window.app.ui.showToast('فشل في تحميل البيانات', 'error');
+                    // Fallback to mock if fetch fails? Or just empty.
+                } finally {
+                    window.app.ui.setLoading(false);
+                }
+            }
 
-    const c = complaints.find(x=>x.id==id);
-    if(c){
-      c.support = Number(updated.support||0);
-      c.oppose  = Number(updated.oppose||0);
-    }
+            loadMockData() {
+                this.data = [
+                    {
+                        id: "1001",
+                        title: "تراكم قمامة أمام مدرسة بشتيل",
+                        type: "قمامة",
+                        status: "open",
+                        desc: "أكوام قمامة تعيق دخول الطلاب.",
+                        lat: 30.0671,
+                        lng: 31.1751,
+                        author: "محمد أحمد",
+                        timestamp: Date.now() - 86400000,
+                        votes: { support: 15, oppose: 1 },
+                        comments: [],
+                        image: null
+                    }
+                ];
+                window.app.ui.renderList();
+                window.app.mapManager.resetMarkers();
+                this.data.forEach(c => window.app.mapManager.addMarker(c));
+            }
 
-    renderList(); renderMarkers(); updateStats();
-    toast(type==='support' ? '👍 تم تسجيل دعمك' : '👎 تم تسجيل رأيك');
-  }catch(err){
-    console.error(err);
-    toast('⚠️ تعذر التصويت');
-  }
-}
+            async addComplaint(complaint) {
+                // Optimistic UI update
+                this.data.unshift(complaint);
+                window.app.ui.renderList();
+                window.app.mapManager.addMarker(complaint);
+                window.app.ui.showToast('جاري الإرسال...', 'progress');
 
-async function addComment(id){
-  const name = (document.getElementById('comment-name')?.value || '').trim();
-  const text = (document.getElementById('comment-text')?.value || '').trim();
-  if(!name) return toast('⚠️ الاسم مطلوب');
-  if(!text) return toast('⚠️ التعليق مطلوب');
+                if (CONSTANTS.API_URL.includes("استبدل هذا الرابط")) return;
 
-  try{
-    await apiPost(`/api/complaint/${encodeURIComponent(id)}`, { name, text });
-    toast('💬 تم نشر تعليقك');
-    openDetail(id);
-  }catch(err){
-    console.error(err);
-    toast('⚠️ تعذر نشر التعليق');
-  }
-}
+                try {
+                    // Use no-cors or post body? GAS web app supports POST
+                    // We'll send payload as stringified body to avoid complex form data parsing in GAS sometimes
+                    await fetch(CONSTANTS.API_URL + "?action=create_complaint", {
+                        method: 'POST',
+                        body: JSON.stringify(complaint)
+                    });
+                    window.app.ui.showToast('تم حفظ البلاغ بنجاح', 'success');
+                } catch (e) {
+                    window.app.ui.showToast('حدث خطأ في الحفظ', 'error');
+                }
+            }
 
-async function submitComplaint(){
-  const reporter_name = (document.getElementById('f-name').value||'').trim();
-  const title = (document.getElementById('f-title').value||'').trim();
-  const type  = (document.getElementById('f-type').value||'').trim();
-  const description = (document.getElementById('f-desc').value||'').trim();
-  const street = (document.getElementById('f-street').value||'').trim();
+            async addComment(complaintId, text, author) {
+                const complaint = this.data.find(c => c.id === complaintId);
+                if (complaint) {
+                    const newComment = {
+                        id: Date.now(),
+                        complaintId,
+                        text,
+                        author: author || 'زائر',
+                        timestamp: Date.now()
+                    };
 
-  if(!reporter_name) return toast('⚠️ الاسم مطلوب');
-  if(!title) return toast('⚠️ العنوان مطلوب');
-  if(!type) return toast('⚠️ نوع المشكلة مطلوب');
-  if(!pickedLatLng) return toast('⚠️ اختر موقع على الخريطة');
+                    complaint.comments.push(newComment);
+                    this.refreshDetails(complaintId);
 
-  try{
-    await apiPost('/api/complaints', {
-      reporter_name, title, type, description, street,
-      lat: pickedLatLng.lat(),
-      lng: pickedLatLng.lng()
-    });
+                    if (!CONSTANTS.API_URL.includes("استبدل هذا الرابط")) {
+                        fetch(CONSTANTS.API_URL + "?action=add_comment", {
+                            method: 'POST',
+                            body: JSON.stringify(newComment)
+                        });
+                    }
+                }
+            }
 
-    closeModal();
-    toast('✅ تم نشر الشكوى');
-    await loadComplaints();
-    renderMarkers(); renderList(); updateStats();
-  }catch(err){
-    console.error(err);
-    toast('⚠️ تعذر نشر الشكوى');
-  }
-}
+            async vote(complaintId, type) {
+                const voteKey = `vote_${complaintId}`;
+                const currentVote = localStorage.getItem(voteKey);
 
-/* ===========================
-   Filter/Sort/Select/UI
-=========================== */
-function setFilter(type, el){
-  filterType=type;
-  document.querySelectorAll('.fc').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  renderList();
-}
-function setSort(mode, el){
-  sortMode=mode;
-  document.querySelectorAll('.stab').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  renderList();
-}
-function selectCard(id){
-  selectedId=id;
-  document.querySelectorAll('.c-card').forEach(el=>{
-    el.classList.toggle('selected', el.dataset.id===String(id));
-  });
-}
-function toggleSidebar(){
-  const sb = document.getElementById('sidebar');
-  sb.classList.toggle('hidden');
-  const btn = document.getElementById('sidebar-toggle');
-  btn.textContent = sb.classList.contains('hidden') ? '▶ الشكاوى' : '◀ الشكاوى';
-  setTimeout(()=>{ if(map) google.maps.event.trigger(map, 'resize'); }, 350);
-}
+                const complaint = this.data.find(c => c.id === complaintId);
+                if (!complaint) return;
 
-function openModal(){
-  document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(()=>{
-    initPickMapIfNeeded();
-    google.maps.event.trigger(pickMap, 'resize');
-    pickMap.setCenter(BASHTEEL_CENTER);
-  }, 150);
-}
-function closeModal(){
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.getElementById('f-name').value='';
-  document.getElementById('f-title').value='';
-  document.getElementById('f-type').value='';
-  document.getElementById('f-desc').value='';
-  document.getElementById('f-street').value='';
-  pickedLatLng=null;
-  if(pickMarker){ pickMarker.setMap(null); pickMarker=null; }
-  const ps = document.getElementById('pin-status');
-  ps.innerHTML='⚠️ لم يتم اختيار موقع بعد';
-  ps.style.color='var(--red)';
-}
-document.getElementById('modal-overlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('modal-overlay')) closeModal();
-});
+                // Optimistic Update
+                if (currentVote === type) {
+                    complaint.votes[type]--;
+                    localStorage.removeItem(voteKey);
+                    // Remote remove
+                    this.sendVote(complaintId, this.voterId, type, true);
+                } else {
+                    if (currentVote) {
+                        complaint.votes[currentVote]--;
+                    }
+                    complaint.votes[type]++;
+                    localStorage.setItem(voteKey, type);
+                    // Remote add/update
+                    this.sendVote(complaintId, this.voterId, type, false);
+                }
 
-/* ===========================
-   Helpers
-=========================== */
-function getBadgeClass(type){
-  return {garbage:'b-garbage',fence:'b-fence',sewage:'b-sewage',water:'b-water',other:'b-other'}[type]||'b-other';
-}
-function timeAgo(ts){
-  const diff = Date.now()-ts;
-  if(diff<60000) return 'الآن';
-  if(diff<3600000) return `${Math.floor(diff/60000)} د`;
-  if(diff<86400000) return `${Math.floor(diff/3600000)} س`;
-  if(diff<2592000000) return `${Math.floor(diff/86400000)} يوم`;
-  return `${Math.floor(diff/2592000000)} شهر`;
-}
-function updateStats(){
-  document.getElementById('total-count').textContent = complaints.length;
-  document.getElementById('open-count').textContent = complaints.filter(c=>c.status==='open').length;
-  document.getElementById('resolved-count').textContent = complaints.filter(c=>c.status==='resolved').length;
-}
-function toast(msg){
-  const el = document.createElement('div');
-  el.className='toast';
-  el.innerHTML = msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(()=>el.remove(),3200);
-}
-function escapeHtml(str){
-  return String(str||'')
-    .replaceAll('&','&amp;').replaceAll('<','&lt;')
-    .replaceAll('>','&gt;').replaceAll('"','&quot;')
-    .replaceAll("'","&#039;");
-}
+                this.refreshDetails(complaintId);
+                window.app.ui.renderList();
+            }
 
-/* ===========================
-   Load Google Maps JS
-=========================== */
-(function loadGoogleMaps(){
-  const s = document.createElement('script');
-  s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&callback=initMaps&v=weekly`;
-  s.async = true; s.defer = true;
-  document.head.appendChild(s);
-})();
-</script>
+            sendVote(complaintId, voterId, type, isRemove) {
+                if (CONSTANTS.API_URL.includes("استبدل هذا الرابط")) return;
+                const action = isRemove ? 'remove_vote' : 'vote';
+                fetch(`${CONSTANTS.API_URL}?action=${action}`, {
+                    method: 'POST', // using POST for better payload handling
+                    body: JSON.stringify({ complaintId, voterId, type })
+                });
+            }
+
+            async updateStatusFromAdmin(id, newStatus) {
+                if (!this.isAdmin) return;
+                const c = this.data.find(x => x.id === id);
+                if (c) {
+                    c.status = newStatus;
+                    this.refreshDetails(id);
+                    window.app.ui.renderList();
+                    window.app.mapManager.addMarker(c);
+
+                    if (!CONSTANTS.API_URL.includes("استبدل هذا الرابط")) {
+                        fetch(`${CONSTANTS.API_URL}?action=update_status`, {
+                            method: 'POST',
+                            body: JSON.stringify({ id, status: newStatus })
+                        });
+                    }
+                }
+            }
+
+            refreshDetails(id) {
+                const complaint = this.data.find(c => c.id === id);
+                if (complaint && document.getElementById('details-drawer').classList.contains('active')) {
+                    window.app.ui.renderDetails(complaint);
+                }
+            }
+
+            checkHash() {
+                const hash = window.location.hash;
+                if (hash.startsWith('#c=')) {
+                    const id = hash.split('=')[1];
+                    const complaint = this.data.find(c => c.id == id); // loose equality for string/num mismatch
+                    if (complaint) {
+                        window.app.ui.openDetails(complaint);
+                        window.app.mapManager.flyTo(complaint.lat, complaint.lng);
+                    }
+                }
+            }
+        }
+
+        class MapManager {
+            constructor() {
+                this.map = null;
+                this.miniMap = null;
+                this.markers = {};
+                this.tempMarker = null;
+            }
+
+            init() {
+                const bounds = L.latLngBounds(CONSTANTS.BOUNDS.SW, CONSTANTS.BOUNDS.NE);
+
+                this.map = L.map('map', {
+                    center: CONSTANTS.BOUNDS.CENTER,
+                    zoom: 16,
+                    minZoom: 15,
+                    maxBounds: bounds,
+                    maxBoundsViscosity: 1.0,
+                    zoomControl: false
+                });
+
+                L.control.zoom({ position: 'topright' }).addTo(this.map);
+
+                // Layers
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: 'Esri'
+                }).addTo(this.map);
+
+                L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/voyager_only_labels/{z}/{x}/{y}.png', {
+                    attribution: 'Carto',
+                    subdomains: 'abcd'
+                }).addTo(this.map);
+
+                window.app.store.data.forEach(c => this.addMarker(c));
+
+                // Clicking map should do nothing unless we have a specific mode? 
+                // Currently main map click is just for viewing.
+            }
+
+            initMiniMap() {
+                if (this.miniMap) return;
+
+                setTimeout(() => {
+                    this.miniMap = L.map('mini-map', {
+                        center: CONSTANTS.BOUNDS.CENTER,
+                        zoom: 15,
+                        minZoom: 14,
+                        maxBounds: L.latLngBounds(CONSTANTS.BOUNDS.SW, CONSTANTS.BOUNDS.NE),
+                        maxBoundsViscosity: 1.,
+                        zoomControl: false
+                    });
+
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(this.miniMap);
+                    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/voyager_only_labels/{z}/{x}/{y}.png').addTo(this.miniMap);
+
+                    this.miniMap.on('click', (e) => {
+                        const { lat, lng } = e.latlng;
+                        if (!this.miniMap.getBounds().contains(e.latlng)) {
+                            window.app.ui.showToast('الموقع خارج حدود بشتيل', 'error');
+                            return;
+                        }
+
+                        if (this.tempMarker) this.miniMap.removeLayer(this.tempMarker);
+
+                        this.tempMarker = L.marker([lat, lng]).addTo(this.miniMap);
+                        document.getElementById('form-lat').value = lat;
+                        document.getElementById('form-lng').value = lng;
+                        document.getElementById('location-hint').innerText = `تم تحديد: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                        document.getElementById('location-hint').style.color = '#10b981';
+                    });
+                }, 100);
+            }
+
+            resetMarkers() {
+                for (let id in this.markers) {
+                    this.map.removeLayer(this.markers[id]);
+                }
+                this.markers = {};
+            }
+
+            addMarker(complaint) {
+                const color = this.getStatusColor(complaint.status);
+
+                const iconHtml = `<div style="
+                    background-color: ${color};
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    border: 2px solid white;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+                    display: flex; align-items: center; justify-content: center;
+                    color: white; font-size: 12px;
+                "> <i class="fa-solid fa-${this.getTypeIcon(complaint.type)}"></i> </div>`;
+
+                const icon = L.divIcon({
+                    html: iconHtml,
+                    className: 'custom-marker',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+
+                const marker = L.marker([complaint.lat, complaint.lng], { icon })
+                    .addTo(this.map);
+                // .bindPopup(this.createPopupContent(complaint)); // Disable popup to use click
+
+                marker.on('click', (e) => {
+                    L.DomEvent.stopPropagation(e);
+                    window.app.ui.openDetails(complaint);
+                });
+
+                this.markers[complaint.id] = marker;
+            }
+
+            getStatusColor(status) {
+                if (status === 'open') return '#ef4444';
+                if (status === 'progress') return '#f59e0b';
+                if (status === 'solved') return '#10b981';
+                return '#999';
+            }
+
+            getTypeIcon(type) {
+                switch (type) {
+                    case 'قمامة': return 'trash';
+                    case 'طريق': return 'road';
+                    case 'صرف': return 'water';
+                    case 'مياه': return 'faucet';
+                    default: return 'circle-exclamation';
+                }
+            }
+
+            flyTo(lat, lng) {
+                this.map.setView([lat, lng], 18, { animate: true });
+            }
+        }
+
+        class UIManager {
+            constructor() {
+                this.logoClicks = 0;
+            }
+
+            init() {
+                this.renderList();
+                this.setupListeners();
+            }
+
+            setupListeners() {
+                document.getElementById('search-input').addEventListener('input', () => this.renderList());
+                document.getElementById('filter-type').addEventListener('change', () => this.renderList());
+                document.getElementById('sort-by').addEventListener('change', () => this.renderList());
+
+                document.getElementById('app-logo').addEventListener('click', () => {
+                    this.logoClicks++;
+                    if (this.logoClicks === 6) {
+                        this.logoClicks = 0;
+                        document.getElementById('admin-modal').classList.add('active');
+                    }
+                });
+            }
+
+            renderList() {
+                const listEl = document.getElementById('complaints-list');
+                const search = document.getElementById('search-input').value.toLowerCase();
+                const typeFilter = document.getElementById('filter-type').value;
+                const sortBy = document.getElementById('sort-by').value;
+
+                let filtered = window.app.store.data.filter(c => {
+                    const matchSearch = c.title.toLowerCase().includes(search) || c.desc.toLowerCase().includes(search);
+                    const matchType = typeFilter === 'all' || c.type === typeFilter;
+                    return matchSearch && matchType;
+                });
+
+                if (sortBy === 'newest') {
+                    filtered.sort((a, b) => b.timestamp - a.timestamp);
+                } else if (sortBy === 'votes') {
+                    filtered.sort((a, b) => (b.votes.support - b.votes.oppose) - (a.votes.support - a.votes.oppose));
+                }
+
+                listEl.innerHTML = '';
+                filtered.forEach(c => {
+                    const el = document.createElement('div');
+                    el.className = 'card';
+                    el.onclick = () => {
+                        this.openDetails(c);
+                        window.app.mapManager.flyTo(c.lat, c.lng);
+                    };
+
+                    const statusText = c.status === 'open' ? 'مفتوحة' : (c.status === 'progress' ? 'قيد المعالجة' : 'تم الحل');
+                    const statusClass = c.status === 'open' ? 'bg-open' : (c.status === 'progress' ? 'bg-progress' : 'bg-solved');
+                    const timeAgo = this.timeAgo(c.timestamp);
+
+                    el.innerHTML = `
+                        <div class="card-header">
+                            <span class="badge ${statusClass}">${statusText}</span>
+                            <span class="badge bg-type">${c.type}</span>
+                        </div>
+                        <div class="card-title">${c.title}</div>
+                        <div class="card-desc">${c.desc}</div>
+                        <div class="card-meta">
+                            <span><i class="fa-regular fa-clock"></i> ${timeAgo}</span>
+                            <span>${c.author || 'زائر'}</span>
+                        </div>
+                        <div class="card-meta" style="border:none">
+                             <div class="card-stats">
+                                <span class="stat-item" style="color:#10b981"><i class="fa-solid fa-thumbs-up"></i> ${c.votes.support}</span>
+                                <span class="stat-item" style="color:#ef4444"><i class="fa-solid fa-thumbs-down"></i> ${c.votes.oppose}</span>
+                             </div>
+                             <span><i class="fa-regular fa-comment"></i> ${c.comments.length}</span>
+                        </div>
+                    `;
+                    listEl.appendChild(el);
+                });
+            }
+
+            openDetails(c) {
+                const drawer = document.getElementById('details-drawer');
+                window.location.hash = `c=${c.id}`;
+                this.renderDetails(c);
+                drawer.classList.add('active');
+            }
+
+            setLoading(isLoading) {
+                // Simple global loader
+                let loader = document.getElementById('global-loader');
+                if (!loader) {
+                    loader = document.createElement('div');
+                    loader.id = 'global-loader';
+                    loader.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:2px; background:transparent; z-index:9999; pointer-events:none;';
+                    loader.innerHTML = '<div style="height:100%; width:0%; background:#3b82f6; transition:width 0.3s;"></div>';
+                    document.body.appendChild(loader);
+                }
+                loader.firstChild.style.width = isLoading ? '70%' : '100%';
+                if (!isLoading) setTimeout(() => { loader.firstChild.style.width = '0%'; }, 500);
+            }
+
+            renderDetails(c) {
+                const content = document.getElementById('drawer-content');
+
+                const statusText = c.status === 'open' ? 'مفتوحة' : (c.status === 'progress' ? 'قيد المعالجة' : 'تم الحل');
+                const adminOps = window.app.store.isAdmin ? `
+                    <div class="admin-panel">
+                        <b>خيارات الإدارة</b>
+                        <div style="display:flex; gap:5px; margin-top:5px;">
+                            <button class="btn btn-sm" onclick="window.app.store.updateStatusFromAdmin('${c.id}', 'progress')">بدء المعالجة</button>
+                            <button class="btn btn-sm" onclick="window.app.store.updateStatusFromAdmin('${c.id}', 'solved')">تم الحل</button>
+                            <button class="btn btn-sm" onclick="window.app.store.updateStatusFromAdmin('${c.id}', 'open')">إعادة فتح</button>
+                        </div>
+                        <textarea class="form-control" style="margin-top:5px; height:50px; font-size:0.8rem" placeholder="ملاحظات.."></textarea>
+                    </div>
+                ` : '';
+
+                const commentsHtml = c.comments.map(com => `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span>${com.author}</span>
+                            <span>${this.timeAgo(com.timestamp || com.date)}</span>
+                        </div>
+                        <div class="comment-text">${com.text}</div>
+                    </div>
+                `).join('');
+
+                const currentVote = localStorage.getItem(`vote_${c.id}`);
+
+                content.innerHTML = `
+                    <h2 style="margin-bottom:10px;">${c.title}</h2>
+                    <div style="display:flex; gap:5px; margin-bottom:15px;">
+                        <span class="badge ${c.status === 'open' ? 'bg-open' : (c.status === 'progress' ? 'bg-progress' : 'bg-solved')}">${statusText}</span>
+                        <span class="badge bg-type">${c.type}</span>
+                    </div>
+                    
+                    ${c.image ? `<img src="${c.image}" style="width:100%; border-radius:8px; margin-bottom:15px;" onerror="this.style.display='none'">` : ''}
+                    
+                    <p style="line-height:1.6; color:#ddd;">${c.desc}</p>
+                    
+                    ${adminOps}
+
+                    <div style="margin-top:20px; border-top:1px solid #404040; padding-top:15px;">
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <button class="btn ${currentVote === 'support' ? 'btn-primary' : ''}" style="flex:1" onclick="window.app.store.vote('${c.id}', 'support')">
+                                <i class="fa-solid fa-thumbs-up"></i> أدعم (${c.votes.support})
+                            </button>
+                            <button class="btn ${currentVote === 'oppose' ? 'btn-primary' : ''}" style="flex:1; background-color:#333; ${currentVote === 'oppose' ? 'border-color:red; color:red' : ''}" onclick="window.app.store.vote('${c.id}', 'oppose')">
+                                <i class="fa-solid fa-thumbs-down"></i> لا أتفق (${c.votes.oppose})
+                            </button>
+                        </div>
+                        
+                        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+                            <button class="btn btn-sm btn-icon" style="color:#25D366; border-color:#25D366" onclick="window.open('https://wa.me/?text=${encodeURIComponent(document.location.href)}', '_blank')">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </button>
+                            <button class="btn btn-sm btn-icon" style="color:#1877F2; border-color:#1877F2" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(document.location.href)}', '_blank')">
+                                <i class="fa-brands fa-facebook"></i>
+                            </button>
+                            <button class="btn btn-sm btn-icon" onclick="navigator.clipboard.writeText(document.location.href); window.app.ui.showToast('تم نسخ الرابط')">
+                                <i class="fa-solid fa-link"></i>
+                            </button>
+                        </div>
+
+                        <h3>التعليقات (${c.comments.length})</h3>
+                        <div class="comments-section">
+                            ${commentsHtml.length ? commentsHtml : '<div style="text-align:center; padding:20px; color:#666">لا توجد تعليقات بعد</div>'}
+                        </div>
+                        
+                        <div style="margin-top:15px;">
+                            <input type="text" id="comment-text" class="form-control" placeholder="أضف تعليقاً..." style="margin-bottom:5px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <input type="text" id="comment-author" class="form-control" placeholder="الاسم (اختياري)" style="width:130px; font-size:0.8rem">
+                                <button class="btn btn-primary btn-sm" onclick="window.app.submitComment('${c.id}')">إرسال</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            closeDrawer() {
+                document.getElementById('details-drawer').classList.remove('active');
+                window.history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
+
+            openAddModal() {
+                document.getElementById('add-modal').classList.add('active');
+                window.app.mapManager.initMiniMap();
+            }
+
+            closeAddModal() {
+                document.getElementById('add-modal').classList.remove('active');
+                this.clearImage();
+            }
+
+            showMobileView(view) {
+                const sidebar = document.getElementById('sidebar');
+                if (view === 'list') {
+                    sidebar.classList.add('active');
+                } else {
+                    sidebar.classList.remove('active');
+                }
+            }
+
+            showToast(msg, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const el = document.createElement('div');
+                el.className = `toast ${type}`;
+                el.innerHTML = `<span>${msg}</span> <i class="fa-solid ${type === 'success' ? 'fa-check' : 'fa-exclamation-circle'}"></i>`;
+                container.appendChild(el);
+                setTimeout(() => el.remove(), 3000);
+            }
+
+            timeAgo(timestamp) {
+                const seconds = Math.floor((Date.now() - timestamp) / 1000);
+                if (seconds < 60) return 'منذ لحظات';
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return `منذ ${minutes} دقيقة`;
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24) return `منذ ${hours} ساعة`;
+                return `منذ ${Math.floor(hours / 24)} يوم`;
+            }
+        }
+
+        class App {
+            constructor() {
+                this.store = new AppState();
+                this.mapManager = new MapManager();
+                this.ui = new UIManager();
+            }
+
+            init() {
+                this.mapManager.init();
+                this.ui.init();
+                this.store.fetchData().then(() => {
+                    this.store.checkHash();
+                });
+            }
+
+            submitComplaint() {
+                const form = document.getElementById('add-form');
+
+                const title = form.querySelector('[name=title]').value;
+                const type = form.querySelector('[name=type]').value;
+                const desc = form.querySelector('[name=desc]').value;
+                const lat = form.querySelector('[name=lat]').value;
+                const lng = form.querySelector('[name=lng]').value;
+                const author = form.querySelector('[name=author]').value;
+
+                if (!title || !lat) {
+                    this.ui.showToast('يرجى ملء كافة الحقول الإجبارية وتحديد الموقع', 'error');
+                    return;
+                }
+
+                const previewImg = document.getElementById('preview-img');
+                let imageData = null;
+                if (previewImg.src && document.getElementById('image-preview').style.display !== 'none') {
+                    imageData = previewImg.src;
+                }
+
+                const newComplaint = {
+                    id: Date.now().toString(),
+                    title,
+                    type,
+                    desc,
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lng),
+                    author: author || 'فاعل خير',
+                    timestamp: Date.now(),
+                    status: 'open',
+                    votes: { support: 0, oppose: 0 },
+                    comments: [],
+                    image: imageData
+                };
+
+                this.store.addComplaint(newComplaint);
+                this.ui.closeAddModal();
+                form.reset();
+                this.clearImage();
+            }
+
+            handleImagePreview(input) {
+                if (input.files && input.files[0]) {
+                    if (input.files[0].size > 5 * 1024 * 1024) {
+                        this.ui.showToast('حجم الصورة يجب أن يكون أقل من 5 ميجا', 'error');
+                        input.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('preview-img').src = e.target.result;
+                        document.getElementById('image-preview').style.display = 'block';
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            clearImage() {
+                document.getElementById('form-image').value = '';
+                document.getElementById('image-preview').style.display = 'none';
+                document.getElementById('preview-img').src = '';
+            }
+
+            submitComment(id) {
+                const text = document.getElementById('comment-text').value;
+                const author = document.getElementById('comment-author').value;
+                if (!text) return;
+                this.store.addComment(id, text, author);
+                document.getElementById('comment-text').value = '';
+            }
+
+            verifyAdmin() {
+                const pin = document.getElementById('admin-pin').value;
+                if (pin === CONSTANTS.ADMIN_PIN) {
+                    sessionStorage.setItem('isAdmin', 'true');
+                    this.store.isAdmin = true;
+                    document.getElementById('admin-modal').classList.remove('active');
+                    this.ui.showToast('تم تفعيل وضع الإدارة', 'success');
+                } else {
+                    this.ui.showToast('رمز PIN غير صحيح', 'error');
+                }
+            }
+
+            updateStatus(id, newStatus) {
+                if (!this.store.isAdmin) return;
+                const c = this.store.data.find(x => x.id === id);
+                if (c) {
+                    c.status = newStatus;
+                    this.store.refreshDetails(id);
+                    this.ui.renderList();
+                    this.mapManager.addMarker(c);
+                }
+            }
+
+            openAddModal() { this.ui.openAddModal(); }
+            closeAddModal() { this.ui.closeAddModal(); }
+            closeDrawer() { this.ui.closeDrawer(); }
+            showMobileView(v) { this.ui.showMobileView(v); }
+        }
+
+        window.onload = () => {
+            window.app = new App();
+            window.app.init();
+        };
+
+    </script>
 </body>
+
 </html>
