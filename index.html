@@ -1,1334 +1,950 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=3.0"/>
-  <title>🔍 بحث عن الخدمات - بشتيل</title>
-  <meta name="theme-color" content="#2196f3">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet"/>
-  
-  <script>
-    const CONFIG = {
-      WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbyVW8NG--5KGo9i9ho3aT1t6zPt9dB1aBKaJbkb8q0yFP5BKiK2Koke4tDjezL3Oo9D/exec',
-      GOOGLE_MAPS_API_KEY: 'AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8'
-    };
-  </script>
-  
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    html, body {
-      width: 100%;
-      height: 100%;
-      font-family: 'Tajawal', sans-serif;
-      background: #f5f8fa;
-      overflow-x: hidden;
-      font-size: 16px;
-    }
-    
-    :root {
-      --primary: #2196f3;
-      --primary-dark: #1976d2;
-      --secondary: #4caf50;
-      --accent: #f44336;
-      --bg: #f5f8fa;
-      --card: #fff;
-      --text: #1a1a2e;
-      --border: #e1e8ed;
-    }
-    
-    /* Splash Screen */
-    .splash {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 99999;
-      transition: opacity 0.3s;
-    }
-    
-    .splash.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    
-    .splash-logo {
-      font-size: 5rem;
-      animation: bounce 1s infinite;
-    }
-    
-    .splash-text {
-      color: #fff;
-      font-size: 2rem;
-      font-weight: 800;
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
-    }
-    
-    .hidden {
-      display: none !important;
-    }
-    
-    /* ============================================ */
-    /* MOBILE VIEW - تصميم تطبيق أندرويد احترافي */
-    /* ============================================ */
-    
-    .mobile-app {
-      display: none;
-      width: 100%;
-      min-height: 100vh;
-      background: var(--bg);
-    }
-    
-    .mobile-app.active {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    /* Header ثابت */
-    .app-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      padding: 1rem;
-      text-align: center;
-      color: #fff;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    
-    .app-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 0.8rem;
-      line-height: 1.2;
-    }
-    
-    .app-buttons {
-      display: flex;
-      gap: 0.6rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    
-    .app-btn {
-      padding: 0.7rem 1.2rem;
-      border-radius: 20px;
-      border: none;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #fff;
-      cursor: pointer;
-      font-family: 'Tajawal';
-      transition: transform 0.2s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    }
-    
-    .app-btn:active {
-      transform: scale(0.95);
-    }
-    
-    .btn-search {
-      background: linear-gradient(135deg, var(--accent), #d32f2f);
-    }
-    
-    .btn-add {
-      background: linear-gradient(135deg, var(--secondary), #388e3c);
-    }
-    
-    /* المحتوى */
-    .app-content {
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    
-    .app-section {
-      padding: 0;
-      margin: 0;
-    }
-    
-    .section-box {
-      background: var(--card);
-      margin: 0 0 1rem 0;
-      padding: 1.2rem 1rem;
-      border-bottom: 2px solid var(--bg);
-    }
-    
-    .section-header {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-    
-    .section-icon {
-      font-size: 1.5rem;
-    }
-    
-    .section-desc {
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
-      margin-bottom: 1rem;
-      line-height: 1.4;
-    }
-    
-    /* Filters - شبكة 3 أعمدة */
-    .filter-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.8rem;
-    }
-    
-    .filter-item {
-      border: 2px solid var(--border);
-      border-radius: 15px;
-      padding: 0.8rem 0.5rem;
-      text-align: center;
-      background: var(--bg);
-      cursor: pointer;
-      transition: all 0.2s;
-      min-height: 90px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-    }
-    
-    .filter-item:active {
-      transform: scale(0.95);
-    }
-    
-    .filter-item.selected {
-      border-color: var(--primary);
-      background: var(--card);
-      box-shadow: 0 4px 12px rgba(33,150,243,0.3);
-      transform: scale(1.02);
-    }
-    
-    .filter-emoji {
-      font-size: 2rem;
-      line-height: 1;
-    }
-    
-    .filter-text {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-    }
-    
-    /* Activities Grid - شبكة 3 أعمدة */
-    .activity-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.8rem;
-      margin-top: 0.8rem;
-    }
-    
-    .activity-item {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 0.7rem 0.4rem;
-      text-align: center;
-      background: var(--bg);
-      cursor: pointer;
-      transition: all 0.2s;
-      min-height: 85px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-    }
-    
-    .activity-item:active {
-      transform: scale(0.95);
-      background: #e3f2fd;
-    }
-    
-    .activity-emoji {
-      font-size: 1.8rem;
-    }
-    
-    .activity-text {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
-    }
-    
-    /* Results */
-    .results-container {
-      padding: 1rem;
-    }
-    
-    .result-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 20px;
-      padding: 1.5rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      border: 2px solid #e3f2fd;
-      border-right: 6px solid var(--primary);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .result-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-    }
-    
-    .result-name {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-    }
-    
-    .result-row {
-      font-size: 1rem;
-      color: var(--text);
-      margin: 0.7rem 0;
-      font-weight: 600;
-      line-height: 1.6;
-      padding: 0.3rem 0;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .result-row a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 700;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.2s;
-    }
-    
-    .result-row a:active {
-      border-bottom-color: var(--primary);
-    }
-    
-    .result-btn {
-      width: 100%;
-      padding: 1.1rem;
-      background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
-      color: #fff;
-      border: none;
-      border-radius: 15px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 1.2rem;
-      font-family: 'Tajawal';
-      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-    
-    .result-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: left 0.5s;
-    }
-    
-    .result-btn:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
-    }
-    
-    .result-btn:active::before {
-      left: 100%;
-    }
-    
-    /* Messages */
-    .msg-loading, .msg-error, .msg-empty {
-      font-size: 1.2rem;
-      text-align: center;
-      padding: 2rem 1rem;
-      font-weight: 700;
-    }
-    
-    .msg-loading {
-      color: var(--primary);
-    }
-    
-    .msg-error {
-      background: #ffebee;
-      color: var(--accent);
-      border-radius: 12px;
-      margin: 1rem;
-    }
-    
-    .msg-empty {
-      color: #999;
-    }
-    
-    /* Fullscreen Map */
-    .map-fullscreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 9999;
-      background: var(--card);
-      display: none;
-    }
-    
-    .map-fullscreen.active {
-      display: block;
-    }
-    
-    .map-close {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.8rem 1.2rem;
-      border-radius: 20px;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      z-index: 99999;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      font-family: 'Tajawal';
-    }
-    
-    .map-close:active {
-      transform: scale(0.95);
-    }
-    
-    #mobileMap {
-      width: 100%;
-      height: 100%;
-    }
-    
-    /* ============================================ */
-    /* DESKTOP VIEW */
-    /* ============================================ */
-    
-    .desktop {
-      display: none;
-      background: var(--bg);
-      min-height: 100vh;
-      padding: 2rem;
-    }
-    
-    .desktop.active {
-      display: block;
-    }
-    
-    .desktop-wrap {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    
-    .desktop-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      padding: 2rem;
-      text-align: center;
-      color: #fff;
-      border-radius: 20px;
-      margin-bottom: 2rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
-    
-    .desktop-header h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 1.2rem;
-    }
-    
-    .desktop-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-    }
-    
-    .desktop-btn {
-      padding: 1rem 2rem;
-      border-radius: 15px;
-      border: none;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      cursor: pointer;
-      font-family: 'Tajawal';
-      transition: all 0.2s;
-      text-decoration: none;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.2);
-    }
-    
-    .desktop-btn:hover {
-      transform: translateY(-2px);
-    }
-    
-    .desktop-btn.btn-search {
-      background: linear-gradient(135deg, var(--accent), #d32f2f);
-    }
-    
-    .desktop-btn.btn-add {
-      background: linear-gradient(135deg, var(--secondary), #388e3c);
-    }
-    
-    .desktop-grid {
-      display: grid;
-      grid-template-columns: 1fr 550px;
-      gap: 2rem;
-    }
-    
-    .desktop-main {
-      background: var(--card);
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-    
-    .desktop-section {
-      margin-bottom: 2rem;
-    }
-    
-    .desktop-section-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 1.2rem;
-      padding-bottom: 0.8rem;
-      border-bottom: 2px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-    
-    .desktop-section-icon {
-      font-size: 1.6rem;
-    }
-    
-    .desktop-info {
-      font-size: 0.95rem;
-      color: #666;
-      text-align: center;
-      margin-bottom: 1.2rem;
-    }
-    
-    .desktop-filters {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-    
-    .desktop-filter {
-      border: 2px solid var(--border);
-      border-radius: 15px;
-      padding: 1.2rem 0.8rem;
-      text-align: center;
-      background: var(--bg);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .desktop-filter:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(33,150,243,0.2);
-    }
-    
-    .desktop-filter.selected {
-      border-color: var(--primary);
-      background: var(--card);
-      box-shadow: 0 6px 20px rgba(33,150,243,0.25);
-    }
-    
-    .desktop-filter-emoji {
-      font-size: 1.8rem;
-    }
-    
-    .desktop-filter-text {
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-    
-    .desktop-activities {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.8rem;
-      margin-top: 1.2rem;
-    }
-    
-    .desktop-activity {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 0.6rem;
-      text-align: center;
-      background: var(--bg);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    
-    .desktop-activity:hover {
-      transform: translateY(-3px);
-      background: #e3f2fd;
-    }
-    
-    .desktop-activity-emoji {
-      font-size: 1.6rem;
-    }
-    
-    .desktop-activity-text {
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    
-    .desktop-results {
-      margin-top: 1.5rem;
-    }
-    
-    .desktop-result-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 18px;
-      padding: 1.8rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      border: 2px solid #e3f2fd;
-      border-right: 6px solid var(--primary);
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .desktop-result-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-    }
-    
-    .desktop-result-card:hover {
-      transform: translateX(-8px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
-    
-    .desktop-result-name {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-    }
-    
-    .desktop-result-row {
-      font-size: 1rem;
-      color: var(--text);
-      margin: 0.7rem 0;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .desktop-result-row a {
-      color: var(--primary);
-      text-decoration: none;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.2s;
-    }
-    
-    .desktop-result-row a:hover {
-      border-bottom-color: var(--primary);
-    }
-    
-    .desktop-result-btn {
-      width: 100%;
-      padding: 1.1rem;
-      background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
-      color: #fff;
-      border: none;
-      border-radius: 15px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 1.2rem;
-      font-family: 'Tajawal';
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-    
-    .desktop-result-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: left 0.5s;
-    }
-    
-    .desktop-result-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-    }
-    
-    .desktop-result-btn:hover::before {
-      left: 100%;
-    }
-    
-    .desktop-sidebar {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .desktop-map-box {
-      background: var(--card);
-      padding: 1.5rem;
-      border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-      position: sticky;
-      top: 2rem;
-    }
-    
-    .desktop-map-title {
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      font-weight: 700;
-    }
-    
-    .desktop-map-container {
-      width: 100%;
-      height: 600px;
-      border-radius: 15px;
-      overflow: hidden;
-      background: #e0e0e0;
-    }
-    
-    #desktopMap {
-      width: 100%;
-      height: 100%;
-    }
-    
-    .desktop-msg-loading, .desktop-msg-error, .desktop-msg-empty {
-      font-size: 1.2rem;
-      text-align: center;
-      padding: 3rem 1.5rem;
-      font-weight: 700;
-    }
-    
-    .desktop-msg-loading {
-      color: var(--primary);
-    }
-    
-    .desktop-msg-error {
-      background: #ffebee;
-      color: var(--accent);
-      border-radius: 15px;
-    }
-    
-    .desktop-msg-empty {
-      color: #999;
-    }
-    
-    @media (max-width: 1024px) {
-      .desktop-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .desktop-map-box {
-        position: relative;
-        top: 0;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دليل خدمات بشتيل</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts (Tajawal) -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --bg-overlay: rgba(0, 0, 0, 0.85);
+            --primary: #2196f3;
+            --primary-dark: #1976d2;
+            --accent: #f44336;
+            --success: #00c853;
+            --text-main: #ffffff;
+            --text-sec: #b0b0b0;
+            --border: #333333;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --font-main: 'Tajawal', sans-serif;
+            --header-height: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Map Container --- */
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: #222;
+        }
+
+        .map-wrap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- Header --- */
+        .app-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            z-index: 1000;
+            pointer-events: none;
+            /* Let clicks pass through except buttons */
+        }
+
+        .header-title {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        .header-actions {
+            pointer-events: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #2e7d32);
+            color: white;
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- Bottom Panel (Search & Results) --- */
+        .bottom-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-height: 85%;
+            /* Increased height for mobile */
+            background: var(--bg-card);
+            border-radius: 24px 24px 0 0;
+            z-index: 900;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            /* Default state: showing search bar + some categories */
+            transform: translateY(calc(100% - 200px));
+            /* Show more by default */
+        }
+
+        .bottom-panel.expanded {
+            transform: translateY(0);
+            height: 85%;
+        }
+
+        /* Desktop override */
+        @media (min-width: 768px) {
+            .bottom-panel {
+                top: 80px;
+                left: 20px;
+                bottom: 20px;
+                width: 400px;
+                max-height: calc(100% - 100px);
+                transform: translateX(-110%);
+                border-radius: 16px;
+                height: auto;
+            }
+
+            .bottom-panel.active-desktop {
+                transform: translateX(0);
+            }
+
+            /* Reset transform for desktop logic */
+            .bottom-panel.expanded {
+                transform: translateX(0);
+                height: auto;
+            }
+        }
+
+        .panel-handle {
+            width: 50px;
+            height: 6px;
+            background: #444;
+            border-radius: 10px;
+            margin: 12px auto;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .search-container {
+            padding: 0 15px 10px;
+            flex-shrink: 0;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border-radius: 12px;
+            background: #2a2a2a;
+            border: 1px solid var(--border);
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sec);
+        }
+
+        /* Categories Grid */
+        .categories-scroll {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            /* 4 columns for mobile */
+            gap: 10px;
+            padding: 0 0 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 380px) {
+            .categories-scroll {
+                grid-template-columns: repeat(3, 1fr);
+                /* 3 cols for very small screens */
+            }
+        }
+
+        .cat-chip {
+            background: #2a2a2a;
+            border: 1px solid var(--border);
+            padding: 10px 5px;
+            border-radius: 12px;
+            color: var(--text-sec);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            min-height: 80px;
+        }
+
+        .cat-chip span {
+            font-size: 1.8rem;
+        }
+
+        .cat-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .results-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 15px 15px;
+        }
+
+        .result-item {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-right: 4px solid var(--primary);
+            cursor: pointer;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .result-meta {
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .result-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            cursor: pointer;
+        }
+
+        /* --- Modal (Add Service) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-overlay);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--radius);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-sec);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #121212;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .map-picker {
+            height: 200px;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .center-marker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+            z-index: 500;
+            font-size: 2rem;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+        }
+
+        /* --- Loading & Toast --- */
+        .loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3000;
+            display: none;
+        }
+
+        .loader.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            z-index: 4000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            font-weight: 700;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--accent);
+        }
+
+        /* Custom Marker */
+        .custom-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="splash" id="splash">
-    <div class="splash-logo">🔍</div>
-    <div class="splash-text">دليل خدمات بشتيل</div>
-  </div>
 
-  <!-- ============================================ -->
-  <!-- MOBILE APP VIEW -->
-  <!-- ============================================ -->
-  <div class="mobile-app" id="mobileApp">
-    <div class="app-header">
-      <div class="app-title">🔍 دليل خدمات بشتيل</div>
-      <div class="app-buttons">
-        <button class="app-btn btn-search" onclick="resetSearch()">🔍 بحث جديد</button>
-        <a href="https://mostafaezat-afk.github.io/mymap/form.html" class="app-btn btn-add">✍️ إضافة نشاط</a>
-      </div>
+    <div class="map-wrap">
+        <div id="map"></div>
     </div>
-    
-    <div class="app-content">
-      <div class="msg-loading hidden" id="mobileLoading">⏳ جاري البحث...</div>
-      <div class="msg-error hidden" id="mobileError"></div>
-      
-      <div id="mobileResults" class="hidden">
-        <div class="results-container" id="mobileResultsContainer"></div>
-      </div>
-      
-      <div id="mobileSearch">
-        <div class="app-section">
-          <div class="section-box">
-            <div class="section-header"><span class="section-icon">🔍</span>اختر الخدمة</div>
-            <p class="section-desc">اختر التصنيف ثم اضغط على النشاط المطلوب</p>
-            <div class="filter-grid" id="mobileFilters"></div>
-          </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-title">🔍 خدمات بشتيل</div>
+        <div class="header-actions">
+            <button class="btn btn-glass" onclick="app.toggleSearchPanel()">
+                <i class="fa-solid fa-search"></i> <span style="display:none">بحث</span>
+            </button>
+            <button class="btn btn-success" onclick="app.openAddModal()">
+                <i class="fa-solid fa-plus"></i> <span>إضافة</span>
+            </button>
         </div>
-        <div class="app-section" id="mobileActivities"></div>
-      </div>
-    </div>
-    
-    <div class="map-fullscreen" id="mobileMapFull">
-      <button class="map-close" onclick="closeMap()">✖ إغلاق</button>
-      <div id="mobileMap"></div>
-    </div>
-  </div>
+    </header>
 
-  <!-- ============================================ -->
-  <!-- DESKTOP VIEW -->
-  <!-- ============================================ -->
-  <div class="desktop" id="desktop">
-    <div class="desktop-wrap">
-      <div class="desktop-header">
-        <h1>🔍 دليل خدمات بشتيل</h1>
-        <div class="desktop-buttons">
-          <button class="desktop-btn btn-search" onclick="resetSearch()">🔍 بحث جديد</button>
-          <a href="https://mostafaezat-afk.github.io/mymap/form.html" class="desktop-btn btn-add">✍️ إضافة نشاط</a>
-        </div>
-      </div>
-      
-      <div class="desktop-msg-loading hidden" id="desktopLoading">⏳ جاري البحث...</div>
-      <div class="desktop-msg-error hidden" id="desktopError"></div>
-      
-      <div class="desktop-grid">
-        <div class="desktop-main">
-          <div class="desktop-section">
-            <div class="desktop-section-title"><span class="desktop-section-icon">🔍</span>اختر الخدمة المطلوبة</div>
-            <p class="desktop-info">اختر التصنيف ثم النشاط للبحث</p>
-            <div class="desktop-filters" id="desktopFilters"></div>
-          </div>
-          <div class="desktop-section" id="desktopActivities"></div>
-          <div class="desktop-section">
-            <div class="desktop-results" id="desktopResults"></div>
-          </div>
-        </div>
-        <div class="desktop-sidebar">
-          <div class="desktop-map-box">
-            <div class="desktop-map-title">🗺️ الخريطة</div>
-            <div class="desktop-map-container"><div id="desktopMap"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const categories = [
-      {id: "all", icon: "🌟", label: "الكل"},
-      {id: "food", icon: "🍽️", label: "مأكولات"},
-      {id: "grocery", icon: "🛒", label: "بقالة"},
-      {id: "services", icon: "🔧", label: "خدمات"},
-      {id: "shops", icon: "🏪", label: "محلات"},
-      {id: "medical", icon: "⚕️", label: "طبي"},
-      {id: "general", icon: "📌", label: "عام"}
-    ];
-    
-    const activities = {
-      food: [
-        {name: "كشري", icon: "🍲"},
-        {name: "كبابجي ومشويات", icon: "🍖"},
-        {name: "فرارجي", icon: "🍗"},
-        {name: "محل فول وطعمية", icon: "🧆"},
-        {name: "محل أسماك", icon: "🐟"},
-        {name: "بيتزا وكريب", icon: "🍕"},
-        {name: "حلواني", icon: "🎂"},
-        {name: "كافتيريا ومشروبات", icon: "☕"},
-        {name: "عصير", icon: "🍹"}
-      ],
-      grocery: [
-        {name: "سوبر ماركت", icon: "🛒"},
-        {name: "خضروات وفاكهة", icon: "🍎"},
-        {name: "جزار", icon: "🥩"},
-        {name: "مخبز عيش", icon: "🍞"},
-        {name: "فرن إفرنجي", icon: "🥐"},
-        {name: "عطارة", icon: "🍯"},
-        {name: "تموين", icon: "🏪"},
-        {name: "ألبان", icon: "🥛"}
-      ],
-      services: [
-        {name: "سباك", icon: "🔧"},
-        {name: "كهربائي", icon: "⚡"},
-        {name: "صيانة أجهزة كهربائية", icon: "🔌"},
-        {name: "صيانة سخانات", icon: "🔥"},
-        {name: "صيانة مواتير مياه", icon: "🚰"},
-        {name: "صيانة كمبيوتر ومحمول", icon: "💻"},
-        {name: "نجار", icon: "🛠️"},
-        {name: "نقاش", icon: "🎨"},
-        {name: "ميكانيكي سيارات", icon: "🚗"},
-        {name: "فني دش وستالايت", icon: "📡"},
-        {name: "فني تكييفات", icon: "❄️"},
-        {name: "حداد", icon: "🔨"}
-      ],
-      shops: [
-        {name: "ملابس", icon: "👕"},
-        {name: "محلات محمول", icon: "📱"},
-        {name: "مكتبة وأدوات مدرسية", icon: "📚"},
-        {name: "حدايد وبويات", icon: "🏠"},
-        {name: "جواهرجي", icon: "💎"},
-        {name: "أدوات منزلية", icon: "🧹"},
-        {name: "منظفات وورقيات", icon: "🧼"},
-        {name: "أحذية وشنط", icon: "👟"},
-        {name: "مفروشات", icon: "🛏️"},
-        {name: "كوافير حريمي", icon: "💇"},
-        {name: "كوافير رجالي", icon: "💇‍♂️"},
-        {name: "مستحضرات تجميل وهدايا", icon: "💄"},
-        {name: "لعب أطفال", icon: "🧸"}
-      ],
-      medical: [
-        {name: "باطنة", icon: "🩺"},
-        {name: "قلب", icon: "❤️"},
-        {name: "أطفال", icon: "👶"},
-        {name: "عظام", icon: "🦴"},
-        {name: "أنف وأذن وحنجرة", icon: "👂"},
-        {name: "نساء وتوليد", icon: "🤰"},
-        {name: "عيون", icon: "👁️"},
-        {name: "جلدية", icon: "💅"},
-        {name: "أسنان", icon: "🦷"},
-        {name: "مخ وأعصاب", icon: "🧠"},
-        {name: "مسالك بولية", icon: "🩸"},
-        {name: "علاج طبيعي", icon: "💪"},
-        {name: "جراحة عامة", icon: "💉"},
-        {name: "نفسية وعصبية", icon: "💭"},
-        {name: "صدر", icon: "🫁"},
-        {name: "تغذية علاجية", icon: "🥗"},
-        {name: "سكر وغدد صماء", icon: "💊"},
-        {name: "ذكورة وعقم", icon: "🧪"},
-        {name: "سمعيات", icon: "🦻"},
-        {name: "تخاطب", icon: "💬"},
-        {name: "صيدلية", icon: "💊"},
-        {name: "معمل تحاليل", icon: "🔬"},
-        {name: "مركز أشعة", icon: "🩻"},
-        {name: "عيادة بيطرية", icon: "🐕"}
-      ],
-      general: [
-        {name: "خدمات توصيل", icon: "🚚"},
-        {name: "مدرسة", icon: "🏫"},
-        {name: "مراكز تقوية", icon: "🎓"},
-        {name: "محامي", icon: "⚖️"},
-        {name: "سمسار", icon: "🏢"},
-        {name: "عقارات", icon: "🏡"},
-        {name: "بلاي ستيشن", icon: "🎮"},
-        {name: "سنترال", icon: "☎️"},
-        {name: "مؤسسات حكومية", icon: "🏛️"},
-        {name: "مغسلة", icon: "👕"},
-        {name: "حضانة أطفال", icon: "🍼"},
-        {name: "إيجار سيارات", icon: "🚙"},
-        {name: "جيم", icon: "🏋️"},
-        {name: "سايبر نت", icon: "🖥️"}
-      ]
-    };
-
-    let selectedCat = 'all';
-    let mobileMap, desktopMap;
-    let markers = [];
-    let infoWindows = [];
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-
-    function resetSearch() {
-      selectedCat = 'all';
-      markers.forEach(m => {
-        if (m.marker) m.marker.setMap(null);
-        if (m.overlay) m.overlay.setMap(null);
-      });
-      markers = [];
-      infoWindows = [];
-      
-      if (isMobile) {
-        document.getElementById('mobileResults').classList.add('hidden');
-        document.getElementById('mobileSearch').classList.remove('hidden');
-        document.getElementById('mobileResultsContainer').innerHTML = '';
-        loadFilters('mobile');
-        loadActivities('mobile', 'all');
-      } else {
-        document.getElementById('desktopResults').innerHTML = '';
-        loadFilters('desktop');
-        loadActivities('desktop', 'all');
-      }
-    }
-
-    function closeMap() {
-      document.getElementById('mobileMapFull').classList.remove('active');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      if (isMobile) {
-        document.getElementById('mobileApp').classList.add('active');
-        loadFilters('mobile');
-        loadActivities('mobile', 'all');
-      } else {
-        document.getElementById('desktop').classList.add('active');
-        loadFilters('desktop');
-        loadActivities('desktop', 'all');
-      }
-    });
-
-    function loadFilters(view) {
-      const grid = view === 'mobile' ? document.getElementById('mobileFilters') : document.getElementById('desktopFilters');
-      grid.innerHTML = '';
-      
-      categories.forEach(cat => {
-        const card = document.createElement('div');
-        card.className = view === 'mobile' ? 'filter-item' : 'desktop-filter';
-        if (cat.id === selectedCat) card.classList.add('selected');
-        
-        card.innerHTML = `
-          <div class="${view === 'mobile' ? 'filter' : 'desktop-filter'}-emoji">${cat.icon}</div>
-          <div class="${view === 'mobile' ? 'filter' : 'desktop-filter'}-text">${cat.label}</div>
-        `;
-        
-        card.onclick = () => selectFilter(cat.id, view);
-        grid.appendChild(card);
-      });
-    }
-
-    function selectFilter(catId, view) {
-      selectedCat = catId;
-      loadFilters(view);
-      loadActivities(view, catId);
-    }
-
-    function loadActivities(view, filter) {
-      const container = view === 'mobile' ? document.getElementById('mobileActivities') : document.getElementById('desktopActivities');
-      container.innerHTML = '';
-      
-      Object.entries(activities).forEach(([cat, acts]) => {
-        if (filter !== 'all' && filter !== cat) return;
-        
-        const section = document.createElement('div');
-        section.className = 'section-box';
-        
-        const catData = categories.find(c => c.id === cat);
-        const title = document.createElement('div');
-        title.className = view === 'mobile' ? 'section-header' : 'desktop-section-title';
-        title.innerHTML = view === 'mobile' 
-          ? `<span class="section-icon">${catData.icon}</span>${catData.label}`
-          : `<span class="desktop-section-icon">${catData.icon}</span>${catData.label}`;
-        section.appendChild(title);
-        
-        const grid = document.createElement('div');
-        grid.className = view === 'mobile' ? 'activity-grid' : 'desktop-activities';
-        
-        acts.forEach(act => {
-          const card = document.createElement('div');
-          card.className = view === 'mobile' ? 'activity-item' : 'desktop-activity';
-          card.innerHTML = `
-            <div class="${view === 'mobile' ? 'activity' : 'desktop-activity'}-emoji">${act.icon}</div>
-            <div class="${view === 'mobile' ? 'activity' : 'desktop-activity'}-text">${act.name}</div>
-          `;
-          card.onclick = () => searchActivity(act.name, view);
-          grid.appendChild(card);
-        });
-        
-        section.appendChild(grid);
-        container.appendChild(section);
-      });
-    }
-
-    function searchActivity(name, view) {
-      const prefix = view === 'mobile' ? 'mobile' : 'desktop';
-      document.getElementById(`${prefix}Error`).classList.add('hidden');
-      document.getElementById(`${prefix}Loading`).classList.remove('hidden');
-      
-      if (view === 'mobile') {
-        document.getElementById('mobileSearch').classList.add('hidden');
-      }
-      
-      fetch(`${CONFIG.WEB_APP_URL}?action=getProvidersByActivity&activity=${encodeURIComponent(name)}`)
-        .then(r => r.json())
-        .then(data => showResults(data, name, view))
-        .catch(error => {
-          document.getElementById(`${prefix}Error`).textContent = "❌ خطأ: " + error.message;
-          document.getElementById(`${prefix}Error`).classList.remove('hidden');
-          document.getElementById(`${prefix}Loading`).classList.add('hidden');
-        });
-    }
-
-    function showResults(providers, name, view) {
-      const prefix = view === 'mobile' ? 'mobile' : 'desktop';
-      document.getElementById(`${prefix}Loading`).classList.add('hidden');
-      
-      const resultsDiv = view === 'mobile' 
-        ? document.getElementById('mobileResultsContainer') 
-        : document.getElementById('desktopResults');
-      resultsDiv.innerHTML = '';
-      
-      if (view === 'mobile') {
-        document.getElementById('mobileResults').classList.remove('hidden');
-      }
-      
-      markers.forEach(m => {
-        if (m.marker) m.marker.setMap(null);
-        if (m.overlay) m.overlay.setMap(null);
-      });
-      markers = [];
-      infoWindows = [];
-      
-      if (!providers || providers.length === 0) {
-        resultsDiv.innerHTML = `<div class="${prefix}-msg-empty">❌ لا توجد نتائج للنشاط: <strong>${name}</strong></div>`;
-        return;
-      }
-      
-      providers.forEach((p, i) => {
-        const card = document.createElement('div');
-        card.className = view === 'mobile' ? 'result-card' : 'desktop-result-card';
-        card.innerHTML = `
-          <div class="${prefix}-result-name">${p.name}</div>
-          <div class="${prefix}-result-row">🛠️ ${p.activity}</div>
-          <div class="${prefix}-result-row">📞 <a href="tel:${p.phone}">${p.phone}</a></div>
-          <div class="${prefix}-result-row">📍 ${p.address}</div>
-          <div class="${prefix}-result-row">🕒 ${p.time || 'غير محدد'}</div>
-          <button class="${prefix}-result-btn" onclick="viewOnMap(${i}, '${view}')">🗺️ شاهد على الخريطة</button>
-        `;
-        resultsDiv.appendChild(card);
-      });
-      
-      addMarkers(providers, view);
-      centerMap(providers, view);
-    }
-
-    function addMarkers(providers, view) {
-      const map = view === 'mobile' ? mobileMap : desktopMap;
-      
-      providers.forEach((p, i) => {
-        // إنشاء Custom Marker مع Label محسّن
-        const marker = new google.maps.Marker({
-          position: {lat: p.lat, lng: p.lng},
-          map: map,
-          title: p.name,
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 12,
-            fillColor: '#2196f3',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 3
-          }
-        });
-        
-        // إنشاء Label مخصص فوق الدبوس
-        const labelDiv = document.createElement('div');
-        labelDiv.style.cssText = `
-          position: absolute;
-          background: #2196f3;
-          color: #ffffff;
-          padding: 6px 12px;
-          border-radius: 8px;
-          font-family: 'Tajawal', sans-serif;
-          font-size: 13px;
-          font-weight: 800;
-          text-shadow: 
-            -1px -1px 0 #000,
-            1px -1px 0 #000,
-            -1px 1px 0 #000,
-            1px 1px 0 #000,
-            0 0 5px rgba(0,0,0,0.5);
-          box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-          white-space: nowrap;
-          pointer-events: none;
-          transform: translate(-50%, -40px);
-          z-index: 1000;
-        `;
-        labelDiv.textContent = p.name;
-        
-        // إضافة Label للخريطة باستخدام OverlayView
-        const overlay = new google.maps.OverlayView();
-        overlay.onAdd = function() {
-          const panes = this.getPanes();
-          panes.floatPane.appendChild(labelDiv);
-        };
-        overlay.draw = function() {
-          const projection = this.getProjection();
-          const position = projection.fromLatLngToDivPixel(marker.getPosition());
-          labelDiv.style.left = position.x + 'px';
-          labelDiv.style.top = position.y + 'px';
-        };
-        overlay.onRemove = function() {
-          if (labelDiv.parentNode) {
-            labelDiv.parentNode.removeChild(labelDiv);
-          }
-        };
-        overlay.setMap(map);
-        
-        const infoWindow = new google.maps.InfoWindow({
-          content: `
-            <div style="font-family: Tajawal; direction: rtl; padding: 15px 10px; max-width: 280px;">
-              <div style="font-size: 1.2rem; font-weight: 800; color: #1976d2; margin-bottom: 10px;">${p.name}</div>
-              <div style="margin: 8px 0; font-size: 0.95rem;">🛠️ ${p.activity}</div>
-              <div style="margin: 8px 0; font-size: 0.9rem;">📞 <a href="tel:${p.phone}" style="color: #2196f3;">${p.phone}</a></div>
-              <div style="margin: 8px 0; font-size: 0.85rem;">📍 ${p.address}</div>
+    <!-- Bottom Search Panel -->
+    <div class="bottom-panel" id="search-panel">
+        <div class="panel-handle" onclick="app.togglePanelExpand()"></div>
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" id="search-input" placeholder="ابحث عن خدمة (صيدلية، مطعم...)"
+                    oninput="app.handleSearch(this.value)">
+                <i class="fa-solid fa-search search-icon"></i>
             </div>
-          `,
-          maxWidth: 300
-        });
-        
-        marker.addListener("click", function() {
-          infoWindows.forEach(iw => iw.close());
-          map.setCenter(marker.getPosition());
-          map.setZoom(18);
-          infoWindow.open(map, marker);
-        });
-        
-        markers.push({marker, overlay});
-        infoWindows.push(infoWindow);
-      });
-    }
 
-    function centerMap(providers, view) {
-      const map = view === 'mobile' ? mobileMap : desktopMap;
-      
-      if (providers.length > 0) {
-        const bounds = new google.maps.LatLngBounds();
-        providers.forEach(p => bounds.extend(new google.maps.LatLng(p.lat, p.lng)));
-        map.fitBounds(bounds);
-        
-        if (providers.length === 1) {
-          map.setZoom(17);
+            <div class="categories-scroll" id="categories-container">
+                <!-- Categories injected here -->
+            </div>
+        </div>
+
+        <div class="results-list" id="results-list">
+            <!-- Results injected here -->
+            <div style="text-align:center; padding: 20px; color: #666;">
+                <i class="fa-solid fa-map-location-dot" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                <p>اختر قسماً أو ابحث عن خدمة لظهور النتائج</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div class="modal-overlay" id="add-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>إضافة خدمة جديدة</span>
+                <i class="fa-solid fa-times" style="cursor:pointer" onclick="app.closeAddModal()"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">اسم النشاط</label>
+                    <input type="text" class="form-input" id="add-name" placeholder="مثال: صيدلية النور">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم الهاتف</label>
+                    <input type="tel" class="form-input" id="add-phone" placeholder="01xxxxxxxxx">
+                </div>
+                <div class="form-group" style="display:flex; gap:10px">
+                    <div style="flex:1">
+                        <label class="form-label">القسم</label>
+                        <select class="form-input" id="add-category" onchange="app.updateActivitySelect()">
+                            <option value="">اختر القسم</option>
+                        </select>
+                    </div>
+                    <div style="flex:1">
+                        <label class="form-label">النشاط</label>
+                        <select class="form-input" id="add-activity">
+                            <option value="">اختر النشاط</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">العنوان</label>
+                    <input type="text" class="form-input" id="add-address" placeholder="العنوان بالتفصيل">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الموقع على الخريطة (حرك الخريطة)</label>
+                    <div class="map-picker">
+                        <div id="picker-map" style="width:100%; height:100%"></div>
+                        <div class="center-marker">📍</div>
+                    </div>
+                    <div id="location-status" style="font-size:0.8rem; color:#888; text-align:center">جاري تحديد
+                        الموقع...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass" style="color:white; background:transparent"
+                    onclick="app.closeAddModal()">إلغاء</button>
+                <button class="btn btn-primary" style="flex:1; justify-content:center" onclick="app.submitService()">حفظ
+                    الخدمة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Elements -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script>
+        const CONFIG = {
+            SEARCH_API: 'https://script.google.com/macros/s/AKfycbzUWGPZPocJJoTSs-kVXsH-4w_Do5jjUIEDlzAws8U-McyvHd8VjAttHn34mSHDHZnl/exec',
+            REGISTER_API: 'https://script.google.com/macros/s/AKfycbzUWGPZPocJJoTSs-kVXsH-4w_Do5jjUIEDlzAws8U-McyvHd8VjAttHn34mSHDHZnl/exec',
+            CENTER: [30.08771, 31.18415], // Updated Center
+            ZOOM: 16,
+            // 3km radius restriction (approx +/- 0.03 degrees)
+            MAX_BOUNDS: [
+                [30.05771, 31.15415], // SouthWest
+                [30.11771, 31.21415]  // NorthEast
+            ]
+        };
+
+        const CATEGORIES = [
+            { id: "all", icon: "🌟", label: "الكل" },
+            { id: "food", icon: "🍽️", label: "مأكولات" },
+            { id: "grocery", icon: "🛒", label: "بقالة" },
+            { id: "services", icon: "🔧", label: "خدمات" },
+            { id: "shops", icon: "🏪", label: "محلات" },
+            { id: "medical", icon: "⚕️", label: "طبي" },
+            { id: "general", icon: "📌", label: "عام" }
+        ];
+
+        const ACTIVITIES = {
+            food: ["كشري", "كبابجي ومشويات", "فرارجي", "محل فول وطعمية", "محل أسماك", "بيتزا وكريب", "حلواني", "كافتيريا ومشروبات", "عصير"],
+            grocery: ["سوبر ماركت", "خضروات وفاكهة", "جزار", "مخبز عيش", "فرن إفرنجي", "عطارة", "تموين", "ألبان"],
+            services: ["سباك", "كهربائي", "صيانة أجهزة كهربائية", "صيانة سخانات", "صيانة مواتير مياه", "صيانة كمبيوتر ومحمول", "نجار", "نقاش", "ميكانيكي سيارات", "فني دش وستالايت", "فني تكييفات", "حداد"],
+            shops: ["ملابس", "محلات محمول", "مكتبة وأدوات مدرسية", "حدايد وبويات", "جواهرجي", "أدوات منزلية", "منظفات وورقيات", "أحذية وشنط", "مفروشات", "كوافير حريمي", "كوافير رجالي", "مستحضرات تجميل وهدايا", "لعب أطفال"],
+            medical: ["باطنة", "قلب", "أطفال", "عظام", "أنف وأذن وحنجرة", "نساء وتوليد", "عيون", "جلدية", "أسنان", "مخ وأعصاب", "مسالك بولية", "علاج طبيعي", "جراحة عامة", "نفسية وعصبية", "صدر", "تغذية علاجية", "سكر وغدد صماء", "ذكورة وعقم", "سمعيات", "تخاطب", "صيدلية", "معمل تحاليل", "مركز أشعة", "عيادة بيطرية"],
+            general: ["خدمات توصيل", "مدرسة", "مراكز تقوية", "محامي", "سمسار", "عقارات", "بلاي ستيشن", "سنترال", "مؤسسات حكومية", "مغسلة", "حضانة أطفال", "إيجار سيارات", "جيم", "سايبر نت"]
+        };
+
+        class App {
+            constructor() {
+                this.map = null;
+                this.pickerMap = null;
+                this.markers = [];
+                this.selectedCat = 'all';
+                this.pickerLocation = null;
+            }
+
+            init() {
+                this.initMap();
+                this.renderCategories();
+                this.populateAddForm();
+
+                // Desktop view logic
+                if (window.innerWidth > 768) {
+                    document.getElementById('search-panel').classList.add('active-desktop');
+                }
+            }
+
+            initMap() {
+                // Main Map
+                this.map = L.map('map', {
+                    zoomControl: false,
+                    maxBounds: CONFIG.MAX_BOUNDS,
+                    maxBoundsViscosity: 1.0,
+                    minZoom: 14 // Allow slight zoom out to see context, but bounded
+                }).setView(CONFIG.CENTER, CONFIG.ZOOM);
+
+                // Hybrid Layer
+                L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                }).addTo(this.map);
+
+                L.control.zoom({ position: 'topright' }).addTo(this.map);
+            }
+
+            initPickerMap() {
+                if (this.pickerMap) return;
+
+                setTimeout(() => {
+                    this.pickerMap = L.map('picker-map', {
+                        zoomControl: false,
+                        maxBounds: CONFIG.MAX_BOUNDS,
+                        maxBoundsViscosity: 1.0,
+                        minZoom: 15
+                    }).setView(CONFIG.CENTER, 17);
+                    L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    }).addTo(this.pickerMap);
+
+                    this.pickerMap.on('move', () => {
+                        const center = this.pickerMap.getCenter();
+                        this.pickerLocation = center;
+                        document.getElementById('location-status').innerText = `الموقع الحالي: ${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`;
+                    });
+
+                    // Initial
+                    this.pickerLocation = this.pickerMap.getCenter();
+                }, 300); // Delay for modal animation
+            }
+
+            renderCategories() {
+                const container = document.getElementById('categories-container');
+                container.innerHTML = CATEGORIES.map(cat => `
+                    <div class="cat-chip ${cat.id === 'all' ? 'active' : ''}" onclick="app.selectCategory('${cat.id}', this)">
+                        <span>${cat.icon}</span> ${cat.label}
+                    </div>
+                `).join('');
+
+                // Add Activities select options for Search (optional, maybe later) 
+            }
+
+            selectCategory(catId, el) {
+                this.selectedCat = catId;
+                document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+
+                if (catId === 'all') {
+                    // Reset
+                } else {
+                    // Show activities bubbles or just filter list?
+                    // For simply merging, let's load activities for this category
+                    this.loadActivitiesForFilter(catId);
+                }
+            }
+
+            loadActivitiesForFilter(catId) {
+                // Show sub-categories as chips replacing the main categories? 
+                // Or just append? For simplicity let's stick to main categories filtering 
+                // and maybe show a list of activities to click.
+                const acts = ACTIVITIES[catId];
+                if (!acts) return;
+
+                const list = document.getElementById('results-list');
+                list.innerHTML = `<h3 style="margin-bottom:10px; color:var(--primary)">اختر نشاطاً</h3>` +
+                    acts.map(act => `
+                    <div class="result-item" onclick="app.searchService('${act}')" style="display:flex; align-items:center; justify-content:space-between">
+                        <span style="font-weight:700">${act}</span>
+                        <i class="fa-solid fa-chevron-left" style="color:var(--text-sec)"></i>
+                    </div>
+                `).join('');
+
+                this.expandPanel();
+            }
+
+            handleSearch(query) {
+                if (query.length < 2) return;
+                // Since API searches by exact activity usually, we might need a smarter search or just fuzzy match locally if we had data.
+                // The GAS script seems to take 'activity' param.
+                // We'll let user type activity name.
+            }
+
+            searchService(activityName) {
+                this.showLoader(true);
+                this.collapsePanel(); // Show map
+
+                fetch(`${CONFIG.SEARCH_API}?action=getProvidersByActivity&activity=${encodeURIComponent(activityName)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        this.renderResults(data, activityName);
+                    })
+                    .catch(err => {
+                        this.showToast('حدث خطأ في البحث: ' + err.message, 'error');
+                    })
+                    .finally(() => this.showLoader(false));
+            }
+
+            renderResults(data, title) {
+                // Clear map
+                this.markers.forEach(m => this.map.removeLayer(m));
+                this.markers = [];
+
+                const list = document.getElementById('results-list');
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = `<div style="text-align:center; padding:20px;">لا توجد نتائج لـ "${title}"</div>`;
+                    this.expandPanel();
+                    return;
+                }
+
+                list.innerHTML = `<h3 style="margin-bottom:10px; color:var(--success)">نتائج البحث: ${title} (${data.length})</h3>`;
+
+                const bounds = L.latLngBounds();
+
+                data.forEach(item => {
+                    // Add Marker
+                    const icon = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div style="
+                            background-color: var(--primary);
+                            width: 30px; height: 30px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                            display: flex; align-items: center; justify-content: center;
+                            font-size: 14px;
+                        ">📍</div>`,
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 30]
+                    });
+
+                    const marker = L.marker([item.lat, item.lng], { icon }).addTo(this.map);
+                    marker.bindPopup(`<b>${item.name}</b><br>${item.phone}`);
+                    this.markers.push(marker);
+                    bounds.extend([item.lat, item.lng]);
+
+                    // Add List Item
+                    const el = document.createElement('div');
+                    el.className = 'result-item';
+                    el.innerHTML = `
+                        <div class="result-title">${item.name}</div>
+                        <div class="result-meta"><i class="fa-solid fa-phone"></i> ${item.phone}</div>
+                        <div class="result-meta"><i class="fa-solid fa-location-dot"></i> ${item.address}</div>
+                        <div class="result-actions">
+                            <button class="action-btn" onclick="app.flyTo(${item.lat}, ${item.lng})"><i class="fa-solid fa-map"></i> الخريطة</button>
+                            <button class="action-btn" onclick="window.open('tel:${item.phone}')"><i class="fa-solid fa-phone"></i> اتصال</button>
+                        </div>
+                    `;
+                    list.appendChild(el);
+                });
+
+                if (bounds.isValid()) this.map.fitBounds(bounds, { padding: [50, 50] });
+
+                // On mobile, expand panel to show results briefly or keep partial
+                if (window.innerWidth < 768) {
+                    this.expandPanel();
+                }
+            }
+
+            flyTo(lat, lng) {
+                this.map.flyTo([lat, lng], 18);
+                if (window.innerWidth < 768) this.collapsePanel();
+            }
+
+            // --- Panel Logic ---
+            togglePanelExpand() {
+                document.getElementById('search-panel').classList.toggle('expanded');
+            }
+            expandPanel() { document.getElementById('search-panel').classList.add('expanded'); }
+            collapsePanel() { document.getElementById('search-panel').classList.remove('expanded'); }
+
+            toggleSearchPanel() {
+                const p = document.getElementById('search-panel');
+                if (window.innerWidth > 768) {
+                    p.classList.toggle('active-desktop');
+                } else {
+                    this.togglePanelExpand();
+                }
+            }
+
+            // --- Add Modal ---
+            openAddModal() {
+                document.getElementById('add-modal').classList.add('active');
+                this.initPickerMap();
+            }
+            closeAddModal() {
+                document.getElementById('add-modal').classList.remove('active');
+            }
+
+            populateAddForm() {
+                const catSelect = document.getElementById('add-category');
+                CATEGORIES.forEach(c => {
+                    if (c.id === 'all') return;
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.innerText = c.label;
+                    catSelect.appendChild(opt);
+                });
+            }
+
+            updateActivitySelect() {
+                const cat = document.getElementById('add-category').value;
+                const actSelect = document.getElementById('add-activity');
+                actSelect.innerHTML = '<option value="">اختر النشاط</option>';
+
+                if (ACTIVITIES[cat]) {
+                    ACTIVITIES[cat].forEach(a => {
+                        const opt = document.createElement('option');
+                        opt.value = a;
+                        opt.innerText = a;
+                        actSelect.appendChild(opt);
+                    });
+                }
+            }
+
+            submitService() {
+                const name = document.getElementById('add-name').value;
+                const phone = document.getElementById('add-phone').value;
+                const address = document.getElementById('add-address').value;
+                const activity = document.getElementById('add-activity').value;
+
+                if (!name || !phone || !activity || !this.pickerLocation) {
+                    this.showToast('يرجى ملء جميع الحقول وتحديد الموقع', 'error');
+                    return;
+                }
+
+                this.showLoader(true);
+
+                const payload = {
+                    action: 'saveProvider',
+                    name,
+                    phone,
+                    address,
+                    activity,
+                    lat: this.pickerLocation.lat,
+                    lng: this.pickerLocation.lng
+                };
+
+                // Use fetch with no-cors or standard POST
+                fetch(CONFIG.REGISTER_API, {
+                    method: 'POST',
+                    mode: 'no-cors', // Important for GAS execution
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(() => {
+                    this.showToast('تم إرسال الطلب بنجاح!', 'success');
+                    this.closeAddModal();
+                    // Clear form
+                    document.getElementById('add-name').value = '';
+                    document.getElementById('add-phone').value = '';
+                    document.getElementById('add-address').value = '';
+                }).catch(e => {
+                    this.showToast('حدث خطأ في الاتصال', 'error');
+                    console.error(e);
+                }).finally(() => this.showLoader(false));
+            }
+
+            // --- Utilities ---
+            showLoader(show) {
+                document.getElementById('loader').classList.toggle('active', show);
+            }
+            showToast(msg, type) {
+                const t = document.getElementById('toast');
+                t.innerText = msg;
+                t.className = `toast show ${type}`;
+                setTimeout(() => t.classList.remove('show'), 3000);
+            }
         }
-      }
-    }
 
-    function viewOnMap(index, view) {
-      if (markers && markers[index]) {
-        const map = view === 'mobile' ? mobileMap : desktopMap;
-        
-        if (view === 'mobile') {
-          document.getElementById('mobileMapFull').classList.add('active');
-          setTimeout(function() {
-            google.maps.event.trigger(map, 'resize');
-            google.maps.event.trigger(markers[index].marker, 'click');
-          }, 300);
-        } else {
-          google.maps.event.trigger(markers[index].marker, 'click');
-          document.querySelector('.desktop-map-box').scrollIntoView({behavior: 'smooth'});
-        }
-      }
-    }
+        const app = new App();
+        window.addEventListener('load', () => app.init());
 
-    function initMap() {
-      const beshtil = {lat: 30.0856171, lng: 31.1819895};
-      const mapOptions = {
-        center: beshtil,
-        zoom: 16,
-        mapTypeId: google.maps.MapTypeId.HYBRID,
-        gestureHandling: 'greedy',
-        zoomControl: true,
-        mapTypeControl: false,
-        streetViewControl: true,
-        fullscreenControl: false,
-        styles: [
-          {
-            featureType: "poi",
-            elementType: "labels",
-            stylers: [{ visibility: "off" }]
-          },
-          {
-            featureType: "poi.business",
-            elementType: "all",
-            stylers: [{ visibility: "off" }]
-          },
-          {
-            featureType: "transit",
-            elementType: "labels.icon",
-            stylers: [{ visibility: "off" }]
-          }
-        ]
-      };
-      
-      if (isMobile) {
-        mobileMap = new google.maps.Map(document.getElementById("mobileMap"), mapOptions);
-      } else {
-        desktopMap = new google.maps.Map(document.getElementById("desktopMap"), mapOptions);
-      }
-    }
-
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        document.getElementById('splash').classList.add('hidden');
-      }, 1200);
-      
-      if (typeof google !== 'undefined' && google.maps) {
-        initMap();
-      } else {
-        setTimeout(initMap, 1000);
-      }
-    });
-  </script>
-
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBT2qu6ecTsP-5xCs6lKuj_OO4UtqOFaJ8&callback=initMap&language=ar&region=EG" async defer></script>
+    </script>
 </body>
+
 </html>
