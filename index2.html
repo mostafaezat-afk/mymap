@@ -979,14 +979,10 @@
 
                 L.control.zoom({ position: 'topright' }).addTo(this.map);
 
-                // Layers
-                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: 'Esri'
-                }).addTo(this.map);
-
-                L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/voyager_only_labels/{z}/{x}/{y}.png', {
-                    attribution: 'Carto',
-                    subdomains: 'abcd'
+                // Google Hybrid Layer (Satellite + Streets)
+                L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
                 }).addTo(this.map);
 
                 window.app.store.data.forEach(c => this.addMarker(c));
@@ -1008,8 +1004,10 @@
                         zoomControl: false
                     });
 
-                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(this.miniMap);
-                    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/voyager_only_labels/{z}/{x}/{y}.png').addTo(this.miniMap);
+                    L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    }).addTo(this.miniMap);
 
                     this.miniMap.on('click', (e) => {
                         const { lat, lng } = e.latlng;
