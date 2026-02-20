@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>واجهة الراكب</h3>
+    <div id="user-profile" style="margin-bottom: 10px;">
+        <input type="text" id="p-name" placeholder="اسمك" class="input-field">
+        <input type="tel" id="p-phone" placeholder="رقم هاتفك" class="input-field">
+
+        <label for="p-vehicle">اختر نوع المركبة/الخدمة:</label>
+        <select id="p-vehicle" class="input-field" onchange="filterMap()">
+            <option value="all">الكل</option>
+            <option value="tuktuk">🛺 توكتوك</option>
+            <option value="moto">🏍️ موتوسيكل</option>
+            <option value="tricycle">🚛 تروسيكل</option>
+            <option value="delivery">📦 دليفري (توصيل طلبات)</option>
+        </select>
+    </div>
+    <div class="controls">
+        <button id="btn-request" onclick="requestRide()">طلب توصيلة 🛺</button>
+        <button id="btn-sos" class="btn-sos" onclick="sendSOS()">🆘 طوارئ (SOS)</button>
+        <div id="request-status"></div>
+    </div>
+    <p>جاري البحث عن تكاتك قريبة...</p>
+    <div id="map" style="height: 400px;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/passenger.js') }}"></script>
+{% endblock %}

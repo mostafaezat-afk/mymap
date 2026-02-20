@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>لوحة التحكم (الإدارة)</h3>
+    <div class="monitor-grid">
+        <div class="monitor-panel">
+            <h4>السائقون النشطون</h4>
+            <div id="drivers-list"></div>
+        </div>
+        <div class="monitor-panel">
+            <h4>طلبات الركوب الحالية</h4>
+            <div id="requests-list"></div>
+        </div>
+    </div>
+    <div id="map" style="height: 500px; margin-top: 20px;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
