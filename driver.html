@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3>واجهة السائق</h3>
+    <div class="status-controls">
+        <div id="driver-profile" style="margin-bottom: 10px;">
+            <input type="text" id="d-name" placeholder="اسمك" class="input-field">
+            <input type="tel" id="d-phone" placeholder="رقم هاتفك" class="input-field">
+            <select id="d-type" class="input-field">
+                <option value="tuktuk">🛺 توكتوك</option>
+                <option value="moto">🏍️ موتوسيكل</option>
+                <option value="tricycle">🚛 تروسيكل</option>
+                <option value="delivery">📦 دليفري (توصيل طلبات)</option>
+            </select>
+        </div>
+        <button id="btn-available" onclick="startTracking()">أنا متاح</button>
+        <button id="btn-busy" onclick="stopTracking()" disabled>مشغول</button>
+        <button id="btn-sos" class="btn-sos" onclick="sendSOS()">🆘 طوارئ</button>
+    </div>
+    <div id="status-display">الحالة: غير متصل</div>
+    <div id="requests-container"></div>
+    <div id="map" style="height: 400px;"></div>
+
+    <div id="chat-box" class="chat-container" style="display: none;">
+        <h4>المحادثة مع الراكب</h4>
+        <div id="chat-messages" class="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="اكتب رسالة...">
+        <button onclick="sendMessage()">إرسال</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/driver.js') }}"></script>
+{% endblock %}
